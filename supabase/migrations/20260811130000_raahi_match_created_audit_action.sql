@@ -1,0 +1,148 @@
+-- ============================================================
+-- RAAHI — Add match_created to audit_action enum
+-- Migration: 20260811130000_raahi_match_created_audit_action.sql
+-- ============================================================
+--
+-- ROOT CAUSE (CONFIRMED):
+--   match_route_queue (migration 20260811120000) inserts an
+--   audit_log row with:
+--
+--     'match_created'::public.audit_action
+--
+--   but that enum value was never added to public.audit_action.
+--   PostgreSQL raises:
+--
+--     code: 22P02
+--     message: "invalid input value for enum audit_action:
+--               \"match_created\""
+--
+--   This causes the entire match_route_queue transaction to roll
+--   back, so no match is ever committed.
+--
+-- CURRENT audit_action ENUM VALUES (all migrations through 20260811120000):
+--   Original (stage2):
+--     fare_changed, cancellation_fee_changed, driver_assigned,
+--     driver_approved, driver_suspended, driver_activated,
+--     booking_cancelled, booking_moved, passenger_replaced,
+--     queue_override, settings_changed, user_suspended
+--   stage3:
+--     driver_went_online, driver_became_active, driver_paused,
+--     driver_removed, booking_created, passenger_reassigned,
+--     trip_became_full, next_driver_activated, admin_override_driver,
+--     trip_started, trip_completed
+--   stage4:
+--     no_show_marked, seat_count_changed, booking_reassigned,
+--     driver_skipped, driver_paused_admin, driver_removed_admin,
+--     route_updated, pickup_point_updated, vehicle_created,
+--     vehicle_updated, vehicle_assigned, settings_updated
+--   stage5:
+--     passenger_joined_queue, passenger_assigned_to_trip,
+--     passenger_returned_to_queue, driver_joined_queue,
+--     driver_offered_ride, driver_accepted_offer,
+--     driver_declined_offer, offer_expired, driver_cancelled_trip,
+--     passengers_rematched, admin_changed_queue_order,
+--     passenger_queue_cancelled
+--   stage51:
+--     offer_batch_expired, placeholder_trip_cleaned
+--   stage52:
+--     test_data_created, test_data_reset, test_scenario_run
+--   fix_departure_audit_action:
+--     trip_departure_initiated
+--   fix_post_trip_driver_reset:
+--     driver_added_to_queue_admin, driver_queue_completed
+--   driver_reactivated_audit:
+--     driver_reactivated
+--   v1_critical_gaps:
+--     passenger_suspended, passenger_reactivated, route_paused,
+--     route_resumed, trip_aborted, passengers_recovered_after_abort,
+--     vehicle_reassigned_admin
+--   google_only_login_and_booking_abuse:
+--     booking_cooldown_started, booking_cooldown_cleared_admin
+--   v1_fare_noshow_pickup_contact:
+--     fare_collected, pickup_point_added, pickup_point_edited,
+--     pickup_points_reordered, pickup_point_deactivated,
+--     pickup_point_activated, passenger_phone_updated
+--   admin_kpi_canonical:
+--     admin_kpi_accessed
+--   stale_booking_fix_and_admin_recovery:
+--     stale_booking_recovered
+--   t2_bug01_stale_booking_lifecycle_fix:
+--     operational_consistency_checked
+--   t2_bug02_offline_driver_trip_lifecycle:
+--     trip_closed_driver_offline, trip_closed_driver_suspended,
+--     orphan_trip_repaired
+--
+--   match_created: NOT PRESENT → this is the defect.
+--
+-- CANONICAL ACTION DECISION:
+--   No existing enum value is semantically equivalent to the
+--   match_route_queue event (creating a provisional trip and
+--   assigning multiple passengers in one FIFO match operation).
+--
+--   The closest existing value is 'passenger_assigned_to_trip'
+--   but that is per-passenger and does not represent the
+--   match-creation event itself.
+--
+--   Decision: ADD 'match_created' as a new value.
+--   This is the minimal, semantically correct fix.
+--
+-- OTHER INVALID AUDIT ACTIONS IN match_route_queue:
+--   Audited all ::public.audit_action literals in the current
+--   match_route_queue body (migration 20260811120000):
+--
+--   Only ONE audit INSERT exists in the function:
+--     'match_created'::public.audit_action
+--
+--   No other audit_action literals are present in the function.
+--   All other enum casts in the function target trip_status,
+--   queue_status, and booking_status — those were fixed in
+--   migration 20260811120000 and are not affected here.
+--
+-- FIX:
+--   ALTER TYPE public.audit_action ADD VALUE IF NOT EXISTS 'match_created'
+--
+--   This is a forward-only, non-destructive, idempotent enum
+--   extension. No function redeployment is required — the
+--   match_route_queue function body is already correct.
+--
+-- WHAT IS NOT CHANGED:
+--   - FIFO semantics
+--   - passenger assignment logic
+--   - test/live isolation
+--   - booking statuses
+--   - trip status logic
+--   - driver queue logic
+--   - fare logic
+--   - no-show logic
+--   - cancellation abuse controls
+--   - route logic
+--   - live queue/passenger state
+--
+-- EXPECTED ROLLBACK-TEST RESULT AFTER THIS MIGRATION:
+--   - matched = true
+--   - Rajeev Backup4 selected (FIFO #1)
+--   - 3 passenger bookings assigned
+--   - 4 total seats assigned
+--   - trip status = full
+--   - Dipti remains waiting #2
+--   - audit insert succeeds (match_created now valid)
+--   - transaction can then be rolled back cleanly
+--
+-- NEW ENUM VALUE ADDED: YES — match_created
+-- FILES CHANGED:
+--   supabase/migrations/20260811130000_raahi_match_created_audit_action.sql
+-- ============================================================
+
+-- ============================================================
+-- STEP 1: Add match_created to audit_action enum (idempotent)
+-- ============================================================
+
+ALTER TYPE public.audit_action ADD VALUE IF NOT EXISTS 'match_created';
+
+-- Commit enum addition so it is visible to subsequent statements
+-- in this session (required before any DML that uses the new value)
+COMMIT;
+
+-- ============================================================
+-- END OF MIGRATION
+-- ============================================================
