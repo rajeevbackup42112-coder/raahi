@@ -1,0 +1,1 @@
+This migration directory on `raahi-learning-implementation-v1` is intended to contain Raahi Learning migrations only. Legacy mobility migrations are excluded from the execution chain.
