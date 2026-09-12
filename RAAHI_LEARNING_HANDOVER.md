@@ -13,10 +13,11 @@ This branch contains the canonical Raahi Learning product, inspected UI, consoli
 2. [`docs/raahi-learning/34-foundation-identity-implementation-result-v1.2.md`](docs/raahi-learning/34-foundation-identity-implementation-result-v1.2.md)
 3. [`docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md`](docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md)
 4. [`docs/raahi-learning/36-locations-implementation-result-v1.2.md`](docs/raahi-learning/36-locations-implementation-result-v1.2.md)
-5. [`docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`](docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md)
-6. [`docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`](docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md)
-7. [`docs/raahi-learning/22-implementation-runbook-v1.2.md`](docs/raahi-learning/22-implementation-runbook-v1.2.md)
-8. [`docs/raahi-learning/29-master-test-case-catalog-v1.2.md`](docs/raahi-learning/29-master-test-case-catalog-v1.2.md)
+5. [`docs/raahi-learning/37-learner-share-codes-implementation-result-v1.2.md`](docs/raahi-learning/37-learner-share-codes-implementation-result-v1.2.md)
+6. [`docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`](docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md)
+7. [`docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`](docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md)
+8. [`docs/raahi-learning/22-implementation-runbook-v1.2.md`](docs/raahi-learning/22-implementation-runbook-v1.2.md)
+9. [`docs/raahi-learning/29-master-test-case-catalog-v1.2.md`](docs/raahi-learning/29-master-test-case-catalog-v1.2.md)
 
 For full product behavior and QA history, see `docs/raahi-learning/README.md`.
 
@@ -32,37 +33,69 @@ The environment was inspected read-only before first mutation and found clean.
 
 ### Foundation + Identity — PASS
 
-Real runtime markers:
+Applied `0001–0106`.
+
+Runtime markers:
 
 - `FOUNDATION_IDENTITY_RUNTIME_TESTS_PASS`
 - `POST_HARDENING_SECURITY_SMOKE_PASS`
 
 ### Locations — PASS
 
-Implemented Location lifecycle, selected Location preference, scoped Local Manager authority, Location Interests, aggregate launch-readiness counts, closure responsibility and RLS/least-privilege controls.
+Applied `0200–0204`.
 
-Real runtime markers:
+Runtime markers:
 
 - `LOCATIONS_RUNTIME_TESTS_PASS`
 - `LOCATIONS_POST_HARDENING_SMOKE_PASS`
 
-Locations applied migrations:
+### Learner Share Codes — PASS
 
-- `0200_locations_tables`
-- `0201_account_location_preferences`
-- `0202_locations_staff_rls_rpcs`
-- `0203_location_interests`
-- `0204_locations_rls_policy_consolidation`
+Applied:
 
-Security Advisor after Locations: **0 findings**. Synthetic test data was rolled back; the dev application/Auth data remains empty.
+- `0250_learner_share_codes`
 
-The implementation branch migration subtree is now explicitly **Raahi Learning only**; inherited mobility migrations were removed before Locations execution.
+Implemented private, one-time Learner identification without a public Learner directory:
+
+- 192-bit database-generated bearer token;
+- plaintext returned only on the first successful create response;
+- SHA-256 hash-only persistence;
+- 24-hour V1 TTL through private policy helper;
+- one active code per Learner;
+- replacement revokes predecessor;
+- formal learner-side authority required for creation;
+- paused current formal authority may revoke an existing code;
+- no direct client table access;
+- no public resolve/search/browse Learner endpoint;
+- private exact-token resolver reserved for later atomic Class invitation + consumption;
+- token excluded from Audit and Idempotency persisted results.
+
+Runtime markers:
+
+- `SHARE_CODE_BASIC_PASS`
+- `SHARE_CODE_PERMISSION_PASS`
+- `SHARE_CODE_STATE_PASS`
+- `SHARE_CODE_TERMINAL_PASS`
+
+Security Advisor after Share Codes: **0 findings**. Performance Advisor has only expected unused-index INFO notices on this empty dev database.
+
+Synthetic test data was rolled back; the dev Auth/application tables remain empty.
+
+The implementation branch migration subtree is explicitly **Raahi Learning only**; inherited mobility migrations were removed before Locations execution.
 
 ## Current gate
 
-> **STOP BEFORE `0250_learner_share_codes.sql`.**
+> **STOP BEFORE ORGANIZATIONS / TEACHER DISCOVERY (`0300–0302`).**
 
-The next eligible implementation slice is private one-time Learner share codes only. Do not proceed to Organizations/Discovery (`0300+`) until that slice passes its own lifecycle/RLS/security/retry gate.
+Next eligible slice:
+
+- `0300_organizations_discovery_tables.sql`
+- `0301_organizations_discovery_constraints.sql`
+- `0302_organizations_discovery_rls_rpcs.sql`
+
+Do not proceed to Restrictions (`0350+`) until Organization ownership/capability, Teaching Option ownership, public discovery, Save privacy, idempotency, RLS and direct-access security tests pass.
+
+The share-code consume/invite race is intentionally still deferred until Classes (`0502`) exists; no fake Class objects were introduced early.
 
 ## Clickable UI artifact
 
