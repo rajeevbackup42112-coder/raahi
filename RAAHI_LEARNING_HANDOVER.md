@@ -11,11 +11,14 @@ Start with:
 2. [`docs/raahi-learning/README.md`](docs/raahi-learning/README.md)
 3. [`docs/raahi-learning/08-database-blueprint-review-v1.md`](docs/raahi-learning/08-database-blueprint-review-v1.md)
 4. [`docs/raahi-learning/03-database-blueprint-v1.1.md`](docs/raahi-learning/03-database-blueprint-v1.1.md)
-5. [`docs/raahi-learning/09-sql-readiness-review-v1.md`](docs/raahi-learning/09-sql-readiness-review-v1.md)
-6. [`docs/raahi-learning/10-sql-migration-plan-v1.md`](docs/raahi-learning/10-sql-migration-plan-v1.md)
+5. [`docs/raahi-learning/11-sql-migration-plan-review-v1.md`](docs/raahi-learning/11-sql-migration-plan-review-v1.md)
+6. [`docs/raahi-learning/10-sql-migration-plan-v1.1.md`](docs/raahi-learning/10-sql-migration-plan-v1.1.md)
 
-The original `03-database-blueprint-v1.md` is retained only as the historical first physical draft and **must not be used for migrations**.
+Historical drafts retained for traceability but not implementation:
 
-**Do not touch Supabase yet.** Product/UI behaviour is frozen and the physical model has completed its correction pass. The SQL Migration Plan has now been drafted; the immediate next task is one final invariant/concurrency/security review of that plan. Only after it is explicitly marked **APPROVED FOR IMPLEMENTATION** should Supabase be connected and the first Foundation + Identity migrations be executed.
+- `03-database-blueprint-v1.md`
+- `10-sql-migration-plan-v1.md`
+
+**Do not touch Supabase yet.** Product/UI behaviour is frozen, the physical schema has been reviewed, and the corrected SQL Migration Plan v1.1 is now the final review target. Only after it is explicitly marked **APPROVED FOR IMPLEMENTATION** should Supabase be connected and the first Foundation + Identity migration slice be executed.
 
 The existing repository `main` branch contains prior Raahi work and must not be assumed to implement Raahi Learning's frozen model.
