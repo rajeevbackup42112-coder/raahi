@@ -35,10 +35,24 @@ This manifest exists so a future chat/developer can verify that the pre-Supabase
 ## Readiness / handover
 
 - `21-pre-supabase-readiness-review-v1.2.md` — PASS
+- `26-final-pre-supabase-consistency-audit-v1.2.md` — PASS
 - `README.md`
 - `99-handover.md`
 - repository top-level `RAAHI_LEARNING_HANDOVER.md`
 - GitHub Issue #1 tracker
+
+## Implementation scaffold branch
+
+Branch: `raahi-learning-implementation-v1`
+
+Prepared without touching Supabase:
+
+- `IMPLEMENTATION_START_HERE.md`
+- `supabase/migrations/README.md`
+- `supabase/ENVIRONMENT_INSPECTION_TEMPLATE.md`
+- `tests/db/README.md`
+
+No environment-specific migration SQL has been fabricated before inspecting the chosen target project.
 
 ## Historical traceability sources
 
