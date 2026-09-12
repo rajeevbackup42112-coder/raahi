@@ -117,12 +117,20 @@ do $$ declare r jsonb; begin
 end $$;
 select public.set_test_results_visibility(current_setting('test.test')::uuid,true,'release-results');
 
+-- After release, guardian may see the released result projection but still cannot read
+-- the protected Test definition/questions/answer key. Learner self retains that access.
 select set_config('request.jwt.claim.sub','73333333-3333-3333-3333-333333333333',true);
 do $$ declare r jsonb; d jsonb; begin
   r:=public.get_test_attempt(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
   if (r->>'score')::numeric<>5 or r->>'teacher_feedback' is null then raise exception 'RELEASE_BAD:%',r; end if;
   d:=public.get_test_definition(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
-  if d #>> '{questions,0,choices,1,is_correct}' <> 'true' then raise exception 'CORRECTED_KEY_NOT_RELEASED:%',d; end if;
+  if d is not null then raise exception 'GUARDIAN_TEST_DEFINITION_LEAK:%',d; end if;
+end $$;
+
+select set_config('request.jwt.claim.sub','72222222-2222-2222-2222-222222222222',true);
+do $$ declare d jsonb; begin
+  d:=public.get_test_definition(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if d #>> '{questions,0,choices,1,is_correct}' <> 'true' then raise exception 'CORRECTED_KEY_NOT_RELEASED_TO_SELF:%',d; end if;
 end $$;
 
 select set_config('request.jwt.claim.sub','74444444-4444-4444-4444-444444444444',true);
