@@ -21,14 +21,15 @@ Completed:
 - **Product + UI Behaviour Freeze V1**;
 - conceptual Domain Model V1;
 - architecture boundaries and canonical command principles;
-- first physical database blueprint draft;
-- formal review of that physical draft;
+- first physical database blueprint draft and formal review;
 - corrected **Physical Database Blueprint v1.1**;
-- command/permission and acceptance-test updates reflecting the review;
-- SQL-readiness checklist;
-- first SQL Migration Plan draft;
-- formal review of migration sequencing/dependencies;
-- corrected **SQL Migration Plan v1.1**.
+- command/permission + acceptance updates;
+- SQL-readiness review;
+- first SQL Migration Plan and dependency review;
+- corrected **SQL Migration Plan v1.1**;
+- mandatory **UI Prototype ↔ DB Design Reconciliation**;
+- binding reconciliation migration/RPC/RLS delta;
+- post-reconciliation **APPROVED FOR CONTROLLED IMPLEMENTATION** decision.
 
 Not started:
 
@@ -71,8 +72,6 @@ Do NOT casually reintroduce:
 - multi-teacher Class;
 - platform tuition payments in V1.
 
-The reason these were removed is documented in `07-decision-log-v1.md`.
-
 ## Core architecture decisions
 
 - modular monolith;
@@ -93,102 +92,98 @@ The reason these were removed is documented in `07-decision-log-v1.md`.
 - live Ads serving is pinned to an exact approved Campaign Revision;
 - significant admin/safety/commercial actions are auditable.
 
-## Physical database review result
+## Current canonical technical contract
 
-The historical `03-database-blueprint-v1.md` did not pass the gate as written. `08-database-blueprint-review-v1.md` documents the corrections.
+Read these together:
 
-The current physical blueprint is:
+- `03-database-blueprint-v1.1.md`
+- `10-sql-migration-plan-v1.1.md`
+- `13-ui-db-reconciliation-v1.md`
+- `14-ui-db-implementation-delta-v1.md`
+- `12-implementation-approval-v1.md`
 
-> **`03-database-blueprint-v1.1.md`**
+If the reconciliation delta conflicts with earlier physical/migration wording, `14-ui-db-implementation-delta-v1.md` wins until a consolidated later revision is produced.
 
-Key corrections include private Class communication, scoped restrictions/capabilities, exact Ads target/revision handling, overlap-safe daily Ads inventory, private Ads frequency state, Test definition lock, finite seat-reserving Class Invitations, Learner avatar/Saved teacher support, and Placement-level Ads metrics.
+## UI↔DB reconciliation result
 
-## SQL Migration Plan review result
+The screen/flow audit passed, but it found real corrections that are now binding:
 
-The first `10-sql-migration-plan-v1.md` was also reviewed before Supabase. `11-sql-migration-plan-review-v1.md` found sequencing dependencies and corrected them.
+1. selected Location is stored in `account_location_preferences`, not an early Account FK;
+2. unavailable/preparing Locations persist authenticated `location_interests` for **Register Interest**;
+3. when a Learner has an active Manager, that manager owns formal marketplace/relationship decisions in V1; otherwise self-access may decide for self;
+4. Manager authority does not permit Test impersonation;
+5. Organization profile supports a public logo/avatar;
+6. Class historical access is deterministic by Membership end state rather than another configurable subsystem;
+7. Class Learner Threads do not have an independent lifecycle;
+8. Session Past is derived from time; Attendance/completed Session machinery remains absent;
+9. Activities can link reusable Materials via `activity_material_links`;
+10. Reports may carry private `context_learner_id`;
+11. Class completion uses one canonical `complete_class` transaction;
+12. educational Sponsored serving is surface-based, not Adult/Minor/turning-18 based;
+13. existing offline learners do not require fake Enquiry/Trial/Enrollment history.
 
-The current SQL implementation plan is:
-
-> **`10-sql-migration-plan-v1.1.md`**
-
-Important corrected sequencing decisions:
-
-1. selected Location is implemented after Locations as `account_location_preferences`, avoiding Identity→Location FK dependency;
-2. general scoped Restrictions are created after Organizations exist;
-3. Enquiries are created without Ads FK, then Sponsored Campaign attribution is added during Ads migration;
-4. Audit + Idempotency are created before early consequential RPCs;
-5. post-lock Test structure is immutable while answer-key correction has one explicit audited privileged path.
+Read `13-ui-db-reconciliation-v1.md` for the full flow-by-flow mapping.
 
 ## Raahi Ads summary
 
-Ads is expected to be commercially important for schools, universities, colleges, coaching institutes, academies and relevant educators.
-
-It is a first-class commercial module but not a generic ad network.
+Ads is a first-class commercial module but not a generic ad network.
 
 Important rules:
 
 - clearly labeled Sponsored;
 - relevant educational promotion only in V1;
 - no paid verification/endorsement/organic ranking;
-- no commercial Ads inside private Classes, Activities, Tests or private Messages;
+- no commercial Ads inside My Classes, Class, Activity, Test or private Message surfaces;
 - no named viewer lists or behavioral microtargeting;
-- finite Location × placement × time inventory;
-- overlap-safe daily physical capacity;
+- finite overlap-safe daily Location × placement inventory;
 - inventory holds expire and cannot oversell;
-- simple fixed/configured packages before auctions/CPC/CPM;
+- fixed/configured packages before auctions/CPC/CPM;
 - Campaign Revision approval is exact and immutable;
-- Ad Placement serves an explicit approved Revision, never implicit latest creative;
+- Ad Placement serves an explicit approved Revision;
 - Commercial Clearance is separate from approval;
 - multi-Location serving is independent per Location;
 - anti-monopoly/no category exclusivity;
 - aggregate analytics only unless user deliberately Enquires;
 - private user-level frequency controls stay private from advertisers.
 
-## Immediate next task
+## Immediate next operational action
 
-**Run one final cross-document approval pass of `10-sql-migration-plan-v1.1.md`. Do not connect to Supabase yet.**
+The documentation gate is closed and implementation is approved **only in slices**.
 
-Check specifically:
+If the user authorizes Supabase execution, first inspect the target Supabase project/environment and implement only:
 
-1. every frozen Product/UI rule is preserved;
-2. no removed concept has returned;
-3. FK/delete semantics preserve shared/history/safety records;
-4. Class invitation reservation/acceptance/transfer is race-safe;
-5. Test lock/correction is safe against ordinary and accidental privileged mutation;
-6. Ads daily multi-row locking cannot oversell and uses deterministic lock order;
-7. RLS/SECURITY DEFINER boundaries cannot escalate Learner/Organization/Location scope;
-8. copied private storage URLs remain unauthorized without current business access;
-9. idempotency result commits atomically with domain outcome;
-10. migration slices are independently testable.
+### Foundation + Identity
 
-If the plan passes, change its status to:
+- PostgreSQL extensions/common helpers;
+- Accounts;
+- Learners;
+- Account↔Learner Access;
+- Account Capabilities;
+- Audit + Idempotency infrastructure;
+- Identity authorization helpers, including `can_make_learning_decision`;
+- Identity canonical RPCs;
+- RLS and privilege hardening;
+- tests for learner ownership, manager-vs-self decision authority, one active self/manager, idempotency and privilege escalation.
 
-> **APPROVED FOR IMPLEMENTATION**
-
-Only after that should Supabase be connected.
-
-## First implementation slice after approval
-
-Implement only:
-
-> **Foundation + Identity**
-
-That means extensions/common helpers → Account/Learner/Account↔Learner/Account Capability tables → Audit/Idempotency infrastructure → RLS helpers → Identity RPCs/tests.
-
-Do not create Locations or later modules until Foundation + Identity migrations and authorization tests pass.
+Do **not** create Locations until Foundation + Identity passes all tests.
 
 ## Supabase rule
 
-Do **not** start creating Supabase tables yet.
+No Raahi Learning migration has been executed yet.
 
-Once `10-sql-migration-plan-v1.1.md` is explicitly approved, use versioned SQL migrations rather than ad-hoc dashboard edits and canonical RPC/functions for consequential writes.
+When execution begins:
+
+- use versioned SQL migrations committed to source control;
+- no ad-hoc dashboard table edits;
+- stop on invariant/permission test failure;
+- use forward-fix migrations after anything is applied to a shared environment.
 
 ## UI source-of-truth note
 
-Many exploratory images were generated during product design. They may contain image-generation drift such as stars/ratings, Enrollment wording, overbuilt Ads billing, or old Adult/Minor assumptions.
+Exploratory prototype images may contain drift such as stars/ratings, Enrollment wording, Book Class semantics, overbuilt Ads billing or old Adult/Minor assumptions.
 
-**Written rules in this documentation folder override generated images.** Visuals are style/layout inspiration only unless explicitly reconciled with frozen written behaviour.
+**Written rules and the completed UI↔DB reconciliation override image drift.**
 
 ## Recommended prompt for a new chat
 
-> “Continue Raahi Learning V1. Read `99-handover.md`, `README.md`, `08-database-blueprint-review-v1.md`, `03-database-blueprint-v1.1.md`, `11-sql-migration-plan-review-v1.md`, and `10-sql-migration-plan-v1.1.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`, then cross-check `00`, `01`, `02`, `04`, `05`, and `06`. Product/UI is frozen and Supabase has not been touched. Perform the final approval review of the corrected SQL Migration Plan. Do not connect to Supabase until the plan is explicitly marked APPROVED FOR IMPLEMENTATION.”
+> “Continue Raahi Learning V1. Read `RAAHI_LEARNING_HANDOVER.md` and `docs/raahi-learning/99-handover.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`. Then read `README.md`, `13-ui-db-reconciliation-v1.md`, `14-ui-db-implementation-delta-v1.md`, `12-implementation-approval-v1.md`, `10-sql-migration-plan-v1.1.md`, and the frozen Product/Domain/Architecture/Command/Acceptance/Ads docs. The UI↔DB reconciliation is complete and the plan is approved for controlled implementation. Supabase has not been touched. Do not build everything at once; if explicitly authorized, inspect Supabase and implement only Foundation + Identity first, then run its tests before proceeding.”
