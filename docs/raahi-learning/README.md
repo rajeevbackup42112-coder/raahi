@@ -1,6 +1,6 @@
 # Raahi Learning V1.2 — Documentation Index
 
-Status: **PRE-SUPABASE WORK COMPLETE. Real clickable UI inspected, final UI↔DB reconciliation passed, consolidated physical/migration contract ready. Supabase remains untouched.**
+Status: **PRE-SUPABASE WORK COMPLETE. Real clickable UI inspected, final UI↔DB reconciliation passed, consolidated physical/migration contract ready, and logical mock/property testing passed. Supabase remains untouched.**
 
 This folder is the canonical handover point for Raahi Learning. It exists so a new ChatGPT conversation, developer or coding agent can continue without relying on chat history.
 
@@ -48,7 +48,9 @@ Audit result:
 14. [`24-supabase-execution-checklist-v1.2.md`](24-supabase-execution-checklist-v1.2.md) — checklist to use only after Supabase access is authorized.
 15. [`25-pre-supabase-package-manifest-v1.2.md`](25-pre-supabase-package-manifest-v1.2.md) — package completeness manifest.
 16. [`26-final-pre-supabase-consistency-audit-v1.2.md`](26-final-pre-supabase-consistency-audit-v1.2.md) — final cross-document consistency PASS.
-17. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — final approval record.
+17. [`27-pre-supabase-test-strategy-v1.2.md`](27-pre-supabase-test-strategy-v1.2.md) — comprehensive scenario/state/auth/concurrency/load/security/chaos test strategy.
+18. [`28-mock-model-test-results-v1.2.md`](28-mock-model-test-results-v1.2.md) — **executed backend-free randomized/property tests: PASS**.
+19. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — final approval record.
 
 ## Historical review chain
 
@@ -106,6 +108,24 @@ No live migration has been executed and no environment-specific SQL has been inv
 - Paid visibility can never buy verification, endorsement or organic rank.
 - Per-user Ads frequency/hide data is private operational data, never advertiser viewer lists.
 - Navigation/workspace selection is never authorization; privileged reads re-check actual capability/relationship/scope.
+
+## Mock/model testing result
+
+Backend-free property-style simulations were executed to attack the highest-risk invariants before any database exists.
+
+Passed:
+
+- ~2.5 million randomized Class capacity/Invitation transitions;
+- ~2.5 million randomized Ads inventory transitions;
+- 100,000 Learner share-code lifecycle operations;
+- 100,000 Test Attempt identity/retry operations;
+- 100,000 protected Ads-surface decisions;
+- 200,000 cross-domain invariant scenario bundles;
+- extreme logical contention: 100,000 requests against a 50-seat Class produced exactly 50 reservations, and 100,000 requests against capacity-100 Ads inventory produced exactly 100 units.
+
+No modeled invariant failure was found.
+
+This is a **logical-model pass**, not a runtime performance certification. Real PostgreSQL/Supabase tests for RLS, grants, locks, deadlocks, indexes, Realtime, Storage, failure recovery and p95/p99 latency remain mandatory after a safe staging schema exists.
 
 ## Current boundary
 
