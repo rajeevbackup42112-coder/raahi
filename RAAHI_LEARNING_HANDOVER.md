@@ -1,6 +1,6 @@
-# Raahi Learning V1.1 — Start Here
+# Raahi Learning V1.2 — Start Here
 
-This branch contains the canonical Raahi Learning V1.1 product, inspected UI and technical handover.
+This branch contains the canonical Raahi Learning product, inspected UI and complete pre-Supabase technical handover.
 
 **Repository:** `rajeevbackup42112-coder/raahi`  
 **Branch:** `raahi-learning-v1-docs`  
@@ -10,14 +10,15 @@ This branch contains the canonical Raahi Learning V1.1 product, inspected UI and
 
 1. [`docs/raahi-learning/99-handover.md`](docs/raahi-learning/99-handover.md)
 2. [`docs/raahi-learning/README.md`](docs/raahi-learning/README.md)
-3. [`docs/raahi-learning/16-ui-page-freeze-and-final-reconciliation-v1.1.md`](docs/raahi-learning/16-ui-page-freeze-and-final-reconciliation-v1.1.md)
-4. [`docs/raahi-learning/17-final-ui-db-implementation-delta-v1.1.md`](docs/raahi-learning/17-final-ui-db-implementation-delta-v1.1.md)
-5. [`docs/raahi-learning/12-implementation-approval-v1.md`](docs/raahi-learning/12-implementation-approval-v1.md)
-6. [`docs/raahi-learning/14-ui-db-implementation-delta-v1.md`](docs/raahi-learning/14-ui-db-implementation-delta-v1.md)
-7. [`docs/raahi-learning/10-sql-migration-plan-v1.1.md`](docs/raahi-learning/10-sql-migration-plan-v1.1.md)
-8. [`docs/raahi-learning/03-database-blueprint-v1.1.md`](docs/raahi-learning/03-database-blueprint-v1.1.md)
+3. [`docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`](docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md)
+4. [`docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`](docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md)
+5. [`docs/raahi-learning/21-pre-supabase-readiness-review-v1.2.md`](docs/raahi-learning/21-pre-supabase-readiness-review-v1.2.md)
+6. [`docs/raahi-learning/22-implementation-runbook-v1.2.md`](docs/raahi-learning/22-implementation-runbook-v1.2.md)
+7. [`docs/raahi-learning/23-final-acceptance-traceability-v1.2.md`](docs/raahi-learning/23-final-acceptance-traceability-v1.2.md)
+8. [`docs/raahi-learning/24-supabase-execution-checklist-v1.2.md`](docs/raahi-learning/24-supabase-execution-checklist-v1.2.md)
+9. [`docs/raahi-learning/12-implementation-approval-v1.md`](docs/raahi-learning/12-implementation-approval-v1.md)
 
-For full business behavior, also read the Product/Domain/Architecture/Command/Acceptance/Ads documents indexed in `README.md`.
+For full product behavior, also read the Product/Domain/Architecture/Command/Acceptance/Ads documents indexed in `README.md`.
 
 ## Clickable UI artifact
 
@@ -33,39 +34,32 @@ SHA-256:
 
 `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
-The inspected prototype covers 77 canonical routes/pages and passed its final desktop/mobile, deep-link permission, interaction/business-rule and semantic/accessibility audit suites.
+The prototype contains 77 canonical routes/pages and passed desktop/mobile, privileged deep-link, interaction/business-rule and semantic/accessibility audit suites with zero final issues.
 
 ## Current gate
 
-The real clickable UI build/review gate is **PASSED/CLOSED**.
+- real clickable UI gate: **PASSED/CLOSED**;
+- final page-level UI↔DB reconciliation: **PASSED**;
+- consolidated physical design: **COMPLETE**;
+- consolidated migration plan: **COMPLETE**;
+- final acceptance traceability: **COMPLETE**;
+- pre-Supabase readiness review: **PASS**;
+- implementation approval: **APPROVED FOR READ-ONLY ENVIRONMENT INSPECTION AND CONTROLLED SLICE IMPLEMENTATION**.
 
-The final inspected page-level UI↔DB reconciliation is **PASSED**.
-
-The technical plan is:
-
-> **APPROVED FOR CONTROLLED IMPLEMENTATION**
-
-Implementation contract:
-
-> `10-sql-migration-plan-v1.1.md` + `14-ui-db-implementation-delta-v1.md` + `17-final-ui-db-implementation-delta-v1.1.md`
-
-with later intentional deltas taking precedence (**17 → 14 → 10**) and `16-ui-page-freeze-and-final-reconciliation-v1.1.md` defining the inspected UI behavior that implementation must preserve.
-
-Important final UI-proven additions include:
-
-- `interest_only` Location state;
-- private expiring one-time Learner share codes;
-- Class Invitation fee-display snapshot;
-- Test Attempt teacher feedback;
-- guarded Account pause/resume/closure flows;
-- explicit capability/relationship/scope checks on privileged deep links/reads.
+Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history. New implementation should use consolidated V1.2 docs instead of manually merging old deltas.
 
 ## Supabase state
 
 **No Raahi Learning Supabase migration has been executed.**
 
-If the user explicitly authorizes database execution, inspect the target Supabase project/environment first and implement only **Foundation + Identity** through versioned migrations. Run its RLS/RPC/authorization/idempotency/privilege tests before proceeding to Locations.
+When the user explicitly authorizes Supabase access:
+
+1. inspect the exact target project read-only first;
+2. compare existing environment state with the V1.2 contract;
+3. implement only **Foundation + Identity** through versioned migrations;
+4. run its RLS/RPC/authorization/idempotency/privilege tests;
+5. do not proceed to Locations until the slice passes.
 
 Do not build the entire database in one push.
 
-The repository `main` branch contains earlier Raahi work and must not be assumed to implement this frozen Raahi Learning model.
+The repository `main` branch contains older Raahi work and must not be assumed to implement this Raahi Learning model.
