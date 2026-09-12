@@ -21,6 +21,7 @@ Before starting/resuming implementation, read the latest canonical files from th
 - `docs/raahi-learning/34-foundation-identity-implementation-result-v1.2.md`
 - `docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md`
 - `docs/raahi-learning/36-locations-implementation-result-v1.2.md`
+- `docs/raahi-learning/37-learner-share-codes-implementation-result-v1.2.md`
 
 ## Target dev environment
 
@@ -33,17 +34,7 @@ Read-only environment inspection was completed before the first mutation.
 
 ### Foundation + Identity — PASS
 
-Applied:
-
-- `0001_extensions_helpers.sql`
-- `0002_common_updated_at.sql`
-- `0100_identity_tables.sql`
-- `0101_identity_constraints_indexes.sql`
-- `0102_command_infrastructure.sql`
-- `0103_identity_rls_helpers.sql`
-- `0104_identity_rpcs.sql`
-- `0105_identity_hardening_followup.sql`
-- `0106_private_function_privileges.sql`
+Applied `0001–0106`.
 
 Runtime markers:
 
@@ -52,36 +43,63 @@ Runtime markers:
 
 ### Locations — PASS
 
-Applied:
-
-- `0200_locations_tables.sql`
-- `0201_account_location_preferences.sql`
-- `0202_locations_staff_rls_rpcs.sql`
-- `0203_location_interests.sql`
-- `0204_locations_rls_policy_consolidation.sql`
+Applied `0200–0204`.
 
 Runtime markers:
 
 - `LOCATIONS_RUNTIME_TESTS_PASS`
 - `LOCATIONS_POST_HARDENING_SMOKE_PASS`
 
-Security Advisor after Locations: **0 findings**.
+### Learner Share Codes — PASS
+
+Applied:
+
+- `0250_learner_share_codes.sql`
+
+Executed markers:
+
+- `SHARE_CODE_BASIC_PASS`
+- `SHARE_CODE_PERMISSION_PASS`
+- `SHARE_CODE_STATE_PASS`
+- `SHARE_CODE_TERMINAL_PASS`
+
+Implemented behavior:
+
+- private 192-bit bearer token returned only on first successful create response;
+- only SHA-256 hash persisted;
+- one active share code per Learner in V1;
+- 24-hour TTL via private policy helper;
+- replacement revokes predecessor;
+- active manager/formal learner-side authority controls creation;
+- paused current formal authority may revoke but cannot create;
+- expired/revoked/consumed token does not resolve;
+- no direct client table access;
+- no public resolve/search/browse Learner API;
+- private exact-token resolver reserved for future `send_class_invitation_with_share_code` transaction;
+- secret omitted from Audit and Idempotency persisted results;
+- same-key create retry returns same logical resource but never replays plaintext secret.
+
+Security Advisor after Share Codes: **0 findings**. Performance Advisor has only expected empty-database unused-index INFO notices.
 
 All synthetic test data was rolled back; the dev database currently has no application/Auth fixture rows.
 
 ## Migration product boundary
 
-`supabase/migrations/` on this branch is now **Raahi Learning only**. Historical mobility migrations inherited from old Raahi work were removed from this execution subtree before Locations was applied, preventing accidental replay into the Learning project.
+`supabase/migrations/` on this branch is **Raahi Learning only**. Historical mobility migrations inherited from old Raahi work were removed from this execution subtree before Locations was applied, preventing accidental replay into the Learning project.
 
 ## Current stop gate
 
-**STOP BEFORE LEARNER SHARE CODES.**
+**STOP BEFORE ORGANIZATIONS / TEACHER DISCOVERY.**
 
 The next eligible slice, only after deliberate continuation, is:
 
-- `0250_learner_share_codes.sql`
+- `0300_organizations_discovery_tables.sql`
+- `0301_organizations_discovery_constraints.sql`
+- `0302_organizations_discovery_rls_rpcs.sql`
 
-That slice must implement and test private, expiring, hash-only, one-time Learner share codes. Do not proceed into Organizations/Discovery (`0300+`) until share codes pass their own gate.
+That slice must prove ownership XOR rules, Organization member/capability scope, durable Organization ownership, teacher profile/Teaching Option behavior, live-Location discovery gating, private Saves, and secure public projections. Do not proceed into Restrictions (`0350+`) until this slice passes.
+
+The later invite-by-share-code consumption path is intentionally deferred until Classes (`0502`) exists; real consume-vs-revoke concurrency, timeout-after-invite retry and endpoint rate limiting remain future tests rather than being falsely marked complete now.
 
 ## Implementation rules remain binding
 
