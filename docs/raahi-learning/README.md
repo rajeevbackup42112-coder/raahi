@@ -1,6 +1,6 @@
 # Raahi Learning V1 — Documentation Index
 
-Status: **Product + UI behaviour frozen; conceptual/architecture model frozen; physical database blueprint reviewed to v1.1; corrected SQL Migration Plan v1.1 drafted. Supabase remains untouched.**
+Status: **Product + UI behaviour frozen; conceptual/architecture model frozen; physical database blueprint reviewed; SQL Migration Plan v1.1 technically approved. Supabase remains untouched.**
 
 This folder is the canonical handover point for Raahi Learning V1. It exists so a new ChatGPT conversation, developer, or coding agent can continue without relying on chat history.
 
@@ -27,14 +27,15 @@ For a parent:
 5. [`03-database-blueprint-v1.1.md`](03-database-blueprint-v1.1.md) — current reviewed physical relational design.
 6. [`09-sql-readiness-review-v1.md`](09-sql-readiness-review-v1.md) — SQL-readiness checklist.
 7. [`11-sql-migration-plan-review-v1.md`](11-sql-migration-plan-review-v1.md) — review of the first migration-plan draft and dependency corrections.
-8. [`10-sql-migration-plan-v1.1.md`](10-sql-migration-plan-v1.1.md) — **current corrected SQL implementation contract; immediate final approval target before Supabase.**
-9. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — canonical commands, authorization and transaction/idempotency requirements.
-10. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then and cross-product regression gates.
-11. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads product, inventory, review, privacy and commercial rules.
-12. [`07-decision-log-v1.md`](07-decision-log-v1.md) — major decisions and explicitly removed/deferred complexity.
-13. [`03-database-blueprint-v1.md`](03-database-blueprint-v1.md) — historical first physical draft. Do not deploy from this file.
-14. [`10-sql-migration-plan-v1.md`](10-sql-migration-plan-v1.md) — historical first migration-plan draft. Do not implement from this file.
-15. [`99-handover.md`](99-handover.md) — exact current state and next actions for another chat/agent.
+8. [`10-sql-migration-plan-v1.1.md`](10-sql-migration-plan-v1.1.md) — current corrected SQL implementation contract.
+9. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — **final technical approval record and first permitted implementation slice.**
+10. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — canonical commands, authorization and transaction/idempotency requirements.
+11. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then and cross-product regression gates.
+12. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads product, inventory, review, privacy and commercial rules.
+13. [`07-decision-log-v1.md`](07-decision-log-v1.md) — major decisions and explicitly removed/deferred complexity.
+14. [`03-database-blueprint-v1.md`](03-database-blueprint-v1.md) — historical first physical draft. Do not deploy from this file.
+15. [`10-sql-migration-plan-v1.md`](10-sql-migration-plan-v1.md) — historical first migration-plan draft. Do not implement from this file.
+16. [`99-handover.md`](99-handover.md) — exact current state and next actions for another chat/agent.
 
 ## Non-negotiable design principles
 
@@ -58,8 +59,8 @@ For a parent:
 
 ## Current implementation gate
 
-Do **not** connect to or mutate Supabase yet.
+The technical plan has passed its final documentation review and is recorded in `12-implementation-approval-v1.md`.
 
-The current review target is `10-sql-migration-plan-v1.1.md`. Run one final cross-document pass against Product, Domain, Architecture, Commands, Acceptance tests and Ads rules. If it passes without reopening product behaviour, explicitly mark the plan **APPROVED FOR IMPLEMENTATION**.
+**Supabase has still not been touched.**
 
-Only then begin versioned migrations, starting with Foundation + Identity only, with constraints/RLS/RPC tests before moving to the next slice.
+The next operational action requires the user to authorize Supabase execution. Once authorized, implement only **Foundation + Identity** first, through versioned migrations with tests. Do not proceed to Locations until that slice passes.
