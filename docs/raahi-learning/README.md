@@ -1,6 +1,6 @@
 # Raahi Learning V1.2 — Documentation Index
 
-Status: **CONTROLLED SUPABASE IMPLEMENTATION ACTIVE. FOUNDATION + IDENTITY PASS. LOCATIONS PASS. CURRENT STOP: BEFORE LEARNER SHARE CODES (`0250`).**
+Status: **CONTROLLED SUPABASE IMPLEMENTATION ACTIVE. FOUNDATION + IDENTITY PASS. LOCATIONS PASS. LEARNER SHARE CODES PASS. CURRENT STOP: BEFORE ORGANIZATIONS / TEACHER DISCOVERY (`0300–0302`).**
 
 This folder is the canonical handover point for Raahi Learning.
 
@@ -31,24 +31,25 @@ Final UI audit:
 ## Read first
 
 1. [`99-handover.md`](99-handover.md) — current state and next gate.
-2. [`34-foundation-identity-implementation-result-v1.2.md`](34-foundation-identity-implementation-result-v1.2.md) — first real DB slice PASS.
+2. [`34-foundation-identity-implementation-result-v1.2.md`](34-foundation-identity-implementation-result-v1.2.md) — Foundation + Identity PASS.
 3. [`35-implementation-branch-legacy-migration-isolation.md`](35-implementation-branch-legacy-migration-isolation.md) — migration product-boundary correction.
-4. [`36-locations-implementation-result-v1.2.md`](36-locations-implementation-result-v1.2.md) — Locations real DB slice PASS.
-5. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — frozen product behavior.
-6. [`01-domain-model-v1.md`](01-domain-model-v1.md) — conceptual model/invariants.
-7. [`02-architecture-blueprint-v1.md`](02-architecture-blueprint-v1.md) — architecture boundaries.
-8. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — command/permission intent.
-9. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then regressions.
-10. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads rules.
-11. [`18-ui-page-inventory-v1.1.md`](18-ui-page-inventory-v1.1.md) — inspected UI inventory.
-12. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — final physical design source.
-13. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — final migration sequence.
-14. [`22-implementation-runbook-v1.2.md`](22-implementation-runbook-v1.2.md) — slice procedure.
-15. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test mapping.
-16. [`24-supabase-execution-checklist-v1.2.md`](24-supabase-execution-checklist-v1.2.md) — environment checklist.
-17. [`29-master-test-case-catalog-v1.2.md`](29-master-test-case-catalog-v1.2.md) — master QA catalog.
-18. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — real runtime load/security/chaos plan.
-19. [`32-canonical-test-personas-fixtures-v1.2.md`](32-canonical-test-personas-fixtures-v1.2.md) — deterministic test personas.
+4. [`36-locations-implementation-result-v1.2.md`](36-locations-implementation-result-v1.2.md) — Locations PASS.
+5. [`37-learner-share-codes-implementation-result-v1.2.md`](37-learner-share-codes-implementation-result-v1.2.md) — Learner Share Codes PASS.
+6. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — frozen product behavior.
+7. [`01-domain-model-v1.md`](01-domain-model-v1.md) — conceptual model/invariants.
+8. [`02-architecture-blueprint-v1.md`](02-architecture-blueprint-v1.md) — architecture boundaries.
+9. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — command/permission intent.
+10. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then regressions.
+11. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads rules.
+12. [`18-ui-page-inventory-v1.1.md`](18-ui-page-inventory-v1.1.md) — inspected UI inventory.
+13. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — final physical design source.
+14. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — final migration sequence.
+15. [`22-implementation-runbook-v1.2.md`](22-implementation-runbook-v1.2.md) — slice procedure.
+16. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test mapping.
+17. [`24-supabase-execution-checklist-v1.2.md`](24-supabase-execution-checklist-v1.2.md) — environment checklist.
+18. [`29-master-test-case-catalog-v1.2.md`](29-master-test-case-catalog-v1.2.md) — master QA catalog.
+19. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — real runtime load/security/chaos plan.
+20. [`32-canonical-test-personas-fixtures-v1.2.md`](32-canonical-test-personas-fixtures-v1.2.md) — deterministic test personas.
 
 Pre-Supabase review/history docs `21`, `25–28`, `30`, `33` remain useful evidence. Historical design/delta files `03/08/09/10/11/13/14/15/16/17` remain decision traceability; consolidated V1.2 sources win where wording differs.
 
@@ -71,23 +72,42 @@ Runtime markers:
 
 ### Locations — PASS
 
-Applied `0200–0204` and passed:
-
-- lifecycle/state rules;
-- selected-Location independence;
-- Location Interest uniqueness/history/eligibility;
-- Local Manager exact Location scope;
-- aggregate-only readiness;
-- Account closure responsibility;
-- RLS/direct-write/anon protections;
-- idempotency and audit behavior.
+Applied `0200–0204` and passed lifecycle/state, selected-Location independence, Location Interest, Local Manager scope, aggregate readiness, closure responsibility, idempotency/RLS/security tests.
 
 Runtime markers:
 
 - `LOCATIONS_RUNTIME_TESTS_PASS`
 - `LOCATIONS_POST_HARDENING_SMOKE_PASS`
 
-Security Advisor after Locations: **0 findings**. Performance Advisor has only expected unused-index INFO notices on the empty database.
+### Learner Share Codes — PASS
+
+Applied:
+
+- `0250_learner_share_codes`
+
+Verified real DB behavior includes:
+
+- 192-bit private token generation;
+- hash-only persistence;
+- one-time plaintext return;
+- no secret replay through Idempotency;
+- one active code per Learner;
+- replacement revocation;
+- formal learner-side authority;
+- paused protective revoke;
+- expired/revoked/consumed non-resolution;
+- no public Learner resolver/search/browse endpoint;
+- direct table/RPC privilege denial;
+- raw-token audit/idempotency exclusion.
+
+Runtime markers:
+
+- `SHARE_CODE_BASIC_PASS`
+- `SHARE_CODE_PERMISSION_PASS`
+- `SHARE_CODE_STATE_PASS`
+- `SHARE_CODE_TERMINAL_PASS`
+
+Security Advisor after Share Codes: **0 findings**. Performance Advisor has only expected `unused_index` INFO notices on the empty dev database.
 
 All synthetic runtime data was rolled back; dev fixture rows remain zero.
 
@@ -102,14 +122,19 @@ Current real DB tests include:
 - `tests/db/010_foundation_identity_runtime_smoke.sql`
 - `tests/db/020_locations_runtime_smoke.sql`
 - `tests/db/021_locations_post_hardening_smoke.sql`
+- `tests/db/025_learner_share_codes_runtime_smoke.sql`
 
 Backend-free model evidence remains at `tests/model/pre_supabase_model_tests.py` with documented expanded run of **5,349,992 cases/operations, 0 invariant failures**.
 
+## Deferred share-code tests
+
+The public invite-by-code command is intentionally not created until Classes (`0502`). Therefore atomic Invitation+consume, second consume through the real path, consume-vs-revoke concurrency, timeout-after-commit retry and endpoint abuse/rate-limit tests remain future gates.
+
 ## Current boundary
 
-> **STOP BEFORE `0250_learner_share_codes.sql`.**
+> **STOP BEFORE ORGANIZATIONS / TEACHER DISCOVERY (`0300–0302`).**
 
-The next eligible slice is Learner private share codes only. Do not start Organizations/Discovery (`0300+`) until that slice passes its own lifecycle/security/RLS/retry gate.
+The next eligible slice is Organizations / teacher discovery only. Do not start Restrictions (`0350+`) until that slice passes ownership, capability, public projection, Save privacy, idempotency and RLS/security gates.
 
 ## Non-negotiable principles
 
