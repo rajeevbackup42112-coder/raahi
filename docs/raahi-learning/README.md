@@ -46,7 +46,9 @@ Audit result:
 12. [`22-implementation-runbook-v1.2.md`](22-implementation-runbook-v1.2.md) — controlled slice-by-slice implementation procedure.
 13. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test traceability.
 14. [`24-supabase-execution-checklist-v1.2.md`](24-supabase-execution-checklist-v1.2.md) — checklist to use only after Supabase access is authorized.
-15. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — final approval record.
+15. [`25-pre-supabase-package-manifest-v1.2.md`](25-pre-supabase-package-manifest-v1.2.md) — package completeness manifest.
+16. [`26-final-pre-supabase-consistency-audit-v1.2.md`](26-final-pre-supabase-consistency-audit-v1.2.md) — final cross-document consistency PASS.
+17. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — final approval record.
 
 ## Historical review chain
 
@@ -66,6 +68,21 @@ The following remain valuable for decision traceability but no longer need to be
 - `17-final-ui-db-implementation-delta-v1.1.md`.
 
 If historical wording differs from the consolidated V1.2 blueprint/plan, **V1.2 wins**.
+
+## Implementation branch scaffold
+
+A dedicated branch exists for future environment work:
+
+`raahi-learning-implementation-v1`
+
+It currently contains only pre-Supabase scaffolding, including:
+
+- `IMPLEMENTATION_START_HERE.md`;
+- `supabase/migrations/README.md`;
+- `supabase/ENVIRONMENT_INSPECTION_TEMPLATE.md`;
+- `tests/db/README.md`.
+
+No live migration has been executed and no environment-specific SQL has been invented before inspecting the target project.
 
 ## Non-negotiable principles
 
