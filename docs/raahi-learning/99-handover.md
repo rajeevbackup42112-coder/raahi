@@ -7,139 +7,120 @@ Documentation branch: `raahi-learning-v1-docs`
 Implementation branch: `raahi-learning-implementation-v1`  
 Canonical folder: `docs/raahi-learning/`
 
-> This project is isolated from the older Raahi ride implementation on `main`. Do not infer Raahi Learning behavior from old ride code.
+> Raahi Learning is isolated from the older Raahi mobility implementation. Do not infer Learning behavior from old ride code or historical mobility migrations.
 
 ## Current phase
 
-### Product / UI / design / QA completed
+Product, UI, domain, architecture, physical design, migration planning, QA strategy and the real clickable UI gate are complete.
 
-- Problem / Actors / Ownership / Business Rules;
-- edge-case, malicious-action and concurrency design;
-- terminology and complexity-reduction passes;
-- learner/guardian simplification;
-- Raahi Ads product/inventory/privacy design;
-- Product + UI behavior freeze;
-- Domain Model and Architecture boundaries;
-- physical DB blueprint/review;
-- SQL migration plan/review;
-- first UI↔DB reconciliation;
-- real backend-free clickable UI prototype;
-- 77-page/state inventory;
-- desktop/mobile/deep-link/interaction/accessibility UI audits;
-- final inspected UI freeze and second UI↔DB reconciliation;
-- consolidated Database Blueprint V1.2;
-- consolidated SQL Migration Plan V1.2;
-- final acceptance traceability;
-- implementation runbook + Supabase execution checklist;
-- pre-Supabase readiness/consistency reviews;
-- comprehensive test strategy;
-- master QA catalog;
-- canonical synthetic personas/fixtures;
-- reproducible backend-free model-test harness;
-- expanded model/property execution: **5,349,992 cases/operations, 0 invariant failures**;
-- staging load/security/chaos/recovery plan;
-- pre-Supabase QA readiness verdict.
+Pre-database evidence remains:
 
-### Supabase implementation completed
+- 77 inspected canonical UI routes/pages;
+- 154 desktop/mobile checks — 0 issues;
+- 32 privileged deep-link checks — 0 unguarded;
+- 26 interaction/business-rule checks — 0 failures;
+- 15 semantic/accessibility samples — 0 issues;
+- backend-free deterministic model suite: **5,349,992 cases/operations, 0 invariant failures**.
 
-Target project:
+Controlled Supabase implementation has now begun.
 
-- name: `rajeev.backup3.2112@gmail.com's Project`
+## Target Supabase dev project
+
 - ref: `iiwwmqokaeflaenhlyip`
 - region: `ap-south-1`
 - PostgreSQL: 17.6
 
-The target was inspected read-only first and was clean: no Raahi application tables, migrations, users, buckets, Edge Functions or legacy mobility objects.
+The project was inspected read-only before the first mutation and was clean: no Raahi app schema/migrations/users/buckets/Edge Functions or mobility objects.
 
-**Foundation + Identity is now implemented in the dev project and its first-slice gate PASSED.**
+## Passed implementation slices
 
-Applied migrations:
+### 1. Foundation + Identity — PASS
 
-1. `0001_extensions_helpers`
-2. `0002_common_updated_at`
-3. `0100_identity_tables`
-4. `0101_identity_constraints_indexes`
-5. `0102_command_infrastructure`
-6. `0103_identity_rls_helpers`
-7. `0104_identity_rpcs`
-8. `0105_identity_hardening_followup`
-9. `0106_private_function_privileges`
+Applied:
 
-Implemented application tables:
+- `0001_extensions_helpers`
+- `0002_common_updated_at`
+- `0100_identity_tables`
+- `0101_identity_constraints_indexes`
+- `0102_command_infrastructure`
+- `0103_identity_rls_helpers`
+- `0104_identity_rpcs`
+- `0105_identity_hardening_followup`
+- `0106_private_function_privileges`
 
-- `accounts`
-- `learners`
-- `account_learner_access`
-- `account_capabilities`
-- `audit_log`
-- `idempotency_keys`
-
-Implemented identity behavior includes Account/Learner separation, one active self and manager relationship per Learner, manager-vs-self formal decision authority, no Test-taking impersonation from manager authority, governed self-access grant, privileged management transfer/capability grant-revoke, pause/resume/guarded closure, idempotency and audit.
-
-All public application tables have RLS enabled and forced. Authenticated clients have safe reads only where intended; core state writes go through canonical RPCs. `anon` cannot call protected Identity RPCs. Private helper function PUBLIC EXECUTE defaults were removed after ACL inspection.
-
-Runtime test results:
+Real runtime markers:
 
 - `FOUNDATION_IDENTITY_RUNTIME_TESTS_PASS`
 - `POST_HARDENING_SECURITY_SMOKE_PASS`
 
-Verified real DB behavior includes idempotency, request-fingerprint mismatch rejection, manager/self authority, sibling isolation, direct-write denial, anonymous denial, privilege-escalation denial, second-manager physical uniqueness, account lifecycle retry behavior, sole-manager closure blocker, audit generation and idempotency records.
+See `34-foundation-identity-implementation-result-v1.2.md`.
 
-All synthetic runtime data was executed inside rollback transactions. Current dev data remains empty.
+### 2. Locations — PASS
 
-Security Advisor after hardening: **0 findings**.
-Performance Advisor: only expected `unused_index` informational notices on the new empty database; no missing-FK-index finding remains.
+Before Locations, an implementation-branch safety problem was found: historical mobility migration files were still present in the inherited `supabase/migrations/` directory. They had never reached the Learning database, but could have been replayed by future CLI operations. The subtree was replaced with a **Raahi Learning-only** migration chain before Locations execution. See `35-implementation-branch-legacy-migration-isolation.md`.
 
-See:
+Applied:
 
-- `34-foundation-identity-implementation-result-v1.2.md`
-- implementation branch `supabase/ENVIRONMENT_INSPECTION_2026-09-12.md`
-- implementation branch `tests/db/010_foundation_identity_runtime_smoke.sql`
+- `0200_locations_tables`
+- `0201_account_location_preferences`
+- `0202_locations_staff_rls_rpcs`
+- `0203_location_interests`
+- `0204_locations_rls_policy_consolidation` — forward performance/RLS cleanup
 
-## Current implementation gate
+Implemented:
 
-> **STOP BEFORE LOCATIONS.**
+- Location lifecycle `interest_only → preparing → live ↔ paused → retired`;
+- selected Location preference independent of established relationships/history;
+- explicit Location-scoped Local Manager assignments;
+- Local Manager responsibility included in Account-closure blockers;
+- authenticated `learn|teach` Location Interest with active uniqueness/history;
+- aggregate Local Manager launch-readiness counts without named interest-row access;
+- retired Location visibility restrictions;
+- canonical Location/Interest commands with idempotency/audit;
+- RLS and least-privilege grants.
 
-Foundation + Identity passed, so the next eligible slice is Locations, but it has **not** been implemented yet.
+Real runtime markers:
 
-Next slice only:
+- `LOCATIONS_RUNTIME_TESTS_PASS`
+- `LOCATIONS_POST_HARDENING_SMOKE_PASS`
 
-- `0200_locations_tables.sql`
-- `0201_account_location_preferences.sql`
-- `0202_locations_staff_rls_rpcs.sql`
-- `0203_location_interests.sql`
+Verified real DB behavior includes lifecycle rules, valid/invalid transitions, selected-Location independence, retired-selection rejection, Interest eligibility/retry/history, learn+teach coexistence, direct-write denial, exact Local Manager scope, wrong-Location denial, aggregate-only readiness, closure blocker, retired visibility and post-policy-consolidation RLS behavior.
 
-Do not proceed beyond Locations until its migration/constraint/RLS/RPC/idempotency/scope tests pass.
+Security Advisor after Locations: **0 findings**.
 
-## Clickable UI artifact
+Performance Advisor: only expected `unused_index` INFO notices on the empty dev database. The overlapping permissive-policy warning was fixed with `0204`; no missing-FK-index warning remains.
 
-Artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`  
-Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
-SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
+All synthetic tests used rollback transactions. Current Auth/application fixture counts remain zero.
 
-Final inspected UI:
+See `36-locations-implementation-result-v1.2.md`.
 
-- 77 canonical routes/pages;
-- 154 desktop/mobile route checks — 0 issues;
-- 32 privileged deep-link checks — 0 unguarded;
-- 26 interaction/business-rule checks — 0 failures;
-- 15 semantic/accessibility sanity samples — 0 issues.
+## Current stop gate
 
-## QA package
+> **STOP BEFORE LEARNER SHARE CODES (`0250`).**
 
-Read:
+Do not start Organizations/Discovery (`0300+`) yet.
 
-- `27-pre-supabase-test-strategy-v1.2.md`
-- `29-master-test-case-catalog-v1.2.md`
-- `30-expanded-mock-model-test-results-v1.3.md`
-- `31-staging-load-security-chaos-plan-v1.2.md`
-- `32-canonical-test-personas-fixtures-v1.2.md`
-- `33-pre-supabase-qa-readiness-verdict-v1.2.md`
-- `34-foundation-identity-implementation-result-v1.2.md`
+The next eligible slice, only after deliberate continuation, is:
 
-## Core implementation sources
+- `0250_learner_share_codes.sql`
 
-For implementation, read at minimum:
+That slice must prove:
+
+- cryptographically strong one-time token;
+- hash-only storage, no plaintext persistence/audit;
+- finite expiry;
+- explicit revocation;
+- one-time consumption semantics;
+- legitimate learner-side authority only;
+- no public Learner search/enumeration;
+- retry/replay safety;
+- consume-vs-revoke concurrency behavior where possible at this stage.
+
+The later atomic **invite-by-code + consume** path is completed when Classes exist; do not fabricate Class/Invitation objects early.
+
+## Canonical implementation sources
+
+Read at minimum:
 
 - `00-product-ui-freeze-v1.md`
 - `01-domain-model-v1.md`
@@ -155,52 +136,37 @@ For implementation, read at minimum:
 - `24-supabase-execution-checklist-v1.2.md`
 - `29-master-test-case-catalog-v1.2.md`
 - `31-staging-load-security-chaos-plan-v1.2.md`
-- `32-canonical-test-personas-fixtures-v1.2.md`
 - `34-foundation-identity-implementation-result-v1.2.md`
+- `35-implementation-branch-legacy-migration-isolation.md`
+- `36-locations-implementation-result-v1.2.md`
 
-Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history. Consolidated V1.2 sources win where wording differs.
+Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history; consolidated V1.2 sources win where wording differs.
 
-## Highest-value simplifications — do not casually restore
+## UI artifact
 
-- Enrollment;
-- Batch entity;
-- Adult/Minor Learner split;
-- turning-18 lifecycle;
-- complex guardian hierarchy;
-- Trial as mandatory/major relationship lifecycle;
-- separate Assignment and Practice engines;
-- Attendance;
-- fake overall Progress %;
-- public ratings/reviews;
-- public Learner directory;
-- global Community;
-- multi-teacher Class in V1;
-- unrestricted direct messaging;
-- advertiser viewer CRM;
-- platform tuition-payment collection.
+`Raahi_Learning_Clickable_UI_v1.1.zip`  
+Library: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
+SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
-## Core architecture rules
+## Non-negotiable architecture/product rules
 
-- one Account may learn, teach, manage a Learner and represent an Organization;
-- Learner identity/history is independent from the acting Account;
-- parent/guardian acts **for** Learner, not by impersonation;
-- formal learner-side marketplace decisions use `can_make_learning_decision`;
-- manager authority does not grant Test-taking authority;
-- UI never directly mutates core operational state;
-- consequential writes use canonical commands/RPCs;
-- navigation/workspace is never authorization;
-- server current state beats stale UI;
-- consequential commands are idempotent;
-- valid Pending Class Invitations reserve seats at send time;
-- Class capacity and Ads inventory are transactionally protected;
-- private share code replaces public Learner search for offline-origin invitation;
-- Test definition locks after first valid Attempt;
-- Realtime invalidates/refetches only;
-- private file URL/path never bypasses current authorization;
-- organic discovery and Sponsored serving are separate;
-- Sponsored uses exact approved Revision;
-- significant safety/admin/commercial actions are auditable.
+- Account ≠ Learner; Learner owns learning history.
+- Parent/Guardian acts for Learner through explicit authority, never impersonation.
+- Active manager owns formal learner-side marketplace decisions; manager authority does not grant Test-taking.
+- No public Learner directory.
+- UI never directly mutates core operational state.
+- Consequential writes use canonical commands and current authoritative server state.
+- Consequential commands are idempotent.
+- Navigation/workspace never grants authorization.
+- Valid Pending Class Invitation reserves a seat at send time.
+- Class capacity and Ads inventory are transactionally protected.
+- Private one-time share code replaces public Learner lookup for offline-origin invitation.
+- Test definition locks after first valid Attempt.
+- Realtime invalidates/refetches; it is not source of truth.
+- Organic discovery and Sponsored serving remain separate.
+- Significant safety/admin/commercial actions are audited.
+- Do not casually restore Enrollment, Batch, Adult/Minor split, turning-18 lifecycle, Attendance, generic Progress %, public ratings/reviews, global Community, unrestricted DM or platform tuition payments.
 
 ## Recommended new-chat prompt
 
-> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, `34-foundation-identity-implementation-result-v1.2.md`, the consolidated blueprint/migration/runbook docs and QA docs. Supabase project `iiwwmqokaeflaenhlyip` has Foundation + Identity implemented and runtime-tested PASS. Security Advisor is clean. Stop gate is currently before Locations. If authorized to continue, implement and test only Locations `0200–0203`, then stop again on any failed gate.”
+> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, and implementation results `34–36`. Supabase project `iiwwmqokaeflaenhlyip` has Foundation + Identity and Locations implemented and runtime-tested PASS; Security Advisor is clean. The current stop gate is before `0250_learner_share_codes.sql`. If I authorize continuation, implement and test only that share-code slice, then stop before Organizations/Discovery.”
