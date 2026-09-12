@@ -1,18 +1,17 @@
 # Raahi Learning V1 — Implementation Approval Record
 
-Status: **IMPLEMENTATION APPROVAL PAUSED. Supabase remains untouched.**
+Status: **APPROVED FOR CONTROLLED IMPLEMENTATION AFTER UI↔DB RECONCILIATION. Supabase has not yet been touched.**
 
-The technical SQL plan passed its internal schema/architecture review, but implementation approval is intentionally **paused** until one additional gate is completed:
+This approval is issued only after completing the mandatory two-way UI Prototype ↔ Database Design reconciliation documented in:
 
-> **UI Prototype ↔ Database Design Reconciliation**
+- `13-ui-db-reconciliation-v1.md`
+- `14-ui-db-implementation-delta-v1.md`
 
-This gate is required because the database must prove it can support every approved UI action/state, and the UI must not imply any behavior, data, permission, or lifecycle that the database/command model does not support.
+The reconciliation found real design gaps, corrected them, and confirmed that the simplified V1 model still works without reintroducing removed complexity.
 
-The previous approval was therefore premature. No Supabase changes were made, so no rollback is required.
+## Canonical implementation contract
 
-## Technical plan already reviewed
-
-The following remain valid inputs to the reconciliation:
+Implementation must read the following together:
 
 - `00-product-ui-freeze-v1.md`
 - `01-domain-model-v1.md`
@@ -25,70 +24,83 @@ The following remain valid inputs to the reconciliation:
 - `09-sql-readiness-review-v1.md`
 - `10-sql-migration-plan-v1.1.md`
 - `11-sql-migration-plan-review-v1.md`
+- `13-ui-db-reconciliation-v1.md`
+- `14-ui-db-implementation-delta-v1.md`
 
-## Required reconciliation before implementation
+Where `14-ui-db-implementation-delta-v1.md` conflicts with the earlier schema/migration wording, the reconciliation delta wins.
 
-For every canonical UI flow/screen/action, verify:
+## Reconciliation corrections now approved
 
-1. what data the screen reads;
-2. whether that data exists in the physical design;
-3. whether a secure projection/view/RPC can provide it;
-4. what command executes each user action;
-5. what state transition/results the UI may show;
-6. what permissions authorize the action;
-7. how stale/double actions behave;
-8. whether files/media are authorized correctly;
-9. whether notifications/realtime are derived correctly;
-10. whether the UI exposes any removed concept or unsupported promise.
+The implementation contract now explicitly includes:
 
-Then perform the reverse check:
+1. `accounts.auth_user_id` closure-safe nullability and no early Location FK on Accounts.
+2. selected Location stored in `account_location_preferences`.
+3. persisted `location_interests` for unavailable/preparing Location “Register Interest”.
+4. manager-owned formal learner decisions when an active `manage` relationship exists; otherwise self-access may decide for self.
+5. manager authority does not grant Test-taking impersonation.
+6. Organization public logo/avatar support.
+7. deterministic historical Class access by Membership end state rather than another configurable policy subsystem.
+8. no independent Class Learner Thread lifecycle; permissions derive from Membership/authority/restrictions.
+9. lightweight Sessions with Past derived from time rather than Attendance/completion machinery.
+10. reusable `activity_material_links` for Activity resources/attachments.
+11. optional moderation-private `reports.context_learner_id`.
+12. canonical `complete_class` transaction so a Class cannot be marked Past while leaving unintended Active Memberships.
+13. surface-based educational Sponsored serving rather than Adult/Minor/turning-18 Ads logic.
+14. existing offline learners do not require fake Enquiry/Trial/Enrollment history; normal Class Invitation begins only after the Learner exists in Raahi.
 
-- every important table/state/command must have a real product/UI purpose;
-- remove or defer schema elements that exist only because the technical design became too clever;
-- ensure the DB does not silently introduce a second product model.
+## Core model still approved
 
-## Canonical flows to reconcile
+The reconciliation did **not** justify bringing back:
 
-At minimum:
+- Enrollment;
+- Batch entity;
+- Adult Learner / Minor Learner entities;
+- turning-18 migration;
+- Trial relationship object;
+- Attendance;
+- generic Progress %;
+- public ratings/reviews;
+- public Learner directory;
+- global Community;
+- advertiser viewer/lead directory;
+- platform tuition payments.
 
-- Learn for myself: Explore → Enquire → optional Trial → Class Invitation → Join → My Classes;
-- Parent acting for Learner: For Rahul → Enquire/Post Request → Join Rahul → oversight;
-- Learning Request: create/open/close/respond/enquiry;
-- Teacher/provider: What I Teach → Teaching Opportunities → Enquiry → Class invite → Class operation;
-- My Classes: feed, materials, announcements, sessions, activities, submissions, tests, learner-specific communication;
-- transfer/leave/remove/past Class;
-- Save and Location switching;
-- Community;
-- Report/Block/Verification/restrictions;
-- Organization/institute administration;
-- Local Manager operations;
-- Raahi Ads advertiser flow;
-- Sponsored viewer flow;
-- Ads review/commercial/inventory/multi-location flow.
+## First implementation slice
 
-## Visual-drift rule
+Only the following may be implemented first:
 
-Generated prototype images are not automatically authoritative because image generation introduced known drift (ratings, Enrollment wording, overbuilt billing, old role assumptions, etc.).
+### Foundation + Identity
 
-Reconciliation uses:
+- PostgreSQL extensions/common helpers;
+- Accounts;
+- Learners;
+- Account↔Learner Access;
+- Account Capabilities;
+- Audit Log;
+- Idempotency Keys;
+- Identity authorization helpers;
+- `can_make_learning_decision(learner_id)`;
+- Identity canonical RPCs;
+- RLS and privilege hardening;
+- tests for learner ownership, one active self/manager, decision authority, manager-vs-self separation, idempotency and privilege escalation.
 
-> **approved intended UI behavior + canonical prototype interaction patterns**
+Do **not** create Locations until this first slice passes.
 
-and treats the written frozen product rules as authoritative where a generated image conflicts.
+## Execution rules
 
-## Approval condition
+Actual Supabase implementation must:
 
-Implementation may be marked **APPROVED FOR IMPLEMENTATION** only after the UI↔DB reconciliation concludes that:
-
-- every approved UI action is representable and enforceable;
-- every required UI read can be projected securely;
-- no UI action bypasses a canonical command;
-- no table/state creates unapproved product behavior;
-- no high-value flow has a missing data relationship;
-- all discovered gaps have been corrected in both the schema/migration plan and the UI behavior specification.
+- use versioned SQL migrations committed to source control;
+- proceed slice by slice rather than as a one-shot schema push;
+- run invariant/permission/concurrency tests after each slice;
+- stop on contradiction or failed test;
+- use forward-fix migrations after anything has been applied to a shared environment;
+- never treat generated UI images as a source of truth when they conflict with frozen written behavior.
 
 ## Current external state
 
+At the time of this approval:
+
 > **No Raahi Learning migration has been executed against Supabase.**
 
-Do not connect to or mutate Supabase until the reconciliation gate is closed and this record is re-approved.
+The next operational action, once explicitly authorized, is to inspect the target Supabase project/environment and implement only the Foundation + Identity slice.
