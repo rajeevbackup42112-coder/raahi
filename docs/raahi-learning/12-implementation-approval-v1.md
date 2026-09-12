@@ -1,53 +1,55 @@
-# Raahi Learning V1.1 — Implementation Approval Record
+# Raahi Learning V1.2 — Implementation Approval Record
 
-Status: **APPROVED FOR CONTROLLED IMPLEMENTATION AFTER INSPECTED UI V1.1. Supabase remains untouched.**
+Status: **PRE-SUPABASE WORK COMPLETE. APPROVED FOR READ-ONLY ENVIRONMENT INSPECTION AND CONTROLLED IMPLEMENTATION. SUPABASE REMAINS UNTOUCHED.**
 
-This approval is the final pre-Supabase gate. It is issued only after:
+This approval is issued only after completing:
 
 1. Product/UI behavior freeze;
 2. conceptual Domain/Architecture review;
 3. physical database blueprint review;
 4. SQL migration-plan review;
-5. written UI↔DB reconciliation;
+5. first written UI↔DB reconciliation;
 6. construction of a real backend-free clickable UI prototype;
 7. desktop/mobile, permission, edge-state and interaction inspection of that prototype;
-8. final page-level UI↔DB reconciliation.
-
-The inspected UI gate is documented in:
-
-- `15-ui-page-build-review-gate-v1.md` — gate definition, now closed;
-- `16-ui-page-freeze-and-final-reconciliation-v1.1.md` — inspected UI freeze/result;
-- `17-final-ui-db-implementation-delta-v1.1.md` — final DB/command changes proved by real pages.
+8. final page-level UI↔DB reconciliation;
+9. consolidated V1.2 physical database blueprint;
+10. consolidated V1.2 migration plan;
+11. final acceptance/UI/data traceability;
+12. pre-Supabase readiness review and implementation runbook.
 
 ## Canonical implementation contract
 
-Implementation must read the following together:
+For **new implementation work**, read these as the primary contract:
 
-- `00-product-ui-freeze-v1.md`;
-- `01-domain-model-v1.md`;
-- `02-architecture-blueprint-v1.md`;
-- `03-database-blueprint-v1.1.md`;
-- `04-command-permission-matrix-v1.md`;
-- `05-acceptance-regression-v1.md`;
-- `06-raahi-ads-v1.md`;
-- `08-database-blueprint-review-v1.md`;
-- `09-sql-readiness-review-v1.md`;
-- `10-sql-migration-plan-v1.1.md`;
-- `11-sql-migration-plan-review-v1.md`;
-- `13-ui-db-reconciliation-v1.md`;
-- `14-ui-db-implementation-delta-v1.md`;
-- `16-ui-page-freeze-and-final-reconciliation-v1.1.md`;
-- `17-final-ui-db-implementation-delta-v1.1.md`.
+- `00-product-ui-freeze-v1.md` — frozen product behavior;
+- `01-domain-model-v1.md` — domain concepts/invariants;
+- `02-architecture-blueprint-v1.md` — architectural boundaries;
+- `04-command-permission-matrix-v1.md` — command ownership/permission intent;
+- `05-acceptance-regression-v1.md` — detailed Given/When/Then regressions;
+- `06-raahi-ads-v1.md` — Ads business model;
+- `18-ui-page-inventory-v1.1.md` — inspected 77-page UI surface inventory;
+- `19-consolidated-database-blueprint-v1.2.md` — **single final physical design source**;
+- `20-consolidated-sql-migration-plan-v1.2.md` — **single final migration sequence**;
+- `21-pre-supabase-readiness-review-v1.2.md` — readiness decision;
+- `22-implementation-runbook-v1.2.md` — slice-by-slice execution procedure;
+- `23-final-acceptance-traceability-v1.2.md` — UI/data/command/test mapping;
+- `24-supabase-execution-checklist-v1.2.md` — environment execution checklist.
 
-**Precedence:** where later reconciliation/delta documents conflict with earlier schema or migration wording, the later inspected-UI delta wins. Specifically, `17` overrides `14` where they differ, and both override the earlier migration wording they intentionally correct.
+Historical review/delta files (`03`, `08`, `09`, `10`, `11`, `13`, `14`, `15`, `16`, `17`) remain useful for decision traceability but no longer need to be mentally merged to reconstruct the final model. Where historical wording differs from the consolidated V1.2 blueprint/plan, V1.2 wins.
 
 ## Inspected UI artifact
 
-Canonical artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`
+Canonical artifact:
 
-Persistent Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`
+`Raahi_Learning_Clickable_UI_v1.1.zip`
 
-SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
+Persistent Library path:
+
+`/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`
+
+SHA-256:
+
+`2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
 Final audit results:
 
@@ -57,36 +59,11 @@ Final audit results:
 - 26 interaction/business-rule checks, 0 failures;
 - 15 semantic/accessibility sanity samples, 0 issues.
 
-Generated concept images remain visual inspiration only; the inspected clickable prototype plus frozen written rules define UI behavior.
-
-## Final inspected-UI corrections now approved
-
-In addition to earlier reconciliation corrections, implementation must now include:
-
-1. Location lifecycle begins with `interest_only` before `preparing`;
-2. secure one-time private `learner_share_codes` for inviting an existing offline learner without a public learner directory or fabricated Enquiry;
-3. optional immutable-while-Pending `class_invitations.fee_display_text` snapshot for the terms displayed at Join;
-4. optional private `test_attempts.teacher_feedback` for released Test Results;
-5. canonical guarded Account pause/resume/closure commands and responsibility blockers;
-6. explicit capability/relationship/scope authorization on every privileged read/deep link; workspace navigation is never authority.
-
-Earlier binding corrections remain, including:
-
-- selected Location in `account_location_preferences`;
-- persisted `location_interests`;
-- `can_make_learning_decision` for formal learner-side marketplace/relationship decisions;
-- Organization logo support;
-- deterministic historical Class access by Membership end state;
-- no independent Class learner-thread lifecycle;
-- Session Past derived from time, no Attendance subsystem;
-- reusable `activity_material_links`;
-- optional private `reports.context_learner_id`;
-- atomic `complete_class`;
-- Sponsored serving governed by allowed surface, not Adult/Minor identity.
+Generated concept images remain inspiration only; the inspected clickable prototype plus frozen written rules define intended UI behavior.
 
 ## Removed complexity remains removed
 
-The inspected real pages did **not** justify restoring:
+Do not casually reintroduce:
 
 - Enrollment;
 - Batch entity;
@@ -98,31 +75,34 @@ The inspected real pages did **not** justify restoring:
 - public ratings/reviews;
 - public Learner directory;
 - unrestricted direct messaging;
-- multi-teacher Class in V1;
+- multi-teacher Class in V1.2;
 - advertiser viewer CRM;
 - platform tuition-payment collection.
 
-## First approved implementation slice
+## First approved execution slice
 
-Only the following may be implemented first:
+After the user explicitly authorizes Supabase access:
 
-### Foundation + Identity
+1. **inspect the target environment read-only first**;
+2. produce a compatibility/diff note;
+3. implement only **Foundation + Identity**;
+4. run all mandatory migration/RLS/RPC/idempotency/authorization tests;
+5. do not proceed to Locations until the slice passes.
 
-- PostgreSQL extensions/common helpers;
+Foundation + Identity includes:
+
+- extensions/common helpers;
 - Accounts;
 - Learners;
 - Account↔Learner Access;
 - Account Capabilities;
 - Audit Log;
 - Idempotency Keys;
-- Identity authorization helpers;
-- `can_make_learning_decision(learner_id)`;
+- Identity authorization helpers including `can_make_learning_decision`;
 - Identity canonical RPCs;
-- Account pause/resume/guarded closure command semantics (in the Identity slice or immediate Identity follow-up before Locations);
+- Account pause/resume/guarded closure semantics;
 - RLS and privilege hardening;
-- tests for learner ownership, one active self/manager relationship, decision authority, manager-vs-self separation, account lifecycle blockers, idempotency and privilege escalation.
-
-Do **not** implement Locations or later modules until Foundation + Identity passes its migration, RLS, RPC, idempotency and authorization tests.
+- ownership, manager-vs-self, account lifecycle, idempotency and privilege-escalation tests.
 
 ## Execution rules
 
@@ -132,15 +112,13 @@ Actual Supabase changes must:
 - proceed slice-by-slice, never as a one-shot schema push;
 - test each slice immediately;
 - stop on contradiction or failed invariant;
-- use forward-fix migrations after anything has been applied to a shared environment;
+- use forward-fix migrations after anything reaches a shared environment;
 - keep private files authorized through current business access rather than copied URLs;
-- keep UI/navigation guards as defense-in-depth, never as the only authorization layer;
-- never reinterpret old generated screenshots as requirements when they conflict with this contract.
+- treat frontend route/workspace guards only as defense in depth;
+- never reinterpret old generated screenshots as requirements when they conflict with the V1.2 contract.
 
 ## Current external state
 
-At the time of this approval:
-
 > **No Raahi Learning migration has been executed against Supabase.**
 
-The design/document/UI gate is complete. The next operational action, only when the user authorizes Supabase execution, is to inspect the target Supabase project/environment and implement **Foundation + Identity only**.
+All meaningful work that should be completed **before** touching the target Supabase environment is now documented and closed. The next boundary crossing is environment inspection, only when explicitly authorized by the user.
