@@ -10,7 +10,7 @@ Canonical artifact name: `Raahi_Learning_Clickable_UI_v1.1.zip`
 
 Persistent Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`
 
-SHA-256: `42d7f1c56233cb14772bb363c4ec501bbca7316f00822b5def329f51e819ca15`
+SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
 A lightweight GitHub prototype branch also exists for handover context: `raahi-learning-ui-v1`. The zipped artifact is the exact inspected build and includes the UI code, audit scripts, audit results and screenshots.
 
