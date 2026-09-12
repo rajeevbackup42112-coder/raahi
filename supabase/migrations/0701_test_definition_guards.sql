@@ -23,11 +23,11 @@ set search_path=''
 as $$
 declare v_test_id uuid;
 begin
-  v_test_id := coalesce(new.test_id,old.test_id);
+  if tg_op='DELETE' then v_test_id:=old.test_id; else v_test_id:=new.test_id; end if;
   if exists(select 1 from public.tests where id=v_test_id and definition_locked_at is not null) then
     raise exception 'TEST_DEFINITION_LOCKED';
   end if;
-  return coalesce(new,old);
+  if tg_op='DELETE' then return old; else return new; end if;
 end;
 $$;
 
@@ -37,8 +37,9 @@ language plpgsql
 security definer
 set search_path=''
 as $$
-declare v_question_id uuid := coalesce(new.question_id,old.question_id);
+declare v_question_id uuid;
 begin
+  if tg_op='DELETE' then v_question_id:=old.question_id; else v_question_id:=new.question_id; end if;
   if app_private.test_definition_locked_for_question(v_question_id) then
     -- Only the explicit audited answer-key correction path may flip correctness.
     if tg_op='UPDATE'
@@ -51,7 +52,7 @@ begin
     end if;
     raise exception 'TEST_DEFINITION_LOCKED';
   end if;
-  return coalesce(new,old);
+  if tg_op='DELETE' then return old; else return new; end if;
 end;
 $$;
 
