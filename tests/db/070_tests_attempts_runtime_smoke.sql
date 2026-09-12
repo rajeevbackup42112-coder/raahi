@@ -99,12 +99,17 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub','71111111-1111-1111-1111-111111111111',true);
 select public.evaluate_test_attempt(current_setting('test.attempt')::uuid,'Good effort; check the fraction rule.','evaluate-1');
 
--- Manager sees evaluated state but not score/feedback while results are hidden.
+-- Manager gets only the limited oversight projection while results are hidden.
+-- Protected Attempt detail and Test definition remain learner-self/provider only.
 select set_config('request.jwt.claim.sub','73333333-3333-3333-3333-333333333333',true);
-do $$ declare r jsonb; begin
-  r:=public.get_test_attempt(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
-  if r->>'state'<>'evaluated' then raise exception 'STATUS_NOT_VISIBLE:%',r; end if;
-  if r->>'score' is not null or r->>'teacher_feedback' is not null then raise exception 'HIDDEN_RESULT_LEAK:%',r; end if;
+do $$ declare o jsonb; a jsonb; d jsonb; begin
+  o:=public.get_test_oversight(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if o->>'attempt_state'<>'evaluated' then raise exception 'STATUS_NOT_VISIBLE:%',o; end if;
+  if o->>'score' is not null or o->>'teacher_feedback' is not null then raise exception 'HIDDEN_RESULT_LEAK:%',o; end if;
+  a:=public.get_test_attempt(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if a is not null then raise exception 'GUARDIAN_ATTEMPT_DETAIL_LEAK:%',a; end if;
+  d:=public.get_test_definition(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if d is not null then raise exception 'GUARDIAN_TEST_DEFINITION_LEAK:%',d; end if;
 end $$;
 
 -- Explicit answer-key correction recalculates evaluated result and keeps feedback.
@@ -117,14 +122,15 @@ do $$ declare r jsonb; begin
 end $$;
 select public.set_test_results_visibility(current_setting('test.test')::uuid,true,'release-results');
 
--- After release, guardian may see the released result projection but still cannot read
--- the protected Test definition/questions/answer key. Learner self retains that access.
+-- After release, guardian receives result/status through the limited oversight projection only.
 select set_config('request.jwt.claim.sub','73333333-3333-3333-3333-333333333333',true);
-do $$ declare r jsonb; d jsonb; begin
-  r:=public.get_test_attempt(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
-  if (r->>'score')::numeric<>5 or r->>'teacher_feedback' is null then raise exception 'RELEASE_BAD:%',r; end if;
+do $$ declare o jsonb; a jsonb; d jsonb; begin
+  o:=public.get_test_oversight(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if (o->>'score')::numeric<>5 or o->>'teacher_feedback' is null then raise exception 'RELEASE_BAD:%',o; end if;
+  a:=public.get_test_attempt(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if a is not null then raise exception 'GUARDIAN_ATTEMPT_DETAIL_LEAK_AFTER_RELEASE:%',a; end if;
   d:=public.get_test_definition(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
-  if d is not null then raise exception 'GUARDIAN_TEST_DEFINITION_LEAK:%',d; end if;
+  if d is not null then raise exception 'GUARDIAN_TEST_DEFINITION_LEAK_AFTER_RELEASE:%',d; end if;
 end $$;
 
 select set_config('request.jwt.claim.sub','72222222-2222-2222-2222-222222222222',true);
@@ -134,9 +140,11 @@ do $$ declare d jsonb; begin
 end $$;
 
 select set_config('request.jwt.claim.sub','74444444-4444-4444-4444-444444444444',true);
-do $$ declare d jsonb; begin
+do $$ declare d jsonb; o jsonb; begin
   d:=public.get_test_definition(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
   if d is not null then raise exception 'OUTSIDER_TEST_READ_ALLOWED'; end if;
+  o:=public.get_test_oversight(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
+  if o is not null then raise exception 'OUTSIDER_OVERSIGHT_ALLOWED'; end if;
 end $$;
 do $$ begin
   insert into public.test_attempts(test_id,learner_id) values(current_setting('test.test')::uuid,'70000000-0000-0000-0000-000000000010');
