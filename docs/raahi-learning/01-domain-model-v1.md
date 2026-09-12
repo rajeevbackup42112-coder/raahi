@@ -1,6 +1,6 @@
 # Raahi Learning V1 — Canonical Domain Model
 
-Status: **Conceptual model frozen for V1.** Physical schema comes later.
+Status: **Conceptual model frozen for V1. Physical design reviewed through database blueprint v1.1.**
 
 ## Canonical concepts
 
@@ -9,6 +9,7 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 - **Account** — authenticated human using Raahi.
 - **Learner** — person whose learning history/classes/work belong to them.
 - **Account–Learner Access** — relationship describing whether an Account may act for a Learner (self or managing parent/guardian).
+- **Account Capability** — explicit unscoped capability where authority is not represented by a Learner/Organization/Location relationship (for example teaching eligibility, Community posting eligibility, verifier/platform/commercial capability).
 - **Organization** — school, university, coaching institute, academy, etc.
 - **Organization Membership** — who may act for an Organization and with what capabilities.
 
@@ -31,13 +32,15 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 ### Private learning
 
 - **Class** — private learning space; 1:1 or Group.
-- **Class Invitation** — controlled invitation to join a specific Class.
+- **Class Invitation** — controlled invitation to join a specific Class; a valid Pending invitation may reserve Class capacity until expiry/resolution.
 - **Class Membership** — actual learner access to a Class.
 - **Session** — lightweight scheduled occurrence of a Class.
 - **Material** — learning resource shared with one or more Classes.
+- **Class Post** — private Class update, announcement, or permitted learner question/discussion item. Never public Community content merely because participants share a Location.
+- **Class Learner Conversation** — contextual private communication for one Class + Learner between the responsible teacher and authorized learner-side Accounts. This supports direct/offline Class invitations without fabricating Enquiry history and is not unrestricted platform DM.
 - **Activity** — underlying assignment/practice/exercise concept.
 - **Submission** — learner work for an Activity; meaningful revisions preserved.
-- **Test** — structured assessment.
+- **Test** — structured assessment whose definition becomes immutable once valid attempts begin, except for governed answer-key correction.
 - **Test Attempt** — one learner's protected attempt at a Test.
 
 ### Community and trust
@@ -47,18 +50,21 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 - **Verification** — exact verified claim attached to a teacher/Organization/profile.
 - **Report** — request for review/moderation; not proof of wrongdoing.
 - **Block** — contact/control relationship; not equivalent to Class removal.
+- **Scoped Restriction** — explicit restriction of one capability/surface such as public discovery, new Enquiries, messaging, Class access, Community or Ads. Restrictions must not collapse unrelated capabilities into one giant status.
 
 ### Ads
 
 - **Advertising Eligibility** — whether an Account/Organization may advertise.
 - **Campaign** — advertiser's promotion initiative.
+- **Campaign Target** — requested Location + Sponsored placement context before serving.
 - **Campaign Revision** — exact immutable public ad content version being reviewed/shown.
 - **Ad Review** — decision against a specific Campaign Revision.
 - **Commercial Clearance** — whether the agreed commercial condition is satisfied.
-- **Inventory Capacity** — sellable Sponsored capacity for Location × placement × time.
+- **Inventory Capacity** — sellable Sponsored capacity for Location × placement × time; physical implementation may use overlap-safe daily buckets.
 - **Inventory Reservation** — temporary/confirmed claim by a Campaign against capacity.
-- **Ad Placement** — per-Location serving state for a Campaign.
+- **Ad Placement** — per-Location serving state for a Campaign, pinned to an exact approved serving Revision.
 - **Claim Evidence** — supporting material for claims requiring substantiation.
+- **Ad Frequency State** — private operational control used to protect user experience; never advertiser-facing viewer history.
 - Ads reuse the existing Enquiry and Report systems.
 
 ## Concepts deliberately not created
@@ -85,6 +91,7 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 - Learner may have self-access through an Account.
 - One Account may also have teaching capabilities and Organization memberships.
 - Learning artifacts always belong to the Learner even when another Account performs an allowed operational action.
+- Capability grants and scoped restrictions supplement relationship-based authorization; they do not replace Learner/Organization/Location relationships.
 
 ### Teaching and discovery
 
@@ -103,7 +110,8 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 - Class **has** Class Invitations.
 - Valid accepted Invitation **creates** Class Membership.
 - Learner **accesses Class through Membership**.
-- Class **has** Sessions, Activities and Tests.
+- Class **has** Sessions, Materials, Class Posts, Activities and Tests.
+- A Class + Learner may have a contextual learner-side/teacher conversation governed by current authorization.
 - Material may be shared with one or multiple Classes.
 - Activity **has** learner Submissions.
 - Test **has** learner Test Attempts.
@@ -116,9 +124,11 @@ Status: **Conceptual model frozen for V1.** Physical schema comes later.
 ### Ads
 
 - Eligible Account/Organization **creates** Campaign.
+- Campaign **has requested Campaign Targets** for Location/placement.
 - Campaign **has many** Campaign Revisions.
 - Campaign Revision **receives** one or more Ad Reviews over time.
-- Campaign **targets** Locations through Ad Placements.
+- Campaign **targets** Locations through Ad Placements after inventory is valid.
+- Ad Placement **serves one exact approved Campaign Revision** at a time.
 - Campaign **reserves** Inventory Capacity through Inventory Reservations.
 - Campaign **requires** valid Commercial Clearance before serving.
 - Claim Evidence **supports** a specific Campaign Revision/claim.
@@ -144,6 +154,8 @@ Closed may reopen when the underlying need is still the same.
 
 **Pending → Accepted / Declined / Expired / Cancelled**
 
+In V1 a valid Pending invitation reserves one finite Class seat until its finite expiry/resolution.
+
 ### Class Membership
 
 **Active → Completed / Left / Transferred / Removed**
@@ -160,7 +172,7 @@ Current status is **Submitted / Changes Requested / Reviewed**; revisions are hi
 
 **Draft → Available → Closed**
 
-Upcoming is derived from start time. Result visibility is separate.
+Upcoming is derived from start time. Result visibility is separate. Test definition locks once the first valid Attempt begins.
 
 ### Test Attempt
 
@@ -170,18 +182,23 @@ Upcoming is derived from start time. Result visibility is separate.
 
 **Preparing → Live → Paused → Retired**
 
+### Scoped Restriction
+
+A restriction is applied to an explicit capability/surface and later may be lifted/expire. It must not silently become a platform-wide punishment unless the safety decision explicitly says so.
+
 ### Ads
 
 Do not collapse Ads into one status. Separate:
 
 - Advertiser eligibility
 - Campaign existence
+- Campaign Target
 - Campaign Revision review
 - Commercial Clearance
 - Inventory Reservation
 - per-Location Ad Placement
 
-A Campaign may validly be Approved, commercially Cleared, Live in Dhanbad, and Paused in Gomoh at the same time.
+A Campaign may validly have an approved serving Revision, be commercially Cleared, be Live in Dhanbad, and Paused in Gomoh at the same time.
 
 ## Universal invariants
 
@@ -190,10 +207,12 @@ A Campaign may validly be Approved, commercially Cleared, Live in Dhanbad, and P
 3. **Idempotency** — repeated logical command must not perform the action twice.
 4. **Capacity** — Class capacity and Ads inventory capacity may never be exceeded.
 5. **Privacy** — browsing, Saving, or viewing Sponsored content does not create a relationship or expose identity.
-6. **Class security** — possession of a Class URL never grants access.
+6. **Class security** — possession of a Class/file URL never grants access.
 7. **Location** — selected Location changes discovery/community context, not ownership of existing relationships.
 8. **Discovery vs current learning** — provider availability affects new relationships, not existing Classes.
-9. **Safety** — Report remains available independently of ordinary communication permissions; Block does not erase evidence.
-10. **Ads integrity** — paid Sponsored visibility cannot buy verification, endorsement, or organic ranking.
-11. **Server authority** — current authoritative state wins over stale UI.
-12. **No direct state mutation** — business state transitions occur through canonical commands, not arbitrary UI writes.
+9. **Safety** — Report remains available independently of ordinary communication permissions; Block does not erase evidence; restrictions are explicitly scoped.
+10. **Assessment integrity** — Test structure cannot be silently changed after valid Attempts start; answer-key correction is explicit and audited.
+11. **Ads integrity** — paid Sponsored visibility cannot buy verification, endorsement, or organic ranking; live serving is pinned to an exact approved Revision.
+12. **Ads privacy** — frequency/hide/view operational data is never exposed as named advertiser viewer data.
+13. **Server authority** — current authoritative state wins over stale UI.
+14. **No direct state mutation** — business state transitions occur through canonical commands, not arbitrary UI writes.
