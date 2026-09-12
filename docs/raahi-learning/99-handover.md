@@ -11,7 +11,7 @@ Canonical folder: `docs/raahi-learning/`
 
 ## Current phase
 
-### Completed before Supabase
+### Product / UI / design / QA completed
 
 - Problem / Actors / Ownership / Business Rules;
 - edge-case, malicious-action and concurrency design;
@@ -33,23 +33,83 @@ Canonical folder: `docs/raahi-learning/`
 - implementation runbook + Supabase execution checklist;
 - pre-Supabase readiness/consistency reviews;
 - comprehensive test strategy;
-- master QA test catalog across scenario/state/permission/stale/retry/concurrency/security/privacy/load/chaos/migration/UI testing;
+- master QA catalog;
 - canonical synthetic personas/fixtures;
-- backend-free reproducible model-test harness on the implementation branch;
+- reproducible backend-free model-test harness;
 - expanded model/property execution: **5,349,992 cases/operations, 0 invariant failures**;
 - staging load/security/chaos/recovery plan;
-- pre-Supabase QA readiness verdict: **PASS for everything that can honestly be proven without a real DB**;
-- implementation approval for controlled slice execution after read-only environment inspection.
+- pre-Supabase QA readiness verdict.
 
-### Not started
+### Supabase implementation completed
 
-- any Raahi Learning Supabase migration;
-- production tables/RLS/RPCs;
-- backend integration of the prototype;
-- real PostgreSQL concurrency/RLS/security/performance testing;
-- production deployment.
+Target project:
 
-> **Supabase is still untouched.**
+- name: `rajeev.backup3.2112@gmail.com's Project`
+- ref: `iiwwmqokaeflaenhlyip`
+- region: `ap-south-1`
+- PostgreSQL: 17.6
+
+The target was inspected read-only first and was clean: no Raahi application tables, migrations, users, buckets, Edge Functions or legacy mobility objects.
+
+**Foundation + Identity is now implemented in the dev project and its first-slice gate PASSED.**
+
+Applied migrations:
+
+1. `0001_extensions_helpers`
+2. `0002_common_updated_at`
+3. `0100_identity_tables`
+4. `0101_identity_constraints_indexes`
+5. `0102_command_infrastructure`
+6. `0103_identity_rls_helpers`
+7. `0104_identity_rpcs`
+8. `0105_identity_hardening_followup`
+9. `0106_private_function_privileges`
+
+Implemented application tables:
+
+- `accounts`
+- `learners`
+- `account_learner_access`
+- `account_capabilities`
+- `audit_log`
+- `idempotency_keys`
+
+Implemented identity behavior includes Account/Learner separation, one active self and manager relationship per Learner, manager-vs-self formal decision authority, no Test-taking impersonation from manager authority, governed self-access grant, privileged management transfer/capability grant-revoke, pause/resume/guarded closure, idempotency and audit.
+
+All public application tables have RLS enabled and forced. Authenticated clients have safe reads only where intended; core state writes go through canonical RPCs. `anon` cannot call protected Identity RPCs. Private helper function PUBLIC EXECUTE defaults were removed after ACL inspection.
+
+Runtime test results:
+
+- `FOUNDATION_IDENTITY_RUNTIME_TESTS_PASS`
+- `POST_HARDENING_SECURITY_SMOKE_PASS`
+
+Verified real DB behavior includes idempotency, request-fingerprint mismatch rejection, manager/self authority, sibling isolation, direct-write denial, anonymous denial, privilege-escalation denial, second-manager physical uniqueness, account lifecycle retry behavior, sole-manager closure blocker, audit generation and idempotency records.
+
+All synthetic runtime data was executed inside rollback transactions. Current dev data remains empty.
+
+Security Advisor after hardening: **0 findings**.
+Performance Advisor: only expected `unused_index` informational notices on the new empty database; no missing-FK-index finding remains.
+
+See:
+
+- `34-foundation-identity-implementation-result-v1.2.md`
+- implementation branch `supabase/ENVIRONMENT_INSPECTION_2026-09-12.md`
+- implementation branch `tests/db/010_foundation_identity_runtime_smoke.sql`
+
+## Current implementation gate
+
+> **STOP BEFORE LOCATIONS.**
+
+Foundation + Identity passed, so the next eligible slice is Locations, but it has **not** been implemented yet.
+
+Next slice only:
+
+- `0200_locations_tables.sql`
+- `0201_account_location_preferences.sql`
+- `0202_locations_staff_rls_rpcs.sql`
+- `0203_location_interests.sql`
+
+Do not proceed beyond Locations until its migration/constraint/RLS/RPC/idempotency/scope tests pass.
 
 ## Clickable UI artifact
 
@@ -75,39 +135,11 @@ Read:
 - `31-staging-load-security-chaos-plan-v1.2.md`
 - `32-canonical-test-personas-fixtures-v1.2.md`
 - `33-pre-supabase-qa-readiness-verdict-v1.2.md`
-
-### Current logical-model result
-
-Expanded deterministic model run:
-
-> **5,349,992 modeled cases/operations, 0 invariant failures.**
-
-Covered:
-
-- Learning Request state rules;
-- Enquiry contextual messaging;
-- Class capacity/Invitation reservations;
-- atomic transfer model;
-- Test self-vs-manager authority and retry behavior;
-- Learner share-code lifecycle;
-- Account closure blockers;
-- Location preference independence;
-- Ads inventory and exact serving Revision;
-- protected Sponsored surfaces;
-- Report/Block separation;
-- Class completion preservation;
-- public Learning Request privacy projection.
-
-Earlier concentrated logical contention also passed:
-
-- 100,000 Invitation attempts against capacity 50 → exactly 50 reservations;
-- 100,000 Ads reservation attempts against capacity 100 → exactly 100 units.
-
-These are model passes, not PostgreSQL certifications. Real locking/deadlock/RLS/GRANT/Storage/Realtime/query-plan/latency/security tests remain mandatory and are explicitly cataloged.
+- `34-foundation-identity-implementation-result-v1.2.md`
 
 ## Core implementation sources
 
-For actual implementation, read at minimum:
+For implementation, read at minimum:
 
 - `00-product-ui-freeze-v1.md`
 - `01-domain-model-v1.md`
@@ -124,7 +156,7 @@ For actual implementation, read at minimum:
 - `29-master-test-case-catalog-v1.2.md`
 - `31-staging-load-security-chaos-plan-v1.2.md`
 - `32-canonical-test-personas-fixtures-v1.2.md`
-- `12-implementation-approval-v1.md`
+- `34-foundation-identity-implementation-result-v1.2.md`
 
 Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history. Consolidated V1.2 sources win where wording differs.
 
@@ -169,31 +201,6 @@ Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history. Consol
 - Sponsored uses exact approved Revision;
 - significant safety/admin/commercial actions are auditable.
 
-## Implementation branch test infrastructure
-
-`raahi-learning-implementation-v1` includes:
-
-- `IMPLEMENTATION_START_HERE.md`
-- `supabase/ENVIRONMENT_INSPECTION_TEMPLATE.md`
-- `supabase/migrations/README.md`
-- `tests/db/README.md`
-- `tests/model/pre_supabase_model_tests.py`
-- `tests/model/README.md`
-- `.github/workflows/raahi-learning-model-tests.yml`
-
-No environment-specific migration SQL has been fabricated before inspecting the chosen target project.
-
-## Next operational action
-
-Only when the user authorizes Supabase work:
-
-1. inspect the exact target Supabase project **read-only first**;
-2. fill the environment inspection record and compare actual environment state with V1.2;
-3. implement only **Foundation + Identity** through versioned migrations;
-4. execute all Foundation + Identity test cases from the master catalog: migration, constraints, RLS, RPC authorization, idempotency, lifecycle blockers and privilege attacks;
-5. stop on any failed invariant/security test;
-6. only after that slice is PASS may Locations begin.
-
 ## Recommended new-chat prompt
 
-> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, the consolidated blueprint/migration/runbook documents, and QA docs `29`–`33`. The clickable UI and pre-Supabase logical QA gates passed. Supabase is untouched. If I explicitly authorize Supabase, inspect the target environment read-only first, then implement Foundation + Identity only and execute its real DB/security tests before proceeding.”
+> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, `34-foundation-identity-implementation-result-v1.2.md`, the consolidated blueprint/migration/runbook docs and QA docs. Supabase project `iiwwmqokaeflaenhlyip` has Foundation + Identity implemented and runtime-tested PASS. Security Advisor is clean. Stop gate is currently before Locations. If authorized to continue, implement and test only Locations `0200–0203`, then stop again on any failed gate.”
