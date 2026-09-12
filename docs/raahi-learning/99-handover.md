@@ -22,7 +22,7 @@ Pre-database evidence remains:
 - 15 semantic/accessibility samples — 0 issues;
 - backend-free deterministic model suite: **5,349,992 cases/operations, 0 invariant failures**.
 
-Controlled Supabase implementation has now begun.
+Controlled Supabase implementation is active.
 
 ## Target Supabase dev project
 
@@ -36,19 +36,9 @@ The project was inspected read-only before the first mutation and was clean: no 
 
 ### 1. Foundation + Identity — PASS
 
-Applied:
+Applied `0001–0106`.
 
-- `0001_extensions_helpers`
-- `0002_common_updated_at`
-- `0100_identity_tables`
-- `0101_identity_constraints_indexes`
-- `0102_command_infrastructure`
-- `0103_identity_rls_helpers`
-- `0104_identity_rpcs`
-- `0105_identity_hardening_followup`
-- `0106_private_function_privileges`
-
-Real runtime markers:
+Runtime markers:
 
 - `FOUNDATION_IDENTITY_RUNTIME_TESTS_PASS`
 - `POST_HARDENING_SECURITY_SMOKE_PASS`
@@ -57,66 +47,89 @@ See `34-foundation-identity-implementation-result-v1.2.md`.
 
 ### 2. Locations — PASS
 
-Before Locations, an implementation-branch safety problem was found: historical mobility migration files were still present in the inherited `supabase/migrations/` directory. They had never reached the Learning database, but could have been replayed by future CLI operations. The subtree was replaced with a **Raahi Learning-only** migration chain before Locations execution. See `35-implementation-branch-legacy-migration-isolation.md`.
+Applied `0200–0204`.
 
-Applied:
-
-- `0200_locations_tables`
-- `0201_account_location_preferences`
-- `0202_locations_staff_rls_rpcs`
-- `0203_location_interests`
-- `0204_locations_rls_policy_consolidation` — forward performance/RLS cleanup
-
-Implemented:
-
-- Location lifecycle `interest_only → preparing → live ↔ paused → retired`;
-- selected Location preference independent of established relationships/history;
-- explicit Location-scoped Local Manager assignments;
-- Local Manager responsibility included in Account-closure blockers;
-- authenticated `learn|teach` Location Interest with active uniqueness/history;
-- aggregate Local Manager launch-readiness counts without named interest-row access;
-- retired Location visibility restrictions;
-- canonical Location/Interest commands with idempotency/audit;
-- RLS and least-privilege grants.
-
-Real runtime markers:
+Runtime markers:
 
 - `LOCATIONS_RUNTIME_TESTS_PASS`
 - `LOCATIONS_POST_HARDENING_SMOKE_PASS`
 
-Verified real DB behavior includes lifecycle rules, valid/invalid transitions, selected-Location independence, retired-selection rejection, Interest eligibility/retry/history, learn+teach coexistence, direct-write denial, exact Local Manager scope, wrong-Location denial, aggregate-only readiness, closure blocker, retired visibility and post-policy-consolidation RLS behavior.
+Before Locations, historical mobility migrations inherited on the implementation branch were removed from the Learning migration execution subtree. They had never been applied to the Learning Supabase project. See `35-implementation-branch-legacy-migration-isolation.md` and `36-locations-implementation-result-v1.2.md`.
 
-Security Advisor after Locations: **0 findings**.
+### 3. Learner Share Codes — PASS
 
-Performance Advisor: only expected `unused_index` INFO notices on the empty dev database. The overlapping permissive-policy warning was fixed with `0204`; no missing-FK-index warning remains.
+Applied:
 
-All synthetic tests used rollback transactions. Current Auth/application fixture counts remain zero.
+- `0250_learner_share_codes`
 
-See `36-locations-implementation-result-v1.2.md`.
+Implemented:
+
+- private 192-bit database-generated bearer token;
+- SHA-256 hash-only persistence;
+- plaintext returned on the first successful create response only;
+- same-key create replay returns the same logical resource but never replays plaintext;
+- 24-hour V1 TTL through a private policy helper;
+- one active code per Learner in V1;
+- replacement revokes predecessor;
+- active `can_make_learning_decision` authority required to create;
+- paused current formal learner-side authority may revoke an already-issued code;
+- expired/revoked/consumed tokens never resolve through the private helper;
+- no public resolve/search/browse Learner endpoint;
+- exact-token private resolver reserved for the later atomic Class invite-by-code transaction;
+- raw token excluded from Audit metadata and Idempotency stored results;
+- direct authenticated table access denied;
+- private helper ACLs explicitly hardened.
+
+Real runtime markers:
+
+- `SHARE_CODE_BASIC_PASS`
+- `SHARE_CODE_PERMISSION_PASS`
+- `SHARE_CODE_STATE_PASS`
+- `SHARE_CODE_TERMINAL_PASS`
+
+Security Advisor after Share Codes: **0 findings**.
+
+Performance Advisor: only expected `unused_index` INFO notices on the empty dev database.
+
+All synthetic tests used rollback transactions. Current Auth/application fixture counts remain zero, including Learner Share Codes, Audit and Idempotency rows.
+
+See `37-learner-share-codes-implementation-result-v1.2.md` and implementation-branch `tests/db/025_learner_share_codes_runtime_smoke.sql`.
+
+## Share-code tests deliberately deferred to Classes/staging
+
+Because the public Class invite-by-code command does not exist until `0502`, these are not falsely marked complete yet:
+
+- atomic Invitation creation + share-code consumption;
+- second consume rejection through the real invite path;
+- real consume-vs-revoke concurrency;
+- timeout-after-success retry with exactly one Invitation;
+- external endpoint rate limiting / abuse testing.
+
+The private resolver and state model needed for those tests are now implemented and runtime-tested.
 
 ## Current stop gate
 
-> **STOP BEFORE LEARNER SHARE CODES (`0250`).**
+> **STOP BEFORE ORGANIZATIONS / TEACHER DISCOVERY (`0300–0302`).**
 
-Do not start Organizations/Discovery (`0300+`) yet.
+Next eligible slice only:
 
-The next eligible slice, only after deliberate continuation, is:
-
-- `0250_learner_share_codes.sql`
+- `0300_organizations_discovery_tables.sql`
+- `0301_organizations_discovery_constraints.sql`
+- `0302_organizations_discovery_rls_rpcs.sql`
 
 That slice must prove:
 
-- cryptographically strong one-time token;
-- hash-only storage, no plaintext persistence/audit;
-- finite expiry;
-- explicit revocation;
-- one-time consumption semantics;
-- legitimate learner-side authority only;
-- no public Learner search/enumeration;
-- retry/replay safety;
-- consume-vs-revoke concurrency behavior where possible at this stage.
+- Organization/member/capability scope;
+- one Teaching Option owner only (Teacher XOR Organization);
+- Organization-owned objects survive employee access changes;
+- Teacher profile and Teaching Option lifecycle/availability rules;
+- public discovery only in eligible live Locations;
+- safe public projections with no private contact/home data;
+- Save/Unsave is private and grants no contact permission;
+- direct privileged reads/writes and forged Organization/Teacher scope are denied;
+- idempotency/audit for consequential writes.
 
-The later atomic **invite-by-code + consume** path is completed when Classes exist; do not fabricate Class/Invitation objects early.
+Do not begin Restrictions (`0350+`) until this slice passes.
 
 ## Canonical implementation sources
 
@@ -139,6 +152,7 @@ Read at minimum:
 - `34-foundation-identity-implementation-result-v1.2.md`
 - `35-implementation-branch-legacy-migration-isolation.md`
 - `36-locations-implementation-result-v1.2.md`
+- `37-learner-share-codes-implementation-result-v1.2.md`
 
 Historical `03/08/09/10/11/13/14/15/16/17` files remain decision history; consolidated V1.2 sources win where wording differs.
 
@@ -169,4 +183,4 @@ SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
 ## Recommended new-chat prompt
 
-> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, and implementation results `34–36`. Supabase project `iiwwmqokaeflaenhlyip` has Foundation + Identity and Locations implemented and runtime-tested PASS; Security Advisor is clean. The current stop gate is before `0250_learner_share_codes.sql`. If I authorize continuation, implement and test only that share-code slice, then stop before Organizations/Discovery.”
+> “Continue Raahi Learning V1.2 from `rajeevbackup42112-coder/raahi`. Read `RAAHI_LEARNING_HANDOVER.md`, `docs/raahi-learning/99-handover.md`, and implementation results `34–37`. Supabase project `iiwwmqokaeflaenhlyip` has Foundation + Identity, Locations and Learner Share Codes implemented and runtime-tested PASS; Security Advisor is clean. The current stop gate is before Organizations / Teacher Discovery `0300–0302`. If I authorize continuation, implement and test only that slice, then stop before Restrictions.”
