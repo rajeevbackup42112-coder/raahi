@@ -1,8 +1,10 @@
-# Raahi Learning V1.2 — Migration Sequence Scaffold
+# Raahi Learning V1.2 — Migration Sequence
 
-Do not add ad-hoc dashboard schema changes. Migration files should be created here only after the target Supabase environment is inspected and reconciled with the V1.2 contract.
+This directory is **Raahi Learning only**. Historical Raahi mobility migrations are deliberately excluded from this execution subtree.
 
-Canonical sequence:
+No ad-hoc dashboard schema changes. Every shared/dev DDL change must exist here as a versioned migration; once applied, corrections are forward-only.
+
+## Applied and passed
 
 ```text
 0001_extensions_helpers.sql
@@ -12,13 +14,30 @@ Canonical sequence:
 0102_command_infrastructure.sql
 0103_identity_rls_helpers.sql
 0104_identity_rpcs.sql
+0105_identity_hardening_followup.sql
+0106_private_function_privileges.sql
 
 0200_locations_tables.sql
 0201_account_location_preferences.sql
 0202_locations_staff_rls_rpcs.sql
 0203_location_interests.sql
-0250_learner_share_codes.sql
+0204_locations_rls_policy_consolidation.sql
+```
 
+Foundation + Identity: **PASS**  
+Locations: **PASS**
+
+## Current stop / next eligible slice
+
+```text
+0250_learner_share_codes.sql
+```
+
+Do not create/apply `0300+` until the share-code slice passes its own runtime/security gate.
+
+## Planned later sequence
+
+```text
 0300_organizations_discovery_tables.sql
 0301_organizations_discovery_constraints.sql
 0302_organizations_discovery_rls_rpcs.sql
@@ -63,10 +82,12 @@ Canonical sequence:
 
 ## Rules
 
-- Do not create all files blindly before read-only environment inspection if existing project objects may conflict.
-- Every applied migration must be represented in source control.
-- Once applied to a shared environment, never rewrite history; fix forward.
-- Execute and test one slice at a time.
-- Foundation + Identity is the first permitted slice.
+- execute and test one slice at a time;
+- successful migration application alone is not a PASS;
+- canonical commands/RPCs own consequential writes;
+- exposed tables/functions use RLS/least privilege;
+- run runtime tests and Supabase advisors after DDL;
+- stop on failed invariant/security checks;
+- use forward-fix migrations after anything reaches shared/dev.
 
-See `docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md` for the full contract.
+See the canonical migration contract on the documentation branch: `docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`.
