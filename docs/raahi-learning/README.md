@@ -1,99 +1,99 @@
 # Raahi Learning V1.2 — Documentation Index
 
-Status: **PRE-SUPABASE WORK COMPLETE. Real clickable UI inspected, final UI↔DB reconciliation passed, consolidated physical/migration contract ready. Supabase remains untouched.**
+Status: **BACKEND DATABASE IMPLEMENTATION COMPLETE — 14/14 SLICES PASS. NEXT: FROZEN UI → REAL SUPABASE INTEGRATION.**
 
-This folder is the canonical handover point for Raahi Learning. It exists so a new ChatGPT conversation, developer or coding agent can continue without relying on chat history.
+This folder is the canonical handover point for Raahi Learning.
 
-> **Source-of-truth rule:** frozen written behavior + the inspected clickable UI define the product. Exploratory/generated images are visual inspiration only where they agree with those sources.
+> **Source-of-truth rule:** frozen written behavior + the inspected clickable UI define the product. Applied forward migrations on `raahi-learning-implementation-v1` are the implementation record. Older exploratory/generated visuals do not override them.
 
 ## Product in one sentence
 
 Raahi Learning is a **local learning community launched one Location at a time**, where people can discover legitimate learning, parents can manage learning for children, teachers/coaches/instructors and institutes can offer learning, relationships form through controlled Enquiries, and ongoing learning continues in private Classes.
 
-Core journey:
+Core journey: **Find → Enquire → optional Trial → Class Invitation → Join Class → Learn**
 
-**Find → Enquire → optional Trial → Class Invitation → Join Class → Learn**
+## Frozen UI
 
-## Inspected clickable UI
-
-Artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`
-
-Persistent Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`
-
+Artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`  
+Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
 SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
-Audit result:
+Audit: 77 canonical pages; 154 desktop/mobile route checks, 32 privileged deep-link checks, 26 interaction/business-rule checks and 15 semantic/accessibility samples — zero final issues.
 
-- 77 canonical routes/pages;
-- 154 desktop/mobile route checks, 0 issues;
-- 32 privileged deep-link checks, 0 unguarded pages;
-- 26 interaction/business-rule checks, 0 failures;
-- 15 semantic/accessibility sanity samples, 0 issues.
+## Read first now
 
-## Read these first for new implementation work
+1. [`99-handover.md`](99-handover.md) — current state and exact continuation boundary.
+2. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — final backend implementation result.
+3. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — frozen product rules.
+4. [`01-domain-model-v1.md`](01-domain-model-v1.md) — conceptual entities/invariants.
+5. [`02-architecture-blueprint-v1.md`](02-architecture-blueprint-v1.md) — architecture boundaries.
+6. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — command/permission intent.
+7. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then regressions.
+8. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads rules.
+9. [`18-ui-page-inventory-v1.1.md`](18-ui-page-inventory-v1.1.md) — inspected UI inventory.
+10. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — consolidated physical design.
+11. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated migration contract.
+12. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test traceability.
+13. [`29-master-test-case-catalog-v1.2.md`](29-master-test-case-catalog-v1.2.md) — QA catalog.
+14. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — remaining true runtime/load/chaos plan.
 
-1. [`99-handover.md`](99-handover.md) — current status and next action.
-2. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — frozen product rules.
-3. [`01-domain-model-v1.md`](01-domain-model-v1.md) — conceptual entities/invariants.
-4. [`02-architecture-blueprint-v1.md`](02-architecture-blueprint-v1.md) — architecture boundaries.
-5. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — command/permission intent.
-6. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — detailed Given/When/Then regressions.
-7. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads product rules.
-8. [`18-ui-page-inventory-v1.1.md`](18-ui-page-inventory-v1.1.md) — frozen inspected UI page/state inventory.
-9. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — **single final physical design source**.
-10. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — **single final migration sequence**.
-11. [`21-pre-supabase-readiness-review-v1.2.md`](21-pre-supabase-readiness-review-v1.2.md) — formal pre-Supabase PASS.
-12. [`22-implementation-runbook-v1.2.md`](22-implementation-runbook-v1.2.md) — controlled slice-by-slice implementation procedure.
-13. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test traceability.
-14. [`24-supabase-execution-checklist-v1.2.md`](24-supabase-execution-checklist-v1.2.md) — checklist to use only after Supabase access is authorized.
-15. [`12-implementation-approval-v1.md`](12-implementation-approval-v1.md) — final approval record.
+## Backend implementation status
 
-## Historical review chain
+Supabase dev: `iiwwmqokaeflaenhlyip`, `ap-south-1`, PostgreSQL 17.6.
 
-The following remain valuable for decision traceability but no longer need to be merged manually during implementation:
+Passed slices:
 
-- `03-database-blueprint-v1.md` — first physical draft;
-- `03-database-blueprint-v1.1.md` — reviewed physical baseline;
-- `08-database-blueprint-review-v1.md`;
-- `09-sql-readiness-review-v1.md`;
-- `10-sql-migration-plan-v1.md` — first migration-plan draft;
-- `10-sql-migration-plan-v1.1.md` — corrected baseline plan;
-- `11-sql-migration-plan-review-v1.md`;
-- `13-ui-db-reconciliation-v1.md`;
-- `14-ui-db-implementation-delta-v1.md`;
-- `15-ui-page-build-review-gate-v1.md` — closed;
-- `16-ui-page-freeze-and-final-reconciliation-v1.1.md`;
-- `17-final-ui-db-implementation-delta-v1.1.md`.
+1. Foundation + Identity
+2. Locations
+3. Learner Share Codes
+4. Organizations / Teacher Discovery
+5. Scoped Restrictions
+6. Requests / Enquiries
+7. Classes / Invitations / Files
+8. Class Communication
+9. Activities / Submissions
+10. Tests / Attempts
+11. Community / Trust & Safety
+12. Ads Campaign / Review / Commercial
+13. Ads Inventory / Serving
+14. Notifications / Read Projections / Final Hardening
 
-If historical wording differs from the consolidated V1.2 blueprint/plan, **V1.2 wins**.
+Storage authorization is completed by forward migration `1004_storage_authorization`.
+
+Final Security Advisor: **0 findings**. Current Performance Advisor findings are only unused-index INFO notices on the empty dev DB.
 
 ## Non-negotiable principles
 
-- One Account may learn, teach, manage a Learner and represent an Organization.
-- Learner identity/history is separate from the Account acting for it.
-- No public Learner directory.
-- Parent/Guardian acts **for** Learner, never by impersonation.
-- Formal learner-side marketplace decisions follow `can_make_learning_decision`; management authority does not grant Test-taking authority.
-- UI never directly mutates core operational state; consequential writes use canonical commands.
-- Current authoritative state beats stale UI.
-- Consequential commands are idempotent.
-- Pending Class Invitations reserve finite capacity **at send time** and expire.
-- Class capacity and Ads inventory may never oversell.
-- Existing offline learners use a private, expiring one-time Learner share code rather than public search/fake Enquiry.
-- Test definition locks when valid Attempts begin; answer-key correction is explicit/audited.
-- Safety/platform restrictions are scoped rather than one giant status.
+- Account and Learner are distinct; Learner owns learning.
+- Parent acts for Learner, never by identity impersonation.
+- Manager formal-decision authority does not grant Test-taking authority.
+- no public Learner directory.
+- UI does not directly mutate core operational state.
+- current server state beats stale UI.
+- consequential commands are idempotent.
+- Pending Invitation reserves Class capacity at send time.
+- transfer is learner-side authority and same-provider only in V1.2.
+- Class and Ads capacity cannot oversell.
+- private share-code targeting replaces public learner search/fake Enquiry.
+- Test definition locks at first valid Attempt.
+- safety restrictions are scope-specific.
 - Realtime invalidates/refetches; it is not source of truth.
-- Organic discovery and Sponsored serving stay separate.
-- Live Ads serve an exact approved Campaign Revision.
-- Sponsored content is surface-governed and excluded from protected learning/private messaging surfaces.
-- Paid visibility can never buy verification, endorsement or organic rank.
-- Per-user Ads frequency/hide data is private operational data, never advertiser viewer lists.
-- Navigation/workspace selection is never authorization; privileged reads re-check actual capability/relationship/scope.
+- Sponsored and organic remain separate.
+- Ads serve exact Approved Revision and require independent commercial clearance/inventory.
+- protected learning/private-message surfaces are ad-free.
+- per-user Ads frequency/hide data is private from advertisers.
+- workspace/navigation selection is not authorization.
+- private Storage reads re-check business authorization; copied paths are not access.
+- authenticated users have no direct DML on public operational tables.
+
+## Historical review chain
+
+`03/08/09/10/11/13/14/15/16/17` remain useful decision traceability. Pre-Supabase readiness/runbook docs `21–26` explain how controlled implementation was entered. They do not override the applied forward migration record.
 
 ## Current boundary
 
-**Supabase has not been touched.**
+The database/backend gate is closed successfully. Do not invent another schema phase merely to delay integration.
 
-All meaningful product/UI/domain/schema-planning/migration-planning/test-planning/handover work that should happen before touching the target environment is complete.
+Next: use the **exact frozen clickable UI**, wire Supabase Auth/RPC/read projections/Storage, then execute browser E2E and the real concurrent load/security/chaos program.
 
-When the user authorizes Supabase access, the first action is **read-only environment inspection**, then only **Foundation + Identity** is implemented and tested. Do not proceed to Locations until that slice passes.
+Do not call the system load-tested or production-ready yet: true multi-session concurrency, p50/p95/p99, soak, deadlock/timeout and real file-transfer evidence still remain.
