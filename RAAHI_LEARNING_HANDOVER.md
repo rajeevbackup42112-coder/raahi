@@ -11,10 +11,12 @@ This branch contains the canonical Raahi Learning product, inspected UI, consoli
 
 1. [`docs/raahi-learning/99-handover.md`](docs/raahi-learning/99-handover.md)
 2. [`docs/raahi-learning/34-foundation-identity-implementation-result-v1.2.md`](docs/raahi-learning/34-foundation-identity-implementation-result-v1.2.md)
-3. [`docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`](docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md)
-4. [`docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`](docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md)
-5. [`docs/raahi-learning/22-implementation-runbook-v1.2.md`](docs/raahi-learning/22-implementation-runbook-v1.2.md)
-6. [`docs/raahi-learning/29-master-test-case-catalog-v1.2.md`](docs/raahi-learning/29-master-test-case-catalog-v1.2.md)
+3. [`docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md`](docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md)
+4. [`docs/raahi-learning/36-locations-implementation-result-v1.2.md`](docs/raahi-learning/36-locations-implementation-result-v1.2.md)
+5. [`docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`](docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md)
+6. [`docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`](docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md)
+7. [`docs/raahi-learning/22-implementation-runbook-v1.2.md`](docs/raahi-learning/22-implementation-runbook-v1.2.md)
+8. [`docs/raahi-learning/29-master-test-case-catalog-v1.2.md`](docs/raahi-learning/29-master-test-case-catalog-v1.2.md)
 
 For full product behavior and QA history, see `docs/raahi-learning/README.md`.
 
@@ -22,48 +24,45 @@ For full product behavior and QA history, see `docs/raahi-learning/README.md`.
 
 Target development project:
 
-- `rajeev.backup3.2112@gmail.com's Project`
 - ref: `iiwwmqokaeflaenhlyip`
 - region: `ap-south-1`
 - PostgreSQL 17.6
 
-The environment was inspected read-only first and found clean.
+The environment was inspected read-only before first mutation and found clean.
 
-**Foundation + Identity has now been implemented and runtime-tested PASS.**
+### Foundation + Identity — PASS
 
-Applied slice includes:
+Real runtime markers:
 
-- extensions/private helper schema + explicit Data API privilege defaults;
-- Accounts;
-- Learners;
-- Account↔Learner Access;
-- Account Capabilities;
-- Audit Log;
-- Idempotency Keys;
-- Identity authorization helpers including `can_make_learning_decision`;
-- canonical Identity RPCs;
-- Account pause/resume/guarded closure behavior;
-- RLS and least-privilege hardening;
-- forward fixes from advisor/ACL review.
+- `FOUNDATION_IDENTITY_RUNTIME_TESTS_PASS`
+- `POST_HARDENING_SECURITY_SMOKE_PASS`
 
-Real database runtime checks passed for idempotency, manager-vs-self authority, direct-write denial, anonymous denial, privilege escalation, uniqueness, sibling isolation, lifecycle retry behavior and closure blockers.
+### Locations — PASS
 
-Security Advisor after hardening: **0 findings**.
+Implemented Location lifecycle, selected Location preference, scoped Local Manager authority, Location Interests, aggregate launch-readiness counts, closure responsibility and RLS/least-privilege controls.
 
-No synthetic test data remains; the tests ran inside rolled-back transactions.
+Real runtime markers:
+
+- `LOCATIONS_RUNTIME_TESTS_PASS`
+- `LOCATIONS_POST_HARDENING_SMOKE_PASS`
+
+Locations applied migrations:
+
+- `0200_locations_tables`
+- `0201_account_location_preferences`
+- `0202_locations_staff_rls_rpcs`
+- `0203_location_interests`
+- `0204_locations_rls_policy_consolidation`
+
+Security Advisor after Locations: **0 findings**. Synthetic test data was rolled back; the dev application/Auth data remains empty.
+
+The implementation branch migration subtree is now explicitly **Raahi Learning only**; inherited mobility migrations were removed before Locations execution.
 
 ## Current gate
 
-> **STOP BEFORE LOCATIONS.**
+> **STOP BEFORE `0250_learner_share_codes.sql`.**
 
-The next eligible slice is only:
-
-- `0200_locations_tables.sql`
-- `0201_account_location_preferences.sql`
-- `0202_locations_staff_rls_rpcs.sql`
-- `0203_location_interests.sql`
-
-Do not proceed beyond Locations until that slice passes its own migration/RLS/RPC/idempotency/scope tests.
+The next eligible implementation slice is private one-time Learner share codes only. Do not proceed to Organizations/Discovery (`0300+`) until that slice passes its own lifecycle/RLS/security/retry gate.
 
 ## Clickable UI artifact
 
@@ -71,6 +70,6 @@ Do not proceed beyond Locations until that slice passes its own migration/RLS/RP
 Library: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
 SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
 
-The inspected UI remains the behavior contract together with the frozen written rules.
+The inspected UI plus frozen written rules remains the product behavior contract.
 
-The repository `main` branch contains older Raahi ride work and must not be assumed to implement Raahi Learning.
+The repository `main` branch contains older Raahi mobility work and must not be assumed to implement Raahi Learning.
