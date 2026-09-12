@@ -32,6 +32,13 @@ This manifest exists so a future chat/developer can verify that the pre-Supabase
 - `24-supabase-execution-checklist-v1.2.md`
 - `12-implementation-approval-v1.md`
 
+## Testing sources
+
+- `27-pre-supabase-test-strategy-v1.2.md` — scenario/state/auth/concurrency/idempotency/load/security/privacy/chaos/migration test plan
+- `28-mock-model-test-results-v1.2.md` — executed backend-free randomized/property-style logical tests: **PASS**
+
+Mock/model execution covered millions of randomized capacity/inventory transitions, share-code lifecycle, Test identity/retries, protected Ads surfaces, cross-domain invariants and 100k-request contention bursts. These results validate logical coherence only; real DB/RLS/performance tests remain mandatory after a safe Supabase staging implementation exists.
+
 ## Readiness / handover
 
 - `21-pre-supabase-readiness-review-v1.2.md` — PASS
@@ -41,18 +48,18 @@ This manifest exists so a future chat/developer can verify that the pre-Supabase
 - repository top-level `RAAHI_LEARNING_HANDOVER.md`
 - GitHub Issue #1 tracker
 
-## Implementation scaffold branch
+## Implementation scaffold
 
 Branch: `raahi-learning-implementation-v1`
 
-Prepared without touching Supabase:
+Contains pre-environment-only scaffolding:
 
 - `IMPLEMENTATION_START_HERE.md`
 - `supabase/migrations/README.md`
 - `supabase/ENVIRONMENT_INSPECTION_TEMPLATE.md`
 - `tests/db/README.md`
 
-No environment-specific migration SQL has been fabricated before inspecting the chosen target project.
+No environment-specific migration has been fabricated before target-project inspection.
 
 ## Historical traceability sources
 
@@ -75,4 +82,4 @@ At completion of this package:
 
 > **No Raahi Learning migration has been executed against Supabase.**
 
-The next phase begins only when the user authorizes Supabase access. Start with read-only environment inspection, then Foundation + Identity only.
+The next phase begins only when the user authorizes Supabase access. Start with read-only environment inspection, then Foundation + Identity only, including real runtime/concurrency/RLS testing before advancing.
