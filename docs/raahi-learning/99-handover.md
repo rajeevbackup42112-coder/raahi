@@ -21,7 +21,10 @@ Completed:
 - **Product + UI Behaviour Freeze V1**;
 - conceptual Domain Model V1;
 - architecture boundaries and canonical command principles;
-- first **physical database blueprint draft**.
+- first physical database blueprint draft;
+- **formal review of the first physical draft**;
+- **corrected physical database blueprint v1.1**;
+- command/permission and acceptance-test updates reflecting the review.
 
 Not started:
 
@@ -73,14 +76,41 @@ The reason these were removed is documented in `07-decision-log-v1.md`.
 - reads may use secure projections;
 - writes go through canonical business commands;
 - UI never directly mutates core operational tables;
-- actor + acting-for + object + relationship/scope authorization;
+- actor + acting-for + object + relationship/capability/scope authorization;
+- explicit scoped restrictions instead of giant Teacher/Account status;
 - idempotent consequential commands;
 - stale UI never overrides server truth;
 - atomic protection of Class capacity and Ads inventory;
+- Pending V1 Class Invitations reserve finite seats until expiry/resolution;
+- Test definition locks once valid Attempts begin;
 - realtime invalidates/refetches only;
 - notifications happen after core state commits;
 - organic discovery and Sponsored serving remain separate;
+- live Ads serving is pinned to an exact approved Campaign Revision;
 - significant admin/safety/commercial actions are auditable.
+
+## Physical database review result
+
+The original `03-database-blueprint-v1.md` **did not pass** the implementation gate as written. `08-database-blueprint-review-v1.md` documents the findings.
+
+Important corrections included:
+
+1. add private Class posts/announcements/questions and Class+Learner contextual messaging;
+2. add explicit Account capabilities and scoped access restrictions;
+3. add Campaign target Locations/placements before serving;
+4. replace overlapping Ads windows with overlap-safe daily inventory capacity buckets;
+5. pin every Ad Placement to an exact approved serving Revision;
+6. add private per-user Ads frequency state without exposing named viewers to advertisers;
+7. lock Test definition after valid Attempts begin;
+8. make Pending Class Invitation itself the finite seat reservation and require expiry;
+9. add Learner avatar support, Saved teacher profiles, selected Location preference and FK-safe Community reactions;
+10. aggregate Ads metrics by Placement/date rather than only Campaign+Location.
+
+The corrected current physical blueprint is:
+
+> **`03-database-blueprint-v1.1.md`**
+
+The original v1 file is historical and must not be used for migrations.
 
 ## Raahi Ads summary
 
@@ -96,62 +126,63 @@ Important rules:
 - no commercial Ads inside private Classes, Activities, Tests or private Messages;
 - no named viewer lists or behavioral microtargeting;
 - finite Location × placement × time inventory;
+- physical capacity model must be overlap-safe;
 - inventory holds expire and cannot oversell;
 - simple fixed/configured packages before auctions/CPC/CPM;
 - Campaign Revision approval is exact and immutable;
+- Ad Placement serves an explicit approved Revision, never implicit “latest” creative;
 - Commercial Clearance is separate from approval;
 - multi-Location serving is independent per Location;
 - anti-monopoly/no category exclusivity;
-- aggregate analytics only unless user deliberately Enquires.
+- aggregate analytics only unless user deliberately Enquires;
+- private user-level frequency controls stay private from advertisers.
 
-Read `06-raahi-ads-v1.md` for full detail.
+Read `06-raahi-ads-v1.md`, `08-database-blueprint-review-v1.md`, and `03-database-blueprint-v1.1.md` for detail.
 
 ## Immediate next task
 
-**Review/challenge `03-database-blueprint-v1.md` before connecting to Supabase.**
+**Run the SQL-readiness review of `03-database-blueprint-v1.1.md`. Do not connect to Supabase yet.**
 
-Run this exact mental/process check:
+The next pass should decide the exact PostgreSQL implementation contract without changing frozen product behaviour:
 
-> “Can this physical design violate any frozen business rule? Does any table introduce a product concept we intentionally removed? Can every important invariant be enforced transactionally and through authorization?”
+1. exact status representation — PostgreSQL enums vs CHECK-constrained text/domain types;
+2. PK/FK data types and `ON DELETE`/`ON UPDATE` behaviour;
+3. partial unique indexes for active/self/manage/Membership/Invitation rules;
+4. capacity transaction strategy for Class Invitations;
+5. Test-definition lock enforcement strategy;
+6. Ads daily inventory reservation locking strategy across multiple rows;
+7. exact RLS read policies and which writes are RPC-only;
+8. SECURITY DEFINER function boundaries and least privilege;
+9. storage bucket/path + signed URL/RLS policy design;
+10. idempotency table/function contract;
+11. audit record strategy for Account vs System actors;
+12. migration slices and rollback/forward-fix strategy;
+13. which constraints can be pure SQL and which require canonical command checks.
 
-Review focus:
+After that review, produce the **SQL Migration Plan v1**. Only then should the user be asked to approve touching Supabase.
 
-1. Account ↔ Learner access model.
-2. Organization/teacher ownership of Teaching Options.
-3. sanitized Learning Request/public projection.
-4. Enquiry provider targeting and duplicate-active rules.
-5. Class Invitation seat reservation + atomic acceptance.
-6. Membership transfer/end reasons.
-7. parent-assisted Submission ownership.
-8. Test Attempt uniqueness/idempotency.
-9. Location-scoped Local Manager permissions.
-10. Ads immutable revisions, review scope and Claim Evidence.
-11. Ads inventory window/reservation concurrency.
-12. RLS and file authorization boundaries.
-13. idempotency key design and audit scope.
+## Recommended implementation sequence after SQL approval
 
-If the physical blueprint passes, the next phase is:
-
-### Implementation sequence
-
-1. Freeze reviewed SQL/schema design.
-2. Create migrations — **not ad-hoc dashboard table edits**.
-3. Implement Identity + Learner access first.
-4. Add Locations + Organizations/Teaching Options.
-5. Add Learning Requests + Enquiries.
-6. Add Classes + Invitations + Memberships.
-7. Add Activities/Submissions.
-8. Add Tests/Attempts.
-9. Add Community/Trust/Safety.
-10. Add Ads review/commercial model.
-11. Add Ads inventory/placement/analytics.
-12. Add notifications/audit/projections.
+1. Identity: Accounts, Learners, Account↔Learner Access, Account Capabilities.
+2. Locations + scoped restrictions.
+3. Organizations, teacher profiles, Teaching Options, Saved items.
+4. Learning Requests + Enquiries.
+5. Classes + Invitations + Memberships + Sessions + Materials/files.
+6. Class feed + Class Learner Threads/Messages.
+7. Activities/Submissions.
+8. Tests/Attempts.
+9. Community/Trust/Safety/Verification.
+10. Ads Campaign/Target/Review/Commercial model.
+11. Ads daily Inventory/Reservation/Placement/Frequency/Analytics.
+12. Notifications, idempotency, audit and projections.
 
 Each slice must include canonical commands, permission/RLS tests and Given/When/Then regression tests before the next slice depends on it.
 
 ## Supabase rule
 
-Do **not** start creating Supabase tables just because the blueprint exists. First explicitly approve/revise the blueprint. Then use versioned SQL migrations and canonical RPC/functions for consequential writes.
+Do **not** start creating Supabase tables yet. The current stage is SQL-readiness review and migration-plan design.
+
+When approved, use versioned SQL migrations rather than ad-hoc dashboard table edits, and canonical RPC/functions for consequential writes.
 
 ## UI source-of-truth note
 
@@ -161,4 +192,4 @@ Many exploratory images were generated during product design. They may contain i
 
 ## Recommended prompt for a new chat
 
-> “Continue Raahi Learning V1. Read the canonical GitHub documentation from `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`, folder `docs/raahi-learning/`, starting with `99-handover.md` and `README.md`. Do not code or touch Supabase yet. First review `03-database-blueprint-v1.md` against the frozen Product, Domain Model, Architecture, Command/Permission Matrix and Acceptance tests. Identify contradictions or unnecessary complexity before proposing the final SQL/migration plan.”
+> “Continue Raahi Learning V1. Read `99-handover.md`, `README.md`, `08-database-blueprint-review-v1.md`, and `03-database-blueprint-v1.1.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`, then cross-check `01`, `02`, `04`, `05`, and `06`. Product/UI is frozen and Supabase has not been touched. Continue with the SQL-readiness review: exact PostgreSQL constraints/indexes/RLS/RPC transaction boundaries and migration slicing. Do not connect to Supabase until the SQL Migration Plan is reviewed and approved.”
