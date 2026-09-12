@@ -8,6 +8,20 @@ returns uuid language sql stable security definer set search_path='' as $$
   );
 $$;
 
+-- Read access to formal relationship history follows the current formal learner-side
+-- authority but permits a paused Account to retain legitimate existing history.
+-- It intentionally does not give the Learner self Account access while an active
+-- manager owns the formal relationship boundary.
+create or replace function app_private.can_read_learner_relationship(p_learner_id uuid)
+returns boolean language sql stable security definer set search_path='' as $$
+  select app_private.has_account_capability('platform_admin') or exists(
+    select 1 from public.accounts a
+    where a.id=app_private.current_account_id()
+      and a.lifecycle_status<>'closed'
+      and a.id=app_private.learner_decision_account_id(p_learner_id)
+  );
+$$;
+
 create or replace function app_private.public_request_text_safe(p_text text)
 returns boolean language sql immutable set search_path='' as $$
   select p_text is null or (
@@ -141,7 +155,7 @@ end; $$;
 alter table public.learning_requests enable row level security;
 alter table public.learning_requests force row level security;
 create policy learning_requests_select_authority on public.learning_requests for select to authenticated
-using(app_private.can_make_learning_decision(learner_id) or app_private.has_account_capability('platform_admin'));
+using(app_private.can_read_learner_relationship(learner_id) or app_private.has_account_capability('platform_admin'));
 revoke all on table public.learning_requests from public,anon,authenticated,service_role;
 grant select on table public.learning_requests to authenticated;
 grant select,insert,update,delete on table public.learning_requests to service_role;
@@ -164,12 +178,12 @@ returns jsonb language sql stable security definer set search_path='' as $$
   where r.id=p_request_id and app_private.learning_request_publicly_visible(r.id);
 $$;
 
-revoke all on function app_private.learner_decision_account_id(uuid),app_private.public_request_text_safe(text),app_private.learning_request_publicly_visible(uuid),
+revoke all on function app_private.learner_decision_account_id(uuid),app_private.can_read_learner_relationship(uuid),app_private.public_request_text_safe(text),app_private.learning_request_publicly_visible(uuid),
   app_private.cmd_post_learning_request(uuid,uuid,text,text,text,text,text,text),app_private.cmd_update_learning_request(uuid,text,text,text,text,text,text),
   app_private.cmd_close_learning_request(uuid,text,text),app_private.cmd_reopen_learning_request(uuid,text),
   app_private.discover_learning_requests(uuid,text),app_private.get_learning_request_public(uuid)
 from public,anon,authenticated,service_role;
-grant execute on function app_private.learner_decision_account_id(uuid) to authenticated;
+grant execute on function app_private.learner_decision_account_id(uuid),app_private.can_read_learner_relationship(uuid) to authenticated;
 grant execute on function app_private.cmd_post_learning_request(uuid,uuid,text,text,text,text,text,text),app_private.cmd_update_learning_request(uuid,text,text,text,text,text,text),
   app_private.cmd_close_learning_request(uuid,text,text),app_private.cmd_reopen_learning_request(uuid,text),app_private.discover_learning_requests(uuid,text),app_private.get_learning_request_public(uuid) to authenticated;
 
