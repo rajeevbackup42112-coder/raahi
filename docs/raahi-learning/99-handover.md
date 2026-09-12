@@ -1,4 +1,4 @@
-# Raahi Learning V1 — Handover / Current State
+# Raahi Learning V1.1 — Handover / Current State
 
 **Read this file first in a new conversation.**
 
@@ -6,184 +6,238 @@ Repository: `rajeevbackup42112-coder/raahi`
 Documentation branch: `raahi-learning-v1-docs`  
 Canonical folder: `docs/raahi-learning/`
 
-> This branch is intentionally isolated from the existing `main` codebase. Do not assume the existing Raahi ride implementation is Raahi Learning architecture.
+> This branch is intentionally isolated from the existing Raahi ride implementation on `main`. Do not infer Raahi Learning behavior from old ride code.
 
 ## Current project phase
 
-Completed:
+### Completed
 
-- problem/actor/ownership/business-rule passes;
-- extensive edge-case and malicious-action audits;
+- Problem / Actors / Ownership / Business Rules;
+- extensive edge-case, malicious-action and concurrency thinking;
 - terminology cleanup;
-- learner simplification pass;
-- Ads product + scale/inventory pass;
-- user-flow visual exploration;
-- **Product + UI Behaviour Freeze V1**;
-- conceptual Domain Model V1;
-- architecture boundaries and canonical command principles;
-- first physical database blueprint draft and formal review;
-- corrected **Physical Database Blueprint v1.1**;
-- command/permission + acceptance updates;
-- SQL-readiness review;
-- first SQL Migration Plan and dependency review;
-- corrected **SQL Migration Plan v1.1**;
-- mandatory **UI Prototype ↔ DB Design Reconciliation**;
-- binding reconciliation migration/RPC/RLS delta;
-- post-reconciliation **APPROVED FOR CONTROLLED IMPLEMENTATION** decision.
+- learner/guardian simplification;
+- Raahi Ads product/inventory/privacy design;
+- generated visual exploration;
+- Product + UI behavior freeze;
+- Domain Model and Architecture boundaries;
+- physical DB blueprint and formal review;
+- SQL migration plan and sequencing review;
+- first written UI↔DB reconciliation + technical delta;
+- **real backend-free clickable UI prototype**;
+- complete page/state inventory;
+- desktop/mobile route audit;
+- privileged deep-link/workspace audit;
+- core journey/business-rule interaction audit;
+- semantic/accessibility sanity audit;
+- visual inspection of representative learner/teacher/manager/platform/mobile states;
+- **final inspected UI behavior freeze V1.1**;
+- **final page-level UI↔DB reconciliation**;
+- **final UI-proven DB/RPC/RLS delta**;
+- **APPROVED FOR CONTROLLED IMPLEMENTATION** decision.
 
-Not started:
+### Not started
 
-- Supabase project/schema changes for Raahi Learning;
-- SQL migration execution;
-- RLS implementation in Supabase;
-- application implementation from this new model;
+- any Raahi Learning Supabase migration;
+- production tables/RLS/RPCs;
+- backend integration of the clickable prototype;
 - production deployment.
+
+**Supabase is still untouched.**
+
+## Canonical clickable UI artifact
+
+Artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`
+
+Persistent Library path:
+
+`/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`
+
+SHA-256:
+
+`2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
+
+The zip contains the exact inspected backend-free UI build, deterministic fixture data, audit scripts/results and screenshots.
+
+Inspection result:
+
+- **77 canonical routes/pages**;
+- **154** desktop/mobile route checks, **0 issues**;
+- **32** privileged deep-link checks, **0 unguarded**;
+- **26** interaction/business-rule checks, **0 failures**;
+- **15** semantic/accessibility sanity samples, **0 issues**.
 
 ## Product essence
 
 Raahi Learning is a **local learning community launched one Location at a time**.
 
-Core learner journey:
+Core journey:
 
 **Find → Enquire → optional Trial → Class Invitation → Join Class → Learn**
 
-No separate Enrollment object.
+One Account may learn, teach, manage a Learner and represent an Organization.
 
-One Account may learn, teach, manage a Learner, and represent an Organization.
+Learner identity/history is separate from the Account acting on the Learner’s behalf.
 
-Learner identity is separate from Account, allowing a parent to act for a child while learning history remains owned by the child.
+No separate Enrollment object exists.
 
-## Highest-value simplifications already agreed
-
-Do NOT casually reintroduce:
+## Highest-value simplifications — do not casually restore
 
 - Enrollment;
 - Batch entity;
-- Adult/Minor learner entity split;
+- Adult/Minor Learner split;
 - turning-18 lifecycle;
 - complex guardian hierarchy;
-- Trial as mandatory/major lifecycle;
-- separate Assignment and Practice systems;
-- attendance;
-- fake overall progress %;
+- Trial as mandatory/major relationship lifecycle;
+- separate Assignment and Practice engines;
+- Attendance;
+- fake overall Progress %;
 - public ratings/reviews;
-- public learner directory;
+- public Learner directory;
 - global Community;
-- multi-teacher Class;
-- platform tuition payments in V1.
+- multi-teacher Class in V1;
+- unrestricted direct messaging;
+- advertiser viewer CRM;
+- platform tuition-payment collection.
 
-## Core architecture decisions
+## Final inspected-UI findings now binding
 
-- modular monolith;
-- PostgreSQL-style relational source of truth;
-- reads may use secure projections;
-- writes go through canonical business commands;
-- UI never directly mutates core operational tables;
-- actor + acting-for + object + relationship/capability/scope authorization;
-- explicit scoped restrictions instead of giant Teacher/Account status;
-- idempotent consequential commands;
-- stale UI never overrides server truth;
-- atomic protection of Class capacity and Ads inventory;
-- Pending V1 Class Invitations reserve finite seats until expiry/resolution;
-- Test definition locks once valid Attempts begin;
-- realtime invalidates/refetches only;
-- notifications happen after core state commits;
-- organic discovery and Sponsored serving remain separate;
-- live Ads serving is pinned to an exact approved Campaign Revision;
-- significant admin/safety/commercial actions are auditable.
+Real pages proved several requirements that earlier image prototypes had not made precise enough:
 
-## Current canonical technical contract
+1. Location lifecycle begins with `interest_only` before `preparing`;
+2. existing offline learner invitation needs a **private, expiring, one-time Learner share code**, not a public learner search or fake Enquiry;
+3. `class_invitations` needs an optional `fee_display_text` snapshot for the exact terms displayed at Join;
+4. `test_attempts` needs optional private `teacher_feedback` for released Test Results;
+5. Settings needs canonical guarded Account pause/resume/closure commands and responsibility blockers;
+6. privileged reads/deep links must always re-check real capability/relationship/Organization/Location scope; UI workspace selection is never authority.
+
+Earlier binding UI↔DB corrections still apply:
+
+- selected Location lives in `account_location_preferences`;
+- persisted `location_interests`;
+- `can_make_learning_decision` for formal learner-side marketplace/relationship decisions;
+- Organization public logo/avatar;
+- deterministic historical Class access by Membership end state;
+- no independent Class learner-thread lifecycle;
+- Session Past derived from time; no Attendance subsystem;
+- reusable `activity_material_links`;
+- optional moderation-private `reports.context_learner_id`;
+- atomic `complete_class` command;
+- surface-based Sponsored serving;
+- direct/offline-origin learners do not need fabricated Enquiry/Trial/Enrollment history.
+
+## Canonical implementation contract
 
 Read these together:
 
-- `03-database-blueprint-v1.1.md`
-- `10-sql-migration-plan-v1.1.md`
-- `13-ui-db-reconciliation-v1.md`
-- `14-ui-db-implementation-delta-v1.md`
-- `12-implementation-approval-v1.md`
+- `00-product-ui-freeze-v1.md`;
+- `01-domain-model-v1.md`;
+- `02-architecture-blueprint-v1.md`;
+- `03-database-blueprint-v1.1.md`;
+- `04-command-permission-matrix-v1.md`;
+- `05-acceptance-regression-v1.md`;
+- `06-raahi-ads-v1.md`;
+- `08-database-blueprint-review-v1.md`;
+- `09-sql-readiness-review-v1.md`;
+- `10-sql-migration-plan-v1.1.md`;
+- `11-sql-migration-plan-review-v1.md`;
+- `13-ui-db-reconciliation-v1.md`;
+- `14-ui-db-implementation-delta-v1.md`;
+- `15-ui-page-build-review-gate-v1.md`;
+- `16-ui-page-freeze-and-final-reconciliation-v1.1.md`;
+- `17-final-ui-db-implementation-delta-v1.1.md`;
+- `12-implementation-approval-v1.md`.
 
-If the reconciliation delta conflicts with earlier physical/migration wording, `14-ui-db-implementation-delta-v1.md` wins until a consolidated later revision is produced.
+### Precedence for implementation
 
-## UI↔DB reconciliation result
+Use:
 
-The screen/flow audit passed, but it found real corrections that are now binding:
+`10-sql-migration-plan-v1.1.md` + `14-ui-db-implementation-delta-v1.md` + `17-final-ui-db-implementation-delta-v1.1.md`
 
-1. selected Location is stored in `account_location_preferences`, not an early Account FK;
-2. unavailable/preparing Locations persist authenticated `location_interests` for **Register Interest**;
-3. when a Learner has an active Manager, that manager owns formal marketplace/relationship decisions in V1; otherwise self-access may decide for self;
-4. Manager authority does not permit Test impersonation;
-5. Organization profile supports a public logo/avatar;
-6. Class historical access is deterministic by Membership end state rather than another configurable subsystem;
-7. Class Learner Threads do not have an independent lifecycle;
-8. Session Past is derived from time; Attendance/completed Session machinery remains absent;
-9. Activities can link reusable Materials via `activity_material_links`;
-10. Reports may carry private `context_learner_id`;
-11. Class completion uses one canonical `complete_class` transaction;
-12. educational Sponsored serving is surface-based, not Adult/Minor/turning-18 based;
-13. existing offline learners do not require fake Enquiry/Trial/Enrollment history.
+where the later intentional delta wins on conflict: **17 → 14 → 10**.
 
-Read `13-ui-db-reconciliation-v1.md` for the full flow-by-flow mapping.
+The inspected UI behavior in `16` must also be preserved.
+
+## Core architecture rules
+
+- modular monolith;
+- PostgreSQL/Supabase-compatible relational source of truth;
+- secure read projections are allowed;
+- consequential writes use canonical business commands/RPCs;
+- UI never directly mutates core operational state;
+- actor + acting-for + object + relationship/capability/scope authorization;
+- navigation/workspace labels are never authorization;
+- scoped restrictions instead of one giant account/provider status;
+- current server state beats stale UI;
+- consequential commands are idempotent;
+- Class capacity and Ads inventory are transactionally protected;
+- valid Pending Class Invitations reserve seats until expiry/resolution;
+- Test definition locks after valid Attempts begin;
+- realtime invalidates/refetches only;
+- notifications occur after core state commits;
+- private file paths/URLs do not bypass current authorization;
+- organic discovery and Sponsored serving remain separate;
+- Sponsored serves an exact approved Campaign Revision;
+- significant admin/safety/commercial actions are auditable.
 
 ## Raahi Ads summary
 
-Ads is a first-class commercial module but not a generic ad network.
-
-Important rules:
-
-- clearly labeled Sponsored;
-- relevant educational promotion only in V1;
+- educational/relevant Sponsored content only in V1;
+- clear Sponsored labeling;
 - no paid verification/endorsement/organic ranking;
-- no commercial Ads inside My Classes, Class, Activity, Test or private Message surfaces;
-- no named viewer lists or behavioral microtargeting;
-- finite overlap-safe daily Location × placement inventory;
-- inventory holds expire and cannot oversell;
-- fixed/configured packages before auctions/CPC/CPM;
-- Campaign Revision approval is exact and immutable;
-- Ad Placement serves an explicit approved Revision;
-- Commercial Clearance is separate from approval;
-- multi-Location serving is independent per Location;
-- anti-monopoly/no category exclusivity;
-- aggregate analytics only unless user deliberately Enquires;
-- private user-level frequency controls stay private from advertisers.
+- excluded from My Classes, Class, Activity, Test and private Message surfaces;
+- no named viewer list or behavioral microtargeting;
+- daily overlap-safe Location × placement inventory;
+- no inventory oversell;
+- finite holds with expiry;
+- fixed/configured packages before auction/CPC complexity;
+- exact immutable submitted Campaign Revisions;
+- exact approved `serving_revision_id`;
+- Review, Commercial Clearance and inventory are independent gates;
+- multi-Location serving is independent by Location;
+- aggregate advertiser analytics only;
+- per-user hide/frequency state private from advertiser.
 
-## Immediate next operational action
+## Next operational action
 
-The documentation gate is closed and implementation is approved **only in slices**.
+The pre-Supabase design/UI/document gate is complete.
 
-If the user authorizes Supabase execution, first inspect the target Supabase project/environment and implement only:
+**Do not build the entire database.**
 
-### Foundation + Identity
+When the user explicitly authorizes Supabase execution:
 
-- PostgreSQL extensions/common helpers;
+1. inspect the target Supabase project/environment first;
+2. implement only **Foundation + Identity** through versioned SQL migrations;
+3. run its RLS/RPC/idempotency/authorization/privilege tests;
+4. stop on any contradiction or failed invariant;
+5. do not create Locations until Foundation + Identity passes.
+
+### Foundation + Identity scope
+
+- extensions/common helpers;
 - Accounts;
 - Learners;
 - Account↔Learner Access;
 - Account Capabilities;
-- Audit + Idempotency infrastructure;
-- Identity authorization helpers, including `can_make_learning_decision`;
+- Audit Log;
+- Idempotency Keys;
+- Identity authorization helpers including `can_make_learning_decision`;
 - Identity canonical RPCs;
-- RLS and privilege hardening;
-- tests for learner ownership, manager-vs-self decision authority, one active self/manager, idempotency and privilege escalation.
-
-Do **not** create Locations until Foundation + Identity passes all tests.
+- Account pause/resume/guarded closure behavior (in first slice or immediate Identity follow-up before Locations);
+- RLS/privilege hardening;
+- tests for learner ownership, one active self/manager, decision authority, manager-vs-self separation, account lifecycle blockers, retries/idempotency and privilege escalation.
 
 ## Supabase rule
 
-No Raahi Learning migration has been executed yet.
+No Raahi Learning migration has been executed.
 
 When execution begins:
 
-- use versioned SQL migrations committed to source control;
-- no ad-hoc dashboard table edits;
-- stop on invariant/permission test failure;
-- use forward-fix migrations after anything is applied to a shared environment.
-
-## UI source-of-truth note
-
-Exploratory prototype images may contain drift such as stars/ratings, Enrollment wording, Book Class semantics, overbuilt Ads billing or old Adult/Minor assumptions.
-
-**Written rules and the completed UI↔DB reconciliation override image drift.**
+- use versioned migrations committed to source control;
+- do not make ad-hoc dashboard schema edits;
+- test every slice before proceeding;
+- use forward-fix migrations after anything reaches a shared environment;
+- never delete required shared/safety/audit history just to simplify rollback.
 
 ## Recommended prompt for a new chat
 
-> “Continue Raahi Learning V1. Read `RAAHI_LEARNING_HANDOVER.md` and `docs/raahi-learning/99-handover.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`. Then read `README.md`, `13-ui-db-reconciliation-v1.md`, `14-ui-db-implementation-delta-v1.md`, `12-implementation-approval-v1.md`, `10-sql-migration-plan-v1.1.md`, and the frozen Product/Domain/Architecture/Command/Acceptance/Ads docs. The UI↔DB reconciliation is complete and the plan is approved for controlled implementation. Supabase has not been touched. Do not build everything at once; if explicitly authorized, inspect Supabase and implement only Foundation + Identity first, then run its tests before proceeding.”
+> “Continue Raahi Learning V1.1. Read `RAAHI_LEARNING_HANDOVER.md` and `docs/raahi-learning/99-handover.md` from `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`. Then read `README.md`, `16-ui-page-freeze-and-final-reconciliation-v1.1.md`, `17-final-ui-db-implementation-delta-v1.1.md`, `12-implementation-approval-v1.md`, `14-ui-db-implementation-delta-v1.md`, `10-sql-migration-plan-v1.1.md`, and the frozen Product/Domain/Architecture/Command/Acceptance/Ads docs. The real clickable UI has been inspected and the final UI↔DB gate passed. Supabase is untouched. If explicitly authorized, inspect Supabase and implement only Foundation + Identity first, then test it before proceeding.”
