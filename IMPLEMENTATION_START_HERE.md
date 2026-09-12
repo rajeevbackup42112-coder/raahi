@@ -8,18 +8,38 @@ The authoritative documentation branch is:
 
 `raahi-learning-v1-docs`
 
-The implementation branch inherited a documentation snapshot when it was created, but future documentation corrections may land on the docs branch first. Before starting or resuming implementation, read the latest canonical files from `raahi-learning-v1-docs` rather than assuming the inherited copies here are newest.
+The implementation branch inherited a documentation snapshot when it was created, but later documentation corrections may land on the docs branch first. Before starting or resuming implementation, read the latest canonical files from `raahi-learning-v1-docs`.
 
-Primary current documents:
+Primary implementation/QA documents:
 
 - `docs/raahi-learning/99-handover.md`
 - `docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`
 - `docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`
-- `docs/raahi-learning/21-pre-supabase-readiness-review-v1.2.md`
 - `docs/raahi-learning/22-implementation-runbook-v1.2.md`
 - `docs/raahi-learning/23-final-acceptance-traceability-v1.2.md`
 - `docs/raahi-learning/24-supabase-execution-checklist-v1.2.md`
-- `docs/raahi-learning/26-final-pre-supabase-consistency-audit-v1.2.md`
+- `docs/raahi-learning/29-master-test-case-catalog-v1.2.md`
+- `docs/raahi-learning/31-staging-load-security-chaos-plan-v1.2.md`
+- `docs/raahi-learning/32-canonical-test-personas-fixtures-v1.2.md`
+- `docs/raahi-learning/33-pre-supabase-qa-readiness-verdict-v1.2.md`
+
+## Pre-Supabase QA already available
+
+Backend-free model harness:
+
+`tests/model/pre_supabase_model_tests.py`
+
+Expanded documented run:
+
+> **5,349,992 cases/operations, 0 invariant failures.**
+
+Run locally:
+
+```bash
+python tests/model/pre_supabase_model_tests.py
+```
+
+This validates logical model properties only. It does **not** waive real RLS/GRANT/locking/security/load tests.
 
 ## Do not mutate Supabase just because this branch exists
 
@@ -45,8 +65,8 @@ Foundation + Identity only:
 - `0103_identity_rls_helpers.sql`
 - `0104_identity_rpcs.sql`
 
-Run all mandatory migration/RLS/RPC/idempotency/authorization/privilege tests before starting Locations.
+A migration applying successfully is **not** a slice PASS. Before Locations, Foundation + Identity must pass all relevant master-catalog tests: constraints, RLS, RPC permissions, acting-for rules, idempotency, Account lifecycle blockers, unauthorized direct reads/writes and privilege-escalation attempts.
 
 ## Current external state
 
-**No Raahi Learning Supabase migration has been executed.**
+> **No Raahi Learning Supabase migration has been executed.**
