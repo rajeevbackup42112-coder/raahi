@@ -22,25 +22,27 @@ No ad-hoc dashboard schema changes. Every shared/dev DDL change must exist here 
 0202_locations_staff_rls_rpcs.sql
 0203_location_interests.sql
 0204_locations_rls_policy_consolidation.sql
-```
 
-Foundation + Identity: **PASS**  
-Locations: **PASS**
-
-## Current stop / next eligible slice
-
-```text
 0250_learner_share_codes.sql
 ```
 
-Do not create/apply `0300+` until the share-code slice passes its own runtime/security gate.
+Foundation + Identity: **PASS**  
+Locations: **PASS**  
+Learner Share Codes: **PASS**
 
-## Planned later sequence
+## Current stop / next eligible slice
 
 ```text
 0300_organizations_discovery_tables.sql
 0301_organizations_discovery_constraints.sql
 0302_organizations_discovery_rls_rpcs.sql
+```
+
+Do not create/apply `0350+` until Organizations / teacher discovery passes its own runtime/security gate.
+
+## Planned later sequence
+
+```text
 0350_access_restrictions.sql
 0351_access_restriction_rpcs_rls.sql
 
@@ -79,6 +81,18 @@ Do not create/apply `0300+` until the share-code slice passes its own runtime/se
 1002_final_privilege_hardening.sql
 1003_account_closure_blockers_complete.sql
 ```
+
+## Share-code implementation notes
+
+- 192 bits of database-generated randomness, encoded as a private `rl_...` bearer token;
+- SHA-256 hash only is persisted; plaintext is returned on the first successful create response only;
+- idempotent replay returns the same logical share-code ID but **never replays the plaintext secret**;
+- if the first secret response is lost, the client must deliberately create a replacement with a new idempotency key; creating the replacement revokes the prior active code;
+- V1 allows one active share code per Learner;
+- current V1 TTL is 24 hours through a private policy helper, not a schema invariant;
+- no public resolver/search/browse endpoint exists;
+- the private exact-token resolver is reserved for the later atomic Class invite-by-code transaction;
+- invite consume/revoke race, timeout-after-invite retry, and endpoint rate limiting are deferred to `0502`/staging because the public invite-by-code command does not exist yet.
 
 ## Rules
 
