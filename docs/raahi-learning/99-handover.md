@@ -26,7 +26,9 @@ Completed:
 - corrected **Physical Database Blueprint v1.1**;
 - command/permission and acceptance-test updates reflecting the review;
 - SQL-readiness checklist;
-- **SQL Migration Plan V1 draft** covering PostgreSQL constraints, RLS/RPC strategy, transaction locking, storage and migration slicing.
+- first SQL Migration Plan draft;
+- formal review of migration sequencing/dependencies;
+- corrected **SQL Migration Plan v1.1**.
 
 Not started:
 
@@ -93,44 +95,29 @@ The reason these were removed is documented in `07-decision-log-v1.md`.
 
 ## Physical database review result
 
-The original `03-database-blueprint-v1.md` **did not pass** the implementation gate as written. `08-database-blueprint-review-v1.md` documents the findings.
+The historical `03-database-blueprint-v1.md` did not pass the gate as written. `08-database-blueprint-review-v1.md` documents the corrections.
 
-Important corrections included:
-
-1. private Class posts/announcements/questions and Class+Learner contextual messaging;
-2. explicit Account capabilities and scoped access restrictions;
-3. Campaign target Locations/placements before serving;
-4. overlap-safe daily Ads inventory capacity buckets;
-5. exact approved serving Revision on every Ad Placement;
-6. private per-user Ads frequency state without named advertiser viewer data;
-7. Test definition lock after valid Attempts begin;
-8. Pending Class Invitation as the finite seat reservation with required expiry;
-9. Learner avatar support, Saved teacher profiles, selected Location preference and FK-safe Community reactions;
-10. Placement/day Ads metrics rather than only Campaign+Location metrics.
-
-The corrected physical blueprint is:
+The current physical blueprint is:
 
 > **`03-database-blueprint-v1.1.md`**
 
-The original v1 file is historical and must not be used for migrations.
+Key corrections include private Class communication, scoped restrictions/capabilities, exact Ads target/revision handling, overlap-safe daily Ads inventory, private Ads frequency state, Test definition lock, finite seat-reserving Class Invitations, Learner avatar/Saved teacher support, and Placement-level Ads metrics.
 
-## SQL implementation decisions now drafted
+## SQL Migration Plan review result
 
-`10-sql-migration-plan-v1.md` currently proposes:
+The first `10-sql-migration-plan-v1.md` was also reviewed before Supabase. `11-sql-migration-plan-review-v1.md` found sequencing dependencies and corrected them.
 
-- UUID PKs + `timestamptz`;
-- constrained `text` + CHECK for lifecycle values rather than PostgreSQL enums;
-- conservative FK deletion (`RESTRICT/NO ACTION` for business/history; Auth user can `SET NULL` on Account link);
-- partial unique indexes for active Learner access, capabilities, Invitations and Memberships;
-- Class row locking as the V1 capacity serialization point;
-- daily Ads capacity rows locked deterministically across multi-day reservations;
-- RPC-only consequential writes with relationship-based RLS reads;
-- explicit Test-definition lock and guarded answer-key correction;
-- explicit approved `serving_revision_id` for Ads;
-- private storage buckets separated by business sensitivity;
-- transaction-coupled idempotency keys;
-- Account-or-System audit actors;
-- small numbered migration slices rather than one giant migration.
+The current SQL implementation plan is:
+
+> **`10-sql-migration-plan-v1.1.md`**
+
+Important corrected sequencing decisions:
+
+1. selected Location is implemented after Locations as `account_location_preferences`, avoiding Identity→Location FK dependency;
+2. general scoped Restrictions are created after Organizations exist;
+3. Enquiries are created without Ads FK, then Sponsored Campaign attribution is added during Ads migration;
+4. Audit + Idempotency are created before early consequential RPCs;
+5. post-lock Test structure is immutable while answer-key correction has one explicit audited privileged path.
 
 ## Raahi Ads summary
 
@@ -146,11 +133,11 @@ Important rules:
 - no commercial Ads inside private Classes, Activities, Tests or private Messages;
 - no named viewer lists or behavioral microtargeting;
 - finite Location × placement × time inventory;
-- physical capacity model must be overlap-safe;
+- overlap-safe daily physical capacity;
 - inventory holds expire and cannot oversell;
 - simple fixed/configured packages before auctions/CPC/CPM;
 - Campaign Revision approval is exact and immutable;
-- Ad Placement serves an explicit approved Revision, never implicit “latest” creative;
+- Ad Placement serves an explicit approved Revision, never implicit latest creative;
 - Commercial Clearance is separate from approval;
 - multi-Location serving is independent per Location;
 - anti-monopoly/no category exclusivity;
@@ -159,45 +146,42 @@ Important rules:
 
 ## Immediate next task
 
-**Review `10-sql-migration-plan-v1.md` once against the frozen documents. Do not connect to Supabase yet.**
+**Run one final cross-document approval pass of `10-sql-migration-plan-v1.1.md`. Do not connect to Supabase yet.**
 
-The review should answer:
+Check specifically:
 
-1. Does the migration plan preserve every frozen product invariant?
-2. Did the SQL mechanics introduce any unnecessary product concept?
-3. Are FK delete semantics safe for history/safety?
-4. Are Class invitation reservation/acceptance/transfer transactions race-safe?
-5. Is Test locking strong enough even against accidental privileged writes?
-6. Can Ads daily inventory reservation deadlock/oversell under concurrency?
-7. Can RLS helpers/SECURITY DEFINER RPCs escalate Learner/Organization/Location scope?
-8. Are private storage objects protected even when URLs/paths are copied?
-9. Is idempotency committed atomically with domain outcomes?
-10. Is the migration slicing small enough to test before the next slice depends on it?
+1. every frozen Product/UI rule is preserved;
+2. no removed concept has returned;
+3. FK/delete semantics preserve shared/history/safety records;
+4. Class invitation reservation/acceptance/transfer is race-safe;
+5. Test lock/correction is safe against ordinary and accidental privileged mutation;
+6. Ads daily multi-row locking cannot oversell and uses deterministic lock order;
+7. RLS/SECURITY DEFINER boundaries cannot escalate Learner/Organization/Location scope;
+8. copied private storage URLs remain unauthorized without current business access;
+9. idempotency result commits atomically with domain outcome;
+10. migration slices are independently testable.
 
-If the plan passes, mark it **APPROVED FOR IMPLEMENTATION** and only then connect to Supabase.
+If the plan passes, change its status to:
 
-## Recommended implementation sequence after approval
+> **APPROVED FOR IMPLEMENTATION**
 
-1. Foundation + Identity only.
-2. Locations + scoped restrictions.
-3. Organizations, teacher profiles, Teaching Options, Saved items.
-4. Learning Requests + Enquiries.
-5. Classes + Invitations + Memberships + Sessions + Materials/files.
-6. Class feed + Class Learner Threads/Messages.
-7. Activities/Submissions.
-8. Tests/Attempts.
-9. Community/Trust/Safety/Verification.
-10. Ads Campaign/Target/Review/Commercial model.
-11. Ads daily Inventory/Reservation/Placement/Frequency/Analytics.
-12. Notifications, idempotency, audit and projections.
+Only after that should Supabase be connected.
 
-Each slice must include canonical commands, permission/RLS tests and Given/When/Then regression tests before the next slice depends on it.
+## First implementation slice after approval
+
+Implement only:
+
+> **Foundation + Identity**
+
+That means extensions/common helpers → Account/Learner/Account↔Learner/Account Capability tables → Audit/Idempotency infrastructure → RLS helpers → Identity RPCs/tests.
+
+Do not create Locations or later modules until Foundation + Identity migrations and authorization tests pass.
 
 ## Supabase rule
 
 Do **not** start creating Supabase tables yet.
 
-When `10-sql-migration-plan-v1.md` is explicitly approved, use versioned SQL migrations rather than ad-hoc dashboard edits and canonical RPC/functions for consequential writes.
+Once `10-sql-migration-plan-v1.1.md` is explicitly approved, use versioned SQL migrations rather than ad-hoc dashboard edits and canonical RPC/functions for consequential writes.
 
 ## UI source-of-truth note
 
@@ -207,4 +191,4 @@ Many exploratory images were generated during product design. They may contain i
 
 ## Recommended prompt for a new chat
 
-> “Continue Raahi Learning V1. Read `99-handover.md`, `README.md`, `08-database-blueprint-review-v1.md`, `03-database-blueprint-v1.1.md`, `09-sql-readiness-review-v1.md`, and `10-sql-migration-plan-v1.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`, then cross-check `00`, `01`, `02`, `04`, `05`, and `06`. Product/UI is frozen and Supabase has not been touched. Review the SQL Migration Plan against the frozen invariants. Do not connect to Supabase unless the plan is explicitly approved for implementation.”
+> “Continue Raahi Learning V1. Read `99-handover.md`, `README.md`, `08-database-blueprint-review-v1.md`, `03-database-blueprint-v1.1.md`, `11-sql-migration-plan-review-v1.md`, and `10-sql-migration-plan-v1.1.md` from repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-v1-docs`, then cross-check `00`, `01`, `02`, `04`, `05`, and `06`. Product/UI is frozen and Supabase has not been touched. Perform the final approval review of the corrected SQL Migration Plan. Do not connect to Supabase until the plan is explicitly marked APPROVED FOR IMPLEMENTATION.”
