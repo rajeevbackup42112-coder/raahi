@@ -1,1 +1,0 @@
-Legacy Raahi mobility migrations are intentionally excluded from the Raahi Learning migration chain. See `docs/raahi-learning/35-implementation-branch-legacy-migration-isolation.md` on the documentation branch for the decision record.
