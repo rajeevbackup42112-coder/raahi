@@ -30,26 +30,50 @@ Verified Account/Learner separation, self/manage uniqueness, manager decision au
 
 Verified Location lifecycle, selected-Location independence, Interest eligibility/history/uniqueness, Local Manager exact scope, aggregate-only readiness, wrong-Location denial, retired visibility, account-closure responsibility, direct-write denial, idempotency and RLS policy behavior.
 
-Security Advisor after Locations: **0 findings**. Only expected empty-database unused-index INFO notices remain in the Performance Advisor.
+### Learner share codes — PASS
 
-## Current stop gate — Learner share codes
+- `025_learner_share_codes_runtime_smoke.sql`
+- executed markers:
+  - `SHARE_CODE_BASIC_PASS`
+  - `SHARE_CODE_PERMISSION_PASS`
+  - `SHARE_CODE_STATE_PASS`
+  - `SHARE_CODE_TERMINAL_PASS`
 
-The next slice must cover at minimum:
+Verified:
 
-- no plaintext token storage;
-- cryptographically strong token generation;
-- finite expiry;
-- one-time consumption;
-- explicit revocation;
-- no public Learner enumeration/search;
-- only legitimate learner-side authority may create/revoke;
-- consume vs revoke race has one terminal outcome;
-- replay/retry after success cannot double-consume;
-- raw token never enters audit/idempotency metadata/logs.
+- 192-bit database-generated private token format;
+- plaintext returned on first create only;
+- hash-only persistence;
+- same-key retry returns one logical resource and never replays the plaintext secret;
+- raw token absent from Audit and Idempotency result JSON;
+- exact private token resolves only through owner-only helper;
+- no public resolve/search/browse Learner API;
+- active manager formal authority enforced;
+- managed Learner self Account cannot overrule active manager;
+- unrelated Account denied;
+- direct client table reads/writes denied;
+- anonymous command execution denied;
+- private resolver not executable by authenticated clients;
+- one active code per Learner, including a physical partial unique index;
+- replacement revokes predecessor;
+- expired/revoked/consumed tokens do not resolve;
+- terminal timestamp consistency enforced;
+- paused current formal learner-side authority may revoke an existing code, but cannot create a new code;
+- revoke command is retry-safe/domain-idempotent.
 
-The later Class invite-by-code atomic consumption test cannot be completed until Classes exist; the share-code slice must still prove its independent lifecycle/security now.
+The later **Class invite-by-code** transaction is intentionally still unimplemented. Therefore `SHR-004/005/008/009/010` portions that depend on the public invite/consume endpoint remain deferred to `0502` and staging: atomic Invitation + consumption, real consume-vs-revoke concurrency, timeout-after-commit retry, and external endpoint rate limiting.
 
-Do not begin Organizations/Discovery until this slice passes.
+Security Advisor after Share Codes: **0 findings**. Performance Advisor contains only expected `unused_index` INFO findings on the empty dev database.
+
+## Current stop gate — Organizations / teacher discovery
+
+Next slice:
+
+- `0300_organizations_discovery_tables.sql`
+- `0301_organizations_discovery_constraints.sql`
+- `0302_organizations_discovery_rls_rpcs.sql`
+
+Do not begin Restrictions (`0350+`) until Organizations/Discovery passes its schema, ownership, capability, public-projection, Save privacy and RLS/security tests.
 
 ## Later gates retained
 
