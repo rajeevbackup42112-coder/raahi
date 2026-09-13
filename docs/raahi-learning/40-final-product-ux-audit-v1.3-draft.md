@@ -1,288 +1,316 @@
-# Raahi Learning V1.3 — Final Product + UX Audit (Draft Review Gate)
+# Raahi Learning V1.3 — Consolidated Product + UX Review Gate
 
-Status: **AUDIT DRAFT — NO PRODUCT RULE, DATABASE, AUTH CONFIGURATION OR FRONTEND CHANGE IS AUTHORIZED BY THIS DOCUMENT.**
+Status: **REVIEW CONSOLIDATED.** This document narrows the V1.3 delta after comparing the final UX audit against the deliberately frozen V1/V1.2 product decisions. It does **not** authorize a broad redesign of the Raahi Learning domain.
 
-Purpose: close one deliberate product/UX review before the next implementation phase. This audit used the frozen 77-page prototype, the integrated V1.2 frontend, canonical product/backend docs, read-only inspection of the deployed Supabase dev contract, current Supabase Auth documentation, and current flow patterns from Google Classroom, Outschool, ClassDojo, Preply, UrbanPro, TeacherOn, Wyzant and Superprof.
+Review rule: **easy intent, strict authority; preserve yesterday's product simplifications unless a concrete scenario proves they cannot work.**
 
-Review principle: **easy intent, strict authority.** User intent should be easy to express; actual authority continues to come from server-side relationships, capabilities and current state.
+## Executive conclusion
 
-## Principles that remain frozen
+The V1/V1.2 product model remains sound. The final UI/competitor/DB audit found implementation and usability gaps, but it did **not** produce evidence that the core domain should be redesigned.
+
+The only intentional product-level amendment for V1.3 is the authentication direction:
+
+- Google is the primary production sign-in path;
+- Google name/photo are onboarding defaults only and remain editable inside Raahi;
+- phone verification is an Account trust signal, not the main repeated login mechanism;
+- phone trust may become stale after the agreed freshness period (currently 90 days) and is rechecked only for selected trust-sensitive actions;
+- stale phone trust must never remove existing Class, Activity, Test or history access;
+- authorization still comes only from current server-side relationships/capabilities/state.
+
+Everything else in this document is either implementation completion over already-approved rules, presentation/orchestration improvement, or explicitly deferred/rejected.
+
+## Product rules that remain frozen
+
+The following decisions are **not reopened** by the V1.3 audit:
 
 - Account is not Learner; learning history belongs to Learner.
-- One Account may learn, manage a learner, teach and represent an Organization.
-- Navigation/workspace choice never grants authority.
+- One Account may learn, manage a Learner, teach and represent an Organization.
+- V1 keeps **one active managing Parent/Guardian per Learner**. Rich multi-guardian/supporter models remain deferred until real evidence requires them.
+- No Adult Learner / Minor Learner split and no turning-18 migration lifecycle.
 - No public Learner or Account directory.
-- Browsing/Saving never grants contact permission.
-- Enquiry remains the controlled marketplace relationship boundary.
-- Trial stays optional inside Enquiry.
-- Pending Class Invitation reserves finite capacity.
+- Browsing or Saving never creates contact permission.
+- Enquiry remains the controlled relationship-starting boundary.
+- Enquiry lifecycle remains Pending → Active → Closed.
+- Trial remains optional inside Enquiry; it is not a separate mandatory lifecycle.
+- Class Invitation remains separate from Membership and may reserve finite capacity.
 - Membership remains the Class-private access boundary.
-- Parent/guardian management never grants Test-taking impersonation.
-- Test definition/Attempt integrity rules remain strict.
-- Private Class/Activity/Test/message content stays private.
-- Sponsored remains education-only, clearly labeled, aggregate-analytics only, and absent from protected learning/private surfaces.
+- One Class model supports 1:1 and Group.
+- One responsible teacher/instructor per Class in V1.
+- Parent/guardian management never grants learner Test-taking impersonation.
+- Activity/Test integrity rules remain strict.
+- No public star ratings/reviews in V1.
+- Community remains local, authenticated and separate from private Class content.
+- Sponsored remains education-only, clearly labeled, aggregate-analytics only, and absent from private learning/Test/message surfaces.
 - UI never directly mutates core operational tables; canonical RPC/state rules continue to win.
+- Realtime remains invalidation/refetch only; PostgreSQL remains source of truth.
 
-## Key findings
+## Authentication amendment
 
-### 1. Public browse before authentication
+### Production entry
 
-Current phone-first entry creates unnecessary acquisition friction. V1.3 should allow a logged-out visitor to browse only sanitized public marketplace discovery: live Locations, Teacher public profile, Organization public profile and Teaching Option/What-I-Teach details.
+Preferred flow:
 
-This is a small backend extension, not UI-only. `list_public_locations()` already permits `anon`, while `discover_teaching_options`, `get_teaching_option_public`, `get_teacher_profile_public` and `get_organization_public` are currently authenticated-only. If adopted, only these deliberately sanitized SECURITY DEFINER reads should gain anonymous EXECUTE. Underlying tables, Learners, Classes, Saves, Enquiries, Messages and Community remain protected.
+**Open Raahi / follow a Raahi link → Continue with Google → find/bootstrap Raahi Account → confirm/edit name and profile image suggestion → continue the intended action.**
 
-Logged-out Community and anonymous Sponsored serving are **not** part of this change.
+Google is authentication, not authorization. A Google account does not create Teacher, Guardian, Institute or Manager authority.
 
-### 2. Google-primary Account authentication
+### Google profile data
 
-Recommended entry:
+- Google-provided name is an editable onboarding default.
+- Later Google profile changes must not silently overwrite an established Raahi display name.
+- Google photo may be suggested during onboarding, but it must never be auto-published as a Teacher/Learner image.
+- If the user chooses to use it, Raahi should import/copy it into Raahi-controlled media rather than depend permanently on an external Google avatar URL.
 
-**Browse → meaningful action → Continue with Google → bootstrap/find Raahi Account → confirm/edit Raahi display name → continue the exact intended action.**
+### Phone trust
 
-Google name/photo are onboarding defaults, not authorization or legal identity proof. Raahi display name stays editable and later Google changes never silently overwrite it. A Google photo must never be auto-published as a Teacher/learner image. If persisted, explicit user confirmation should copy it into Raahi-controlled media rather than treat an external URL as a permanent Raahi upload.
+Phone verification belongs to the **Account**, not the Learner.
 
-### 3. Phone OTP becomes trust freshness
+Recommended behavior:
 
-The proposed three-month phone check fits if implemented as **soft trust freshness**, not periodic account expiry.
+- verify phone once before the first trust-sensitive action that requires it;
+- store durable server-owned verification freshness;
+- after 90 days, mark trust stale rather than invalidating the Account;
+- request a fresh OTP only when the user next performs a selected trust-sensitive action;
+- existing Classes, Materials, Activities, Tests and history continue normally;
+- a phone-number change immediately invalidates the prior phone-trust freshness.
 
-- phone verification belongs to Account, not Learner;
-- stale phone trust never logs the user out or removes existing Class/history access;
-- existing Class learning, permitted Activities, Tests and released history continue;
-- fresh trust is required for selected trust-sensitive actions such as new Enquiry, new Learning Request, accepting a new Class Invitation, publishing teaching, Organization creation/member invitation, learner-access invitation and sensitive contact/identity changes;
-- Community posting/reporting may require a verified phone without necessarily forcing a new OTP exactly at day 90.
+Do not use JWT/session `amr` timestamp alone as the 90-day source of truth because it is session-scoped.
 
-Do not rely only on JWT `amr` for the 90-day rule because it is session-scoped. Recommended minimal backend support: server-owned `accounts.phone_trust_verified_at`, comparison with current `auth.users.phone_confirmed_at` so a phone change invalidates older trust, and canonical helper/guard functions that record fresh trust only after server-verifiable phone confirmation/OTP.
+Exact trust-sensitive action matrix is an implementation-spec task, not a reason to reopen the domain model.
 
-### 4. First-use onboarding contradiction
+## Required V1.3 implementation completion
 
-The live frontend bootstraps a new Account and then offers only already-authorized workspaces. A genuine new Account may have no Learner, teach capability or Organization and therefore no useful workspace.
+These are required because the currently integrated frontend exposes technical gaps or fails to provide a human path for already-approved capabilities. They do **not** change the core product model.
 
-Intent must perform setup rather than pretend authority already exists:
+### 1. First-use intent must actually set up the user
 
-- **I want to learn** → create self Learner if needed;
-- **I’m helping someone learn** → inline create managed Learner;
-- **I teach** → `enable_teaching` → Teacher Profile → What I Teach → Location/availability → publish;
-- **I represent an institute** → `create_organization` → guided institute setup;
-- **I’m exploring** → ordinary Explore/Home with no privileged capability.
+Current issue: a newly bootstrapped Account may have no authorized workspace and therefore no meaningful next step.
 
-The backend primitives already exist; the live frontend is missing this orchestration.
+Required guided paths:
 
-### 5. Family/learner UX
+- **I want to learn** → create/select self Learner using existing canonical learner command.
+- **I’m helping someone learn** → inline create/select managed Learner.
+- **I teach** → enable teaching → Teacher profile → What I Teach → Location/availability → publish.
+- **I represent an institute** → create Organization → guided institute setup.
+- **I’m exploring** → ordinary non-privileged Home/Explore experience.
 
-Replace technical acting-context language with human learning cards:
+Intent guides setup; it never grants authority by itself.
 
-**Your learning: Me · Rahul · Ananya · + Add learner.**
+### 2. Human learner switching and inline Add learner
 
-When a parent is already composing a Request/Enquiry and chooses Add learner, `create_learner` should run inline and return them to the same task with that Learner selected.
+Replace technical acting-context language with a simple learning/family selector such as:
 
-The current live frontend does not wire `create_learner` even though the backend already supports it.
+**Me · Rahul · Ananya · + Add learner**
 
-### 6. Learner later receiving own access
+If a user adds a Learner while composing an Enquiry or Learning Request, create the Learner through the canonical command and resume the same draft with that Learner selected.
 
-The backend command `grant_learner_self_access` requires a target Account UUID. That proves the authority rule, but is not a viable human journey.
+### 3. Learner later receiving their own Account access
 
-V1.3 should add a private, expiring, one-time **Learner self-access invitation**:
+The approved domain already allows an existing Learner to later gain self-access without recreating history. The current command requires a target Account UUID, which is not a usable human journey.
 
-**Manager → Set up Rahul’s own access → share private link → Rahul authenticates → accept → same Rahul Learner gains self access.**
+Add a private, expiring, one-time invitation mechanism:
 
-No history is recreated, and the current rule preventing the active manager Account from also becoming Rahul’s self Account remains.
+**Managing guardian → Set up Rahul’s own access → private link → Rahul authenticates → accepts → same Learner gets self access.**
 
-This requires a replay-safe invitation/token object or equivalent server capability.
+This invitation is implementation infrastructure for the existing relationship rule; it does not create a new Learner type or guardian hierarchy.
 
-### 7. Guardian rule is the only major family-domain decision still open
+### 4. WhatsApp-friendly existing learner share flow
 
-Real family use strongly suggests father/mother or another guardian may share supervision. Do **not** allow two full `manage` relationships because formal marketplace decision authority becomes ambiguous.
+Keep the existing secure learner share-code model and its one-time/expiry/capacity rules. Present the bearer token as a private WhatsApp-friendly link instead of making users copy a technical code.
 
-Audit recommendation if the rule changes: retain exactly **one active managing guardian**, plus optional narrower **family supporter** relationships. A supporter may see appropriate Class/material/session/activity/Test-oversight information, receive relevant learner notifications, report concerns and optionally assist uploads; a supporter may not take Tests, create/close formal marketplace relationships, accept/decline Class Invitations, voluntarily transfer/leave, grant learner self access or change guardian authority.
+The link never grants Class Membership. It only lets an authorized teacher resolve the intended Learner and send the normal seat-reserving Class Invitation.
 
-This is a true domain/permission change and needs explicit approval before implementation.
+Do not add a generic public/untargeted teacher-created join link in V1.3.
 
-### 8. Enquiry and Trial
+### 5. Guided Teacher onboarding
 
-Keep `Pending → Active → Closed` internally, but make the UX natural:
+Present one human journey over the existing backend primitives:
 
-- learner side: **Send enquiry** with contextual opening note;
-- provider side: **Reply & connect** / **Decline**;
-- unrestricted messaging opens only after the existing engage transition;
-- Trial appears as optional **Schedule trial** action inside the Enquiry, not a mandatory journey stage.
+**Start teaching → profile basics → What I Teach → Locations → availability → preview → publish.**
 
-### 9. Learning Request recovery
+Do not expose capability/object terminology to first-time teachers.
 
-Preserve duplicate/material-change rules, but guide the user:
+### 6. Guided Institute onboarding
 
-- duplicate → “You already have a Maths request open. View/edit it?”
-- materially different learner/need → “Create a new request using these details?”
+Wire the existing Organization creation command into first-use onboarding. The creator remains the initial authorized Organization administrator as already implemented.
 
-No domain change required.
+Replace technical UUID entry with human flows:
 
-### 10. WhatsApp-friendly offline learner invitation
+- Organization Class responsible teacher → select from eligible current Organization members.
+- Adding a staff member → private, expiring Organization staff invitation link; recipient authenticates and accepts once.
 
-Existing learner share codes are high-entropy, hashed, one-time and expiring, and `send_class_invitation_with_share_code` already enforces authority/capacity atomically.
+Keep granular capability codes underneath, but present friendly permission labels/presets in the UI.
 
-Present the same bearer token as a private link instead of requiring humans to copy a code:
+### 7. Messages must represent all authorized contextual conversations
 
-**Rahul’s family → Share with teacher → WhatsApp Raahi link → teacher authenticates → selects eligible Class → sends Invitation.**
+The navigation already promises **Messages**, but the current implementation effectively lists Enquiries while Class/Learner conversations are accessible only from inside Classes.
 
-The link never grants Class access itself. A generic untargeted teacher-created join link is deferred because it introduces bearer-seat and learner-targeting complexity.
-
-### 11. Teacher onboarding
-
-Use one guided setup over existing primitives:
-
-**I teach → phone trust if required → enable teaching → profile → What I Teach → Locations → availability → preview → publish.**
-
-Do not expose Profile vs Teaching Option vs capability mechanics to a first-time teacher.
-
-Objective trust claims such as Identity verified / Qualification verified stay. Public star ratings/reviews stay rejected. Response-time badges are deferred until real data exists.
-
-### 12. Institute onboarding and staff
-
-`create_organization` already creates the Organization, creator membership and initial management capabilities, but the live frontend never wires Organization creation.
-
-Institute staff is a genuine missing journey: the live UI currently asks for a raw “Known Account ID / UUID”. Do not solve this with a public Account search.
-
-Add a private expiring **Organization member invitation**:
-
-**Admin → invite staff → choose friendly permission preset → share link → recipient authenticates → accepts → membership/capabilities created once.**
-
-Organization Class creation must also replace “Responsible teacher Account ID” with a picker of eligible active Organization members.
-
-Keep granular backend capability codes, but show friendly labels/presets such as Profile & public information, Learning & Classes, Ads, Manage staff.
-
-### 13. Messages is incomplete
-
-The nav says **Messages**, but the current live route lists Enquiries only; Class+Learner contextual conversations are accessible only from inside a Class.
-
-V1.3 should provide one contextual Messages inbox listing both:
+Provide one contextual Messages inbox that can list:
 
 - Enquiry conversations;
 - authorized Class + Learner threads.
 
-Each item names its context. There is still no unrestricted DM directory. This likely needs a small authorized conversation-list projection.
+Every conversation retains its context and current authorization checks. There is still no unrestricted DM search/compose directory.
 
-### 14. Notifications are structurally present but not wired to real transitions
+This likely requires a small read-only authorized conversation-list projection; it does not change messaging permission rules.
 
-The `notifications` table, private read projection and `app_private.enqueue_notification` helper exist, but read-only deployed-schema inspection found no domain function or trigger currently invoking the helper.
+### 8. Notifications must be produced by real business transitions
 
-V1.3 needs a deliberately small notification matrix: Enquiry received/replied/connected, Class Invitation, important Session change, Activity/changes requested, Test available/result released, contextual Class message, Organization staff invitation, and appropriate safety resolution. Every notification must carry enough source/learner context to open the exact authorized screen. Sponsored viewer push remains prohibited.
+The notification table/read path exists, but current business commands do not yet generate a useful notification stream.
 
-Notification delivery must remain derived/non-authoritative; failure must not own or reverse the core business transition.
+Add a deliberately small transition-to-notification matrix for meaningful events such as:
 
-### 15. Community, Ads, closure and low-connectivity
+- Enquiry received/replied/connected;
+- Class Invitation;
+- important Session change;
+- Activity changes requested / reviewed where useful;
+- Test available / result released;
+- contextual Class message;
+- Organization staff invitation;
+- relevant safety/admin resolution.
 
-- Community stays authenticated/local in V1.3; no logged-out feed and no global community.
-- Logged-out Explore stays ad-free initially; anonymous Sponsored serving is deferred.
-- Advertiser UI should become a simple campaign wizard while approval, commercial clearance, immutable approved revision and inventory rules remain underneath.
-- Account closure blockers remain strict but become a human checklist of responsibilities to resolve.
-- Weak-network UX preserves typed drafts where practical, disables duplicate submits while in flight, reuses the same logical idempotency key on retry, and never claims success before the server confirms it.
+Every notification must deep-link to the exact authorized context and recheck current authorization at open time. Notifications remain derived/non-authoritative; notification failure never reverses the business transition. Sponsored viewer push remains prohibited.
 
-## Master candidate register
+### 9. Wording and visual simplification
 
-Classification: **A** presentation only; **B** orchestration over existing backend; **C** small backend/auth/projection extension; **D** domain/relationship/permission change.
+Keep lifecycle/security terms in specifications and admin/audit surfaces, not ordinary end-user copy.
 
-| ID | Candidate | Class | Recommendation |
+Examples of concepts to hide or translate for normal users:
+
+- capability / authorization scope;
+- derived lifecycle state;
+- immutable revision;
+- reserved occupancy;
+- projection;
+- Account UUID;
+- internal Invitation/Membership mechanics unless the distinction matters to the user.
+
+Use natural actions such as **Send enquiry**, **Reply & connect**, **Schedule trial**, **Join Class**, **Invite staff**, **Add learner**, **Take a break**.
+
+### 10. Helpful recovery instead of raw rule errors
+
+Preserve existing domain guards but translate them into recoverable UX:
+
+- duplicate Learning Request → offer the existing request;
+- materially different need/learner → offer to create a new request using the entered details;
+- stale/expired Invitation → explain and return to the relevant Class/teacher context;
+- closure blocker → show the specific responsibility to transfer/resolve;
+- weak network → preserve drafts where practical, disable duplicate submits while in-flight, and reuse the same logical idempotency key on retry.
+
+### 11. Advertiser/admin simplification
+
+Do not alter Ads governance. Simplify the advertiser-facing campaign journey into a guided wizard while preserving approval, commercial clearance, immutable approved revision, inventory and placement controls underneath.
+
+Likewise, keep Local/Platform admin controls strict while reducing unnecessary operational jargon in routine screens.
+
+## Explicitly deferred / rejected after the final review
+
+The following are **not** required V1.3 changes:
+
+- secondary Family Supporter relationship — defer;
+- multiple managing guardians — reject V1;
+- logged-out Teacher/Institute/Teaching Option discovery — defer until acquisition evidence justifies the additional anonymous surface;
+- logged-out Community — reject V1.3;
+- anonymous Sponsored serving — defer;
+- generic public Learner/Account directory — reject;
+- unrestricted DM search/compose — reject;
+- generic teacher-created join link — defer;
+- response-time public badge — defer until real data exists;
+- public star ratings/reviews — reject V1;
+- attendance, progress percentage, multi-teacher Class, platform tuition payment, global Community — remain deferred/removed as previously decided.
+
+## Final implementation register
+
+Classification: **A** presentation only; **B** orchestration over existing backend; **C** small backend/auth/projection extension; **E** enabling infrastructure for an already-approved relationship/flow (not a new product rule).
+
+| ID | Required item | Class | V1.3 disposition |
 |---|---|---:|---|
-| UX-01 | Logged-out Teacher/Institute/Teaching Option discovery | C | Adopt |
-| UX-02 | Logged-out Community feed | C | Reject V1.3 |
-| UX-03 | Anonymous Sponsored serving | C | Defer |
-| UX-04 | Google-primary sign-in | C/B | Adopt |
-| UX-05 | Editable Google-name default | B | Adopt |
-| UX-06 | Google photo suggested, never auto-public | B/C | Adopt principle |
-| UX-07 | Resume exact intended action after auth | B | Adopt |
-| UX-08 | Account phone trust separate from login | C | Adopt |
-| UX-09 | 90-day freshness only for selected trust actions | C | Adopt |
-| UX-10 | Hard day-90 account/learning lock | D | Reject |
-| UX-11 | Intent performs first-use setup | B | Adopt |
-| UX-12 | Base “Explore” experience without privilege | B | Adopt |
-| UX-13 | Inline Add learner | B | Adopt |
-| UX-14 | Family/learning cards instead of technical context | A/B | Adopt |
-| UX-15 | Private learner self-access invitation | D | Adopt |
-| UX-16 | Secondary family supporter | D | **Decision required** |
-| UX-17 | Multiple full managing guardians | D | Reject |
-| UX-18 | Friendly Enquiry wording with same states | A/B | Adopt |
-| UX-19 | Trial as optional Enquiry action | A/B | Adopt |
-| UX-20 | Helpful Request duplicate/material-change recovery | A/B | Adopt |
-| UX-21 | Learner share code rendered as private WhatsApp link | B | Adopt |
-| UX-22 | Generic untargeted teacher join link | D | Defer |
-| UX-23 | Guided Teacher onboarding | B | Adopt |
-| UX-24 | Objective verification/availability trust signals | A/B | Adopt |
-| UX-25 | Public star ratings/reviews | D | Reject |
-| UX-26 | Response-time badge | C | Defer |
-| UX-27 | Guided Institute creation | B | Adopt |
-| UX-28 | Private Organization staff invitation | D | Adopt |
-| UX-29 | Responsible teacher picker, never UUID entry | B | Adopt |
-| UX-30 | Human org permission labels/presets | A/B | Adopt |
-| UX-31 | Unified contextual Messages inbox | C | Adopt |
-| UX-32 | Unrestricted DM compose/search | D | Reject |
-| UX-33 | Meaningful notification production + deep links | C | Adopt |
-| UX-34 | Engagement/promotion spam notifications | D | Reject |
-| UX-35 | Simpler Class/Activity/Test wording | A | Adopt |
-| UX-36 | Guardian Test-taking | D | Reject |
-| UX-37 | Account closure blocker checklist | B/C | Adopt |
-| UX-38 | Simplified advertiser campaign wizard | A/B | Adopt |
-| UX-39 | Simplify Local/Platform operational jargon | A | Adopt |
-| UX-40 | Context-aware mobile nav labels | A | Adopt |
-| UX-41 | Weak-network draft/retry protection | B | Adopt |
-| UX-42 | Public Learner/Account directory to solve invites | D | Reject |
+| V13-01 | Google-primary authentication | C | Adopt |
+| V13-02 | Editable Google-name default | B | Adopt |
+| V13-03 | Google photo opt-in import, never auto-public | B/C | Adopt |
+| V13-04 | Durable Account phone-trust freshness | C | Adopt |
+| V13-05 | No hard day-90 learning/account lock | A/C | Freeze |
+| V13-06 | Intent-driven first-use setup | B | Adopt |
+| V13-07 | Base Explore path without privileged authority | B | Adopt |
+| V13-08 | Inline Add learner / learner selector | B | Adopt |
+| V13-09 | Learner self-access invitation link | E | Adopt |
+| V13-10 | Learner share token rendered as private WhatsApp link | B | Adopt |
+| V13-11 | Guided Teacher onboarding | B | Adopt |
+| V13-12 | Guided Institute creation | B | Adopt |
+| V13-13 | Private Organization staff invitation | E | Adopt |
+| V13-14 | Responsible teacher member picker | B | Adopt |
+| V13-15 | Human Organization permission labels/presets | A/B | Adopt |
+| V13-16 | Unified contextual Messages inbox | C | Adopt |
+| V13-17 | Meaningful transition notifications + deep links | C | Adopt |
+| V13-18 | Friendly Enquiry/Trial/Request wording and recovery | A/B | Adopt |
+| V13-19 | Account-closure blocker checklist | B/C | Adopt |
+| V13-20 | Simplified advertiser/admin presentation | A/B | Adopt |
+| V13-21 | Weak-network draft/retry protection | B | Adopt |
+| V13-22 | Secondary family supporter | — | Defer |
+| V13-23 | Logged-out marketplace discovery | — | Defer |
 
-## Scenario additions that must be automated/replayed
+## Scenario suite required before implementation is considered complete
 
-1. Logged-out visitor opens public Teaching Option → Enquire → Google auth → exact option resumes.
-2. New self learner intent creates self Learner once and continues.
-3. Parent adds Rahul inline during Enquiry/Request and resumes same draft.
-4. Parent with Rahul/Ananya switches context without leaking sibling data.
-5. 92-day-old phone trust does not block existing Class/Activity/Test/history.
-6. 92-day-old phone trust does trigger before a new Enquiry and the draft survives OTP.
-7. Phone change makes older phone-trust record stale.
-8. Learner self-access private invite links to the same Learner/history.
-9. Active manager cannot consume the Learner self-access invite as the same Account.
-10. Pending Enquiry still blocks free messaging; Reply & connect opens it once.
-11. Private learner WhatsApp share token is one-time and produces a normal seat-reserving Invitation.
-12. Institute owner onboarding creates Organization/creator authority once without UUID entry.
-13. Organization staff invite is private, expiring, revocable and idempotent.
-14. Organization Class responsible teacher is chosen only from eligible current members.
-15. Messages inbox lists both Enquiry and authorized Class threads; stale relationship cannot grant access.
-16. Notification deep link rechecks current authorization before opening its source.
-17. Manager/supporter Test oversight never grants Start/Save/Submit.
-18. Weak-network retry reuses one logical idempotency key.
-19. Logged-out discovery cannot expose Community content.
-20. Account closure translates blockers into specific resolution steps.
+1. New Google user bootstraps exactly one Raahi Account and can edit imported display name.
+2. Google photo is never automatically published; explicit opt-in import is required.
+3. New self-learner intent creates/selects one self Learner and continues.
+4. Parent adds Rahul inline during an Enquiry/Request and the draft resumes unchanged except for learner selection.
+5. Parent with Rahul/Ananya can switch context without sibling data leakage.
+6. Stale (>90-day) phone trust does not block existing Class/Activity/Test/history.
+7. Stale phone trust does trigger before a selected trust-sensitive action and the pending user action survives OTP.
+8. Changing the registered phone invalidates the previous trust freshness.
+9. Learner self-access invite links to the same Learner and preserves history.
+10. Managing guardian cannot accidentally turn their own Account into the Learner self identity.
+11. Pending Enquiry still blocks unrestricted messaging; Reply & connect opens it once.
+12. Existing learner private WhatsApp token remains one-time/expiring and produces a normal Class Invitation.
+13. Institute owner onboarding creates Organization/creator authority once.
+14. Organization staff invite is private, expiring, revocable/replay-safe and creates only intended membership/capabilities.
+15. Organization Class responsible teacher can only be selected from eligible current members.
+16. Messages inbox lists Enquiry and authorized Class threads but cannot manufacture access.
+17. Notification deep links recheck current permission before rendering private context.
+18. Notification failure cannot roll back the core transition.
+19. Guardian can view permitted Test oversight but still cannot Start/Save/Submit a learner Test.
+20. Weak-network retries reuse one logical idempotency key and do not duplicate state.
+21. Account closure translates server blockers into concrete resolution steps.
+22. No V1.3 path exposes a public Learner/Account directory or unrestricted DM surface.
 
-## DB/auth compatibility summary
+## DB compatibility conclusion
 
-**Existing backend already supports most B items:** Account bootstrap/profile, Learner creation, teaching enable/profile/options, Organization creation, Enquiry/Trial, Learning Request lifecycle, learner share code + Class Invitation, Class/Activity/Test/Storage, Account pause/resume/closure and Organization capability management once a target Account is known.
+The core database/domain model remains valid.
 
-**C additions:** narrow anonymous discovery grants; Google OAuth/continuation handling; durable phone-trust record/helpers; optional explicit Google-avatar import; contextual conversation-list projection; real notification production/context contract; optional structured closure-readiness projection.
+Expected V1.3 backend work is limited to:
 
-**D additions:** Learner self-access invitation; Organization member invitation; and, only if approved, family-supporter relationship/permission matrix.
+- Google Auth integration and continuation handling;
+- durable phone-trust freshness + guards for the chosen action matrix;
+- optional safe Google-avatar import handling;
+- learner self-access invitation infrastructure;
+- Organization member invitation infrastructure;
+- authorized contextual conversation-list projection;
+- real notification production/context/deep-link contract;
+- optional closure-readiness projection if needed for clean UI.
 
-No evidence supports rebuilding the core Learner/Class/Enquiry/Test/Ads domain.
+Existing canonical commands already cover Account bootstrap/profile, Learner creation, teaching enable/profile/options, Organization creation, Enquiry/Trial, Learning Request lifecycle, learner share code + Class Invitation, Class/Activity/Test/Storage, Account pause/resume/closure and Organization capability management once the target identity is safely resolved.
 
-## One product decision required before final V1.3 freeze
+No evidence supports rebuilding the Learner/Class/Enquiry/Test/Ads domain.
 
-Current frozen rule: one active managing guardian per Learner.
+## Change-control after this gate
 
-Audit recommendation: **keep exactly one manager, but allow optional narrower family supporters.**
+After this consolidation, another platform doing something differently is not sufficient reason to reopen V1.3.
 
-If approved:
+A new product/domain change requires one of:
 
-- rule: manager owns formal marketplace/relationship decisions; supporter is oversight/help only;
-- relationship: add `support` (or equivalent) to learner access;
-- lifecycle: existing `active|ended` remains sufficient;
-- supporter may see permitted learning/oversight, receive relevant notifications, report concerns and optionally assist upload;
-- supporter may not take Tests, post/close the Learner’s formal marketplace relationship, accept/decline Class Invitation, transfer/leave, grant self access or alter guardian authority;
-- Class-thread audience, closure blockers, sibling isolation and support-ending tests must be updated.
+1. a contradiction in the frozen rules;
+2. a security/privacy defect;
+3. a failed scenario/usability test that cannot be fixed by presentation/orchestration;
+4. real pilot-user evidence showing the current simpler model cannot represent the needed journey safely.
 
-This is the only frozen family rule this audit recommends reconsidering, and it must not be changed silently.
+Otherwise, treat the request as post-V1 evidence/backlog rather than redesigning the implementation.
 
-## Next gate after that decision
+## Next gate
 
-1. finalize this register and exact phone-trust action matrix;
-2. rewrite the clickable prototype and end-user wording only;
-3. run persona journeys, mobile/desktop and privileged/deep-link regression;
-4. perform final UI ↔ DB reconciliation;
-5. write exact C/D migration/RPC deltas;
-6. extend Given/When/Then automation;
-7. only then modify Supabase and the integrated frontend.
-
-After the V1.3 UX/Product freeze, another platform doing something differently is not sufficient reason to reopen design. A later change requires a demonstrated contradiction, security/privacy issue, failed usability test, or real pilot-user evidence.
+1. define the exact Google + phone-trust authentication scenarios and selected trust-sensitive actions;
+2. rewrite the clickable prototype/end-user wording to the consolidated V1.3 flows without touching the proven DB yet;
+3. replay the full persona/scenario suite on mobile and desktop;
+4. perform UI ↔ canonical RPC/projection reconciliation;
+5. produce the minimal migration/RPC delta;
+6. only then modify Supabase/frontend implementation.
