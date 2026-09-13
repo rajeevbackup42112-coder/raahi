@@ -15,7 +15,7 @@ select set_config('request.jwt.claim.sub','a1011111-1111-1111-1111-111111111111'
 select set_config('t.owner',(public.bootstrap_account('Org Owner 110')->>'account_id'),true);
 select set_config('request.jwt.claim.sub','a1022222-2222-2222-2222-222222222222',true);
 select set_config('t.classmgr',(public.bootstrap_account('Class Manager 110')->>'account_id'),true);
-select set_config('request.jwt.claim.sub','a1033333-3333-3333-3333-333333333333',true);
+select set_config('request.jwt.claim.sub','a1033333-3333-3333-333333333333',true);
 select set_config('t.parent',(public.bootstrap_account('Parent 110')->>'account_id'),true);
 select set_config('request.jwt.claim.sub','a1044444-4444-4444-4444-444444444444',true);
 select set_config('t.teacher',(public.bootstrap_account('Teacher 110')->>'account_id'),true);
@@ -31,7 +31,7 @@ values('a1100000-0000-0000-0000-000000000001','Dhanbad 110','dhanbad-110','live'
 set local role authenticated;
 select set_config('request.jwt.claim.sub','a1011111-1111-1111-1111-111111111111',true);
 select set_config('t.org',(public.create_organization('coaching','Institute 110',null,null,null,null,'none',null,'110-org')->>'organization_id'),true);
-select set_config('t.member',(public.add_organization_member(current_setting('t.org')::uuid,current_setting('t.classmgr')::uuid,'110-add-classmgr')->>'organization_member_id'),true);
+select set_config('t.member',(public.add_organization_member(current_setting('t.org')::uuid,current_setting('t.classmgr')::uuid,'110-add-classmgr')->>'member_id'),true);
 select public.set_organization_member_capability(current_setting('t.member')::uuid,'manage_classes',true,'110-class-cap');
 
 select set_config('request.jwt.claim.sub','a1022222-2222-2222-2222-222222222222',true);
