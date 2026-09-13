@@ -1,30 +1,42 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const bundleDir = path.join(appDir, 'source-bundle-v13');
 const outputDir = path.join(appDir, 'reconstructed-v13');
+const retrofitPatchB64 = path.join(appDir, 'retrofit-v13.patch.b64');
 
-const expectedTarSha256 = '9aa71d002775f719970fcf6d48c324f4f3270ac9f65aa1c7e8a2f9f17c2dc9cc';
+// The original V1.3 source bundle remains immutable. The AI Builder v2 retrofit
+// is a small verified text patch layered on that byte-verified baseline.
+const expectedBaseTarSha256 = '9aa71d002775f719970fcf6d48c324f4f3270ac9f65aa1c7e8a2f9f17c2dc9cc';
+const expectedRetrofitPatchGzSha256 = '8a68163024ef1b100ebc4d56b8b1cfa56bf3459fc9f897952b6ca5602a19afa9';
+const expectedRetrofitPatchSha256 = 'ced0f5ca5b590e8ca344011f8f008c8fa719d57cca6ca3ead63b01a4fc6efc08';
 
 const expectedFiles = {
-  'README.md': '2dc9ca49421b2c61109ed1e832a5ea45306b590c24dc5ab78dc00b7bc2de6bbf',
+  'README.md': '1cb628ac91c839891123b0f4651e3db95be866c87186aa4bed7be8036f8043af',
   'app.fixture.js': '6eb67b36931c45aa4113c77005d82c13bb14ec145500e08cfd92130ebcef576c',
-  'app.live-core-v13.js': '925ea0ecdbb95f76a2c548f3efa3fbdd3d99ac1bf355d5d59f945a626c14274b',
+  'app.live-core-v13.js': 'b8fea9446bba5171aa399d709eede2a0403949e96015157aa0ab1db320834a0f',
   'index.html': '620febde290d2d0b8fe8b8f16a7ef95af6d3ac55e1e1eeda55622ea460333183',
-  'live.js': '8ae054cbd24e33775f1782f78609531e1003ea391e6acd9a2c10c264caedf058',
+  'live.js': 'cdc44f514b1f396799313c977a4a48fe8efad33ae1f6054db776682c977796aa',
   'styles.css': 'b2d89e454f8e13712d10058c876f5efe2c8c69acf73dd6aade158241900f7bdd',
-  'tests/cdp-v13-actions.mjs': '9c374662e5023a7fdf96728975caa7939df92fdd1d8a87a3919da1fd2fd93214',
-  'tests/cdp-live-contract.mjs': 'efa0fb161d4aa094e58e3b0f298825d6643cc195caa94504e9b883efb41dc77a',
+  'tests/cdp-audit.mjs': '5e3b89bcd6cb00df4c15e3433c73f9fd7a7ae8ba748ef8141de852f2065c4f6d',
+  'tests/cdp-guard-audit.mjs': 'd873c6f5c3afb428064acf5ecc3a981cc70d4b6a731b55eb9e45523bf74819a6',
+  'tests/cdp-inline-shot.mjs': 'a5f60c98949115f893423ec4522ee2b25956055fc5fbd690859db6b8ad902d2a',
+  'tests/cdp-interactions.mjs': 'b034dd894f2067aded19e4bb0545dc6e395ab337ecb3ac99342922c8770021a7',
+  'tests/cdp-live-contract.mjs': '056788dcfa5c431b25385e7912bb24136d6d63f95bafc8a4bd48d8a22fe39acf',
+  'tests/cdp-review-shot.mjs': 'b9e49b8f58e537c046b907ec1dd9262aa5eabc8fd2a3181af117d23a6b1bdf1d',
+  'tests/cdp-semantic-audit.mjs': '85fea36f65dbc6d485a9974f5d46e74bd35a3e193078895ce7de74902b6fbad8',
+  'tests/cdp-shot.mjs': 'bb5a701d3dd08d859be1cbfa84f294a2cff3d57cc6011e1e3afe119da41da7d3',
+  'tests/cdp-v13-actions.mjs': '612e8d5e404c9c84b8e3dd441cf863bae3aa1bc8d9d7e73aa6deef812b2d215f',
+  'tests/cdp-workspace-audit.mjs': '9b720af0d62ced2f29b8d38164648da4114f2c1841352b8c7aebb8e61a6221cc',
+  'tests/live-contract.html': 'ee4c906c158f11f62d982c822935bea5e634550e823092191955160863fff42e',
+  'tests/live-stub.js': '6ebaa83ab39b23e09149aa1cfc92aab1131d95c2a1782baa665020c3f1792357',
 };
 
-// Parts 00-10 transferred cleanly through the connector. The final logical part
-// is deliberately represented by smaller verified pieces because large direct
-// transfers of that tail were observed to mutate bytes. Do not simplify this
-// list unless the rebuilt tar hash remains exactly equal to expectedTarSha256.
 const pieces = [
   ...Array.from({ length: 11 }, (_, i) => `part${String(i).padStart(2, '0')}.b64`),
   'part11-00.b64',
@@ -44,20 +56,14 @@ const pieces = [
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
 for (const name of pieces) {
-  if (!fs.existsSync(path.join(bundleDir, name))) {
-    throw new Error(`Missing source bundle piece: ${name}`);
-  }
+  if (!fs.existsSync(path.join(bundleDir, name))) throw new Error(`Missing source bundle piece: ${name}`);
 }
+if (!fs.existsSync(retrofitPatchB64)) throw new Error('Missing retrofit-v13.patch.b64');
 
-const base64 = pieces
-  .map(name => fs.readFileSync(path.join(bundleDir, name), 'utf8').trim())
-  .join('');
+const base64 = pieces.map(name => fs.readFileSync(path.join(bundleDir, name), 'utf8').trim()).join('');
 const tarBytes = Buffer.from(base64, 'base64');
-const tarSha = sha256(tarBytes);
-
-if (tarSha !== expectedTarSha256) {
-  throw new Error(`Source bundle hash mismatch: ${tarSha}`);
-}
+const baseTarSha = sha256(tarBytes);
+if (baseTarSha !== expectedBaseTarSha256) throw new Error(`Base source bundle hash mismatch: ${baseTarSha}`);
 
 fs.rmSync(outputDir, { recursive: true, force: true });
 fs.mkdirSync(outputDir, { recursive: true });
@@ -66,15 +72,22 @@ fs.writeFileSync(tmpTar, tarBytes);
 execFileSync('tar', ['-xzf', tmpTar, '-C', outputDir], { stdio: 'inherit' });
 fs.rmSync(tmpTar, { force: true });
 
+const patchGz = Buffer.from(fs.readFileSync(retrofitPatchB64, 'utf8').trim(), 'base64');
+const patchGzSha = sha256(patchGz);
+if (patchGzSha !== expectedRetrofitPatchGzSha256) throw new Error(`Compressed retrofit patch hash mismatch: ${patchGzSha}`);
+const patchBytes = zlib.gunzipSync(patchGz);
+const patchSha = sha256(patchBytes);
+if (patchSha !== expectedRetrofitPatchSha256) throw new Error(`Retrofit patch hash mismatch: ${patchSha}`);
+const tmpPatch = path.join(outputDir, '.v13-retrofit.patch');
+fs.writeFileSync(tmpPatch, patchBytes);
+execFileSync('patch', ['-p1', '-i', tmpPatch], { cwd: outputDir, stdio: 'inherit' });
+fs.rmSync(tmpPatch, { force: true });
+
 for (const [relativePath, expected] of Object.entries(expectedFiles)) {
   const filePath = path.join(outputDir, relativePath);
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Missing reconstructed file: ${relativePath}`);
-  }
+  if (!fs.existsSync(filePath)) throw new Error(`Missing reconstructed file: ${relativePath}`);
   const actual = sha256(fs.readFileSync(filePath));
-  if (actual !== expected) {
-    throw new Error(`Reconstructed hash mismatch for ${relativePath}: ${actual}`);
-  }
+  if (actual !== expected) throw new Error(`Reconstructed hash mismatch for ${relativePath}: ${actual}`);
 }
 
-console.log(`RAAHI_LEARNING_V13_SOURCE_RECONSTRUCTED ${tarSha}`);
+console.log(`RAAHI_LEARNING_V13_RETROFIT_RECONSTRUCTED base=${baseTarSha} patch=${patchSha}`);
