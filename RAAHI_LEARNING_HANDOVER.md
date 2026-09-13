@@ -1,4 +1,4 @@
-# Raahi Learning V1.2 — Start Here
+# Raahi Learning V1.3 — Start Here
 
 **Repository:** `rajeevbackup42112-coder/raahi`  
 **Implementation branch:** `raahi-learning-implementation-v1`  
@@ -6,63 +6,91 @@
 
 ## Current status
 
-**BACKEND DATABASE IMPLEMENTATION COMPLETE — 14/14 SLICES PASS IN SUPABASE DEV.**
+Raahi Learning V1.2 backend remains complete. The bounded **V1.3 product/UX/backend/browser delta is also implemented and regression-tested in Supabase DEV**, while real hosted Google OAuth + phone-trust evidence remains the next unfinished technical gate.
 
-Target dev project: `iiwwmqokaeflaenhlyip` (`ap-south-1`, PostgreSQL 17.6).
-
-The target was inspected read-only before the first mutation. Implementation then proceeded slice-by-slice with real PostgreSQL runtime gates, forward-only fixes, RLS/privilege checks and Supabase advisor checks.
+DEV Supabase project: `iiwwmqokaeflaenhlyip` (`ap-south-1`).
 
 Read first:
 
 1. `docs/raahi-learning/99-handover.md`
-2. `docs/raahi-learning/38-backend-implementation-complete-v1.2.md`
-3. `docs/raahi-learning/19-consolidated-database-blueprint-v1.2.md`
-4. `docs/raahi-learning/20-consolidated-sql-migration-plan-v1.2.md`
-5. `docs/raahi-learning/23-final-acceptance-traceability-v1.2.md`
-6. `docs/raahi-learning/29-master-test-case-catalog-v1.2.md`
-7. `docs/raahi-learning/31-staging-load-security-chaos-plan-v1.2.md`
+2. `docs/raahi-learning/43-v1.3-implementation-checkpoint.md`
+3. `docs/raahi-learning/41-authentication-phone-trust-v1.3.md`
+4. `docs/raahi-learning/42-v1.3-ui-db-reconciliation.md`
+5. `docs/raahi-learning/07-decision-log-v1.md`
+6. `docs/raahi-learning/38-backend-implementation-complete-v1.2.md`
 
-## Frozen UI
+## V1.3 direction
 
-Canonical inspected artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`  
-Persistent Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
-SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
+Do not redesign the domain. The existing rules remain frozen, including `Account ≠ Learner`, one managing guardian in V1, controlled Enquiry, optional Trial, Invitation before Membership, guardian Test non-impersonation, local Community, no public Learner directory and governed education-only Ads.
 
-It contains 77 canonical routes/pages and previously passed 154 desktop/mobile route checks, 32 privileged deep-link checks, 26 interaction/business-rule checks and 15 semantic/accessibility samples with zero final issues.
+The principal V1.3 amendment is:
 
-## Backend gate
+**Google-primary authentication + periodic phone trust.**
 
-Passed domains:
+Google profile name/photo are editable onboarding defaults only. Phone verification is a periodic trust/contact proof and must not become a second routine login or remove existing learning access merely because it is stale.
 
-- Foundation + Identity;
-- Locations;
-- Learner Share Codes;
-- Organizations / Teacher Discovery;
-- Scoped Restrictions;
-- Requests / Enquiries;
-- Classes / Invitations / Files;
-- Class Communication;
-- Activities / Submissions;
-- Tests / Attempts;
-- Community / Trust & Safety;
-- Ads Campaign / Review / Commercial;
-- Ads Inventory / Serving;
-- Notifications / Read Projections / Final Hardening.
+Do not add Family Supporters/multi-guardian complexity, anonymous marketplace browsing, fake OTP, attendance, generic progress %, public ratings/reviews, unrestricted DM, global Community, or other deferred complexity without new evidence.
 
-Final Storage authorization is also implemented through `1004_storage_authorization` with governed public/private buckets and relationship-based private reads.
+## Applied V1.3 DEV delta
 
-Final Supabase Security Advisor: **0 findings**. Performance Advisor currently reports only unused-index INFO notices on the clean dev database.
+Applied migrations:
 
-All disposable integration tests roll back. Final check: 0 Auth users, 0 application fixture rows and 0 Storage object rows remain.
+- `1015_v13_contextual_inbox_and_org_teacher_picker`
+- `1016_v13_learner_self_access_invitations`
+- `1017_v13_organization_member_invitations`
+- `1018_v13_notification_transition_wiring`
+- `1019_v13_notification_initial_enquiry_dedup`
 
-## Current boundary
+V1.3 runtime markers all pass, touched V1.2 Enquiry/Class Communication/Activities/Tests suites pass, and Supabase Security Advisor is **0 findings**.
 
-The next phase is **not more schema invention**.
+## Browser evidence
 
-Next:
+- 83 canonical routes;
+- 83 × desktop/mobile = **166/166** live-contract checks;
+- **0 issues**;
+- **0 guard failures**;
+- focused V1.3 action paths: **7/7 PASS**;
+- no direct operational-table browser DML;
+- no phone-primary OTP path in `live.js`;
+- no raw Account UUID user flow.
 
-> Frozen UI → Supabase Auth/RPC/read-projection/Storage integration → browser E2E → true concurrent load/security/chaos → launch readiness.
+A real modal action-delegation bug was found by the focused click suite and fixed centrally before this checkpoint.
 
-Do not claim production readiness yet. True concurrent p95/p99, soak, deadlock, connection-pool and browser/file-transfer testing remain future evidence gates.
+## Source recovery
 
-The repository `main` branch contains older Raahi work and must not be treated as Raahi Learning implementation.
+Run:
+
+```bash
+node apps/raahi-learning/build-source-v13.mjs
+```
+
+Required reconstructed tar SHA-256:
+
+`9aa71d002775f719970fcf6d48c324f4f3270ac9f65aa1c7e8a2f9f17c2dc9cc`
+
+Source-bundle documentation: `apps/raahi-learning/SOURCE_BUNDLE_V1.3.md`.
+
+Persistent backup artifact:
+
+`/Raahi Learning/Raahi_Learning_Integrated_V1.3_DEV.zip`
+
+ZIP SHA-256:
+
+`c1acb034d81da01379886cbea7311fd500b30375cb48b99c4e8bdde5e6a8e113`
+
+## Exact remaining boundary
+
+Next work:
+
+1. check current Supabase Auth docs/changelog;
+2. configure/verify real DEV Google OAuth through an authorized hosted-Auth surface;
+3. prove Google → Supabase session → `bootstrap_account` → editable profile → server-derived contexts;
+4. configure hosted DEV fixed/test phone OTP through an authorized Auth-management surface;
+5. prove trustworthy server-side evidence after phone verification;
+6. implement/test the frozen 90-day phone-trust policy without blocking ordinary existing learning;
+7. run the 25-persona real-auth E2E cohort and full regression/security gate;
+8. then concurrency/load/chaos and launch readiness.
+
+Do not claim production readiness or deploy publicly before those gates.
+
+The repository `main` branch contains older Raahi work and must not be treated as the Raahi Learning implementation.
