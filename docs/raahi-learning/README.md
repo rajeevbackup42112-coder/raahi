@@ -1,10 +1,10 @@
-# Raahi Learning V1.2 — Documentation Index
+# Raahi Learning V1.3 — Documentation Index
 
-Status: **BACKEND DATABASE IMPLEMENTATION COMPLETE — 14/14 SLICES PASS. NEXT: FROZEN UI → REAL SUPABASE INTEGRATION.**
+Status: **V1.2 BACKEND COMPLETE; V1.3 UX/BACKEND/BROWSER DELTA IMPLEMENTED + REGRESSION-TESTED IN DEV. NEXT: REAL GOOGLE OAUTH + PHONE-TRUST PROOF.**
 
 This folder is the canonical handover point for Raahi Learning.
 
-> **Source-of-truth rule:** frozen written behavior + the inspected clickable UI define the product. Applied forward migrations on `raahi-learning-implementation-v1` are the implementation record. Older exploratory/generated visuals do not override them.
+> **Source-of-truth rule:** frozen written behavior + later approved V1.3 amendments + applied forward migrations define the product. Older exploratory/generated visuals do not override them.
 
 ## Product in one sentence
 
@@ -12,88 +12,110 @@ Raahi Learning is a **local learning community launched one Location at a time**
 
 Core journey: **Find → Enquire → optional Trial → Class Invitation → Join Class → Learn**
 
-## Frozen UI
-
-Artifact: `Raahi_Learning_Clickable_UI_v1.1.zip`  
-Library path: `/Raahi Learning/Raahi_Learning_Clickable_UI_v1.1.zip`  
-SHA-256: `2c10cb4ef8e3cef8cced61d67806d595abac6427307b2ea0ada5fa925db8ce66`
-
-Audit: 77 canonical pages; 154 desktop/mobile route checks, 32 privileged deep-link checks, 26 interaction/business-rule checks and 15 semantic/accessibility samples — zero final issues.
-
 ## Read first now
 
 1. [`99-handover.md`](99-handover.md) — current state and exact continuation boundary.
-2. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — final backend implementation result.
-3. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — frozen product rules.
-4. [`01-domain-model-v1.md`](01-domain-model-v1.md) — conceptual entities/invariants.
-5. [`02-architecture-blueprint-v1.md`](02-architecture-blueprint-v1.md) — architecture boundaries.
-6. [`04-command-permission-matrix-v1.md`](04-command-permission-matrix-v1.md) — command/permission intent.
-7. [`05-acceptance-regression-v1.md`](05-acceptance-regression-v1.md) — Given/When/Then regressions.
-8. [`06-raahi-ads-v1.md`](06-raahi-ads-v1.md) — Ads rules.
-9. [`18-ui-page-inventory-v1.1.md`](18-ui-page-inventory-v1.1.md) — inspected UI inventory.
-10. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — consolidated physical design.
-11. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated migration contract.
-12. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — UI/data/command/test traceability.
-13. [`29-master-test-case-catalog-v1.2.md`](29-master-test-case-catalog-v1.2.md) — QA catalog.
-14. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — remaining true runtime/load/chaos plan.
+2. [`43-v1.3-implementation-checkpoint.md`](43-v1.3-implementation-checkpoint.md) — current V1.3 implementation evidence and remaining gap.
+3. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
+4. [`42-v1.3-ui-db-reconciliation.md`](42-v1.3-ui-db-reconciliation.md) — V1.3 UI ↔ backend reconciliation.
+5. [`40-final-product-ux-audit-v1.3-draft.md`](40-final-product-ux-audit-v1.3-draft.md) — final bounded UX audit/change register.
+6. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical decisions including V1.3 amendment.
+7. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
+8. [`00-product-ui-freeze-v1.md`](00-product-ui-freeze-v1.md) — original frozen product rules.
+9. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — consolidated physical design.
+10. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated baseline migration contract.
+11. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — baseline UI/data/command/test traceability.
+12. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — remaining true runtime/load/chaos plan.
 
-## Backend implementation status
+## Frozen + V1.3 UI artifacts
 
-Supabase dev: `iiwwmqokaeflaenhlyip`, `ap-south-1`, PostgreSQL 17.6.
+Original inspected V1.1 fixture remains preserved byte-for-byte inside the V1.3 integration:
 
-Passed slices:
+- `app.fixture.js` SHA-256: `6eb67b36931c45aa4113c77005d82c13bb14ec145500e08cfd92130ebcef576c`
+- `styles.css` SHA-256: `b2d89e454f8e13712d10058c876f5efe2c8c69acf73dd6aade158241900f7bdd`
 
-1. Foundation + Identity
-2. Locations
-3. Learner Share Codes
-4. Organizations / Teacher Discovery
-5. Scoped Restrictions
-6. Requests / Enquiries
-7. Classes / Invitations / Files
-8. Class Communication
-9. Activities / Submissions
-10. Tests / Attempts
-11. Community / Trust & Safety
-12. Ads Campaign / Review / Commercial
-13. Ads Inventory / Serving
-14. Notifications / Read Projections / Final Hardening
+Current V1.3 DEV integration backup:
 
-Storage authorization is completed by forward migration `1004_storage_authorization`.
+`/Raahi Learning/Raahi_Learning_Integrated_V1.3_DEV.zip`
 
-Final Security Advisor: **0 findings**. Current Performance Advisor findings are only unused-index INFO notices on the empty dev DB.
+SHA-256: `c1acb034d81da01379886cbea7311fd500b30375cb48b99c4e8bdde5e6a8e113`
+
+GitHub source recovery:
+
+```bash
+node apps/raahi-learning/build-source-v13.mjs
+```
+
+Required tar SHA-256: `9aa71d002775f719970fcf6d48c324f4f3270ac9f65aa1c7e8a2f9f17c2dc9cc`
+
+## Backend status
+
+Supabase DEV: `iiwwmqokaeflaenhlyip`, `ap-south-1`.
+
+The completed V1.2 backend baseline includes Identity, Locations, Learner Share Codes, Organizations/Discovery, Scoped Restrictions, Requests/Enquiries, Classes/Invitations/Files, Class Communication, Activities/Submissions, Tests/Attempts, Community/Trust, Ads Campaign/Review/Commercial, Ads Inventory/Serving, Notifications/Read Projections/Final Hardening and governed Storage.
+
+V1.3 forward migrations applied in DEV:
+
+- `1015_v13_contextual_inbox_and_org_teacher_picker`
+- `1016_v13_learner_self_access_invitations`
+- `1017_v13_organization_member_invitations`
+- `1018_v13_notification_transition_wiring`
+- `1019_v13_notification_initial_enquiry_dedup`
+
+V1.3 runtime suites pass; touched V1.2 regressions pass; latest Security Advisor at checkpoint: **0 findings**.
+
+## Browser checkpoint
+
+- 83 canonical V1.3 routes;
+- 166/166 desktop/mobile live-contract checks;
+- 0 contract issues;
+- 0 guard failures;
+- focused V1.3 action suite: 7/7 PASS;
+- no direct browser DML against operational tables;
+- no phone-primary OTP login in `live.js`;
+- no raw Account UUID user workflow.
 
 ## Non-negotiable principles
 
 - Account and Learner are distinct; Learner owns learning.
+- One active managing guardian per Learner in V1.
 - Parent acts for Learner, never by identity impersonation.
 - Manager formal-decision authority does not grant Test-taking authority.
+- no turning-18 migration/lifecycle.
 - no public Learner directory.
 - UI does not directly mutate core operational state.
 - current server state beats stale UI.
 - consequential commands are idempotent.
 - Pending Invitation reserves Class capacity at send time.
-- transfer is learner-side authority and same-provider only in V1.2.
+- transfer is learner-side authority and same-provider only in V1.
 - Class and Ads capacity cannot oversell.
-- private share-code targeting replaces public learner search/fake Enquiry.
 - Test definition locks at first valid Attempt.
-- safety restrictions are scope-specific.
-- Realtime invalidates/refetches; it is not source of truth.
-- Sponsored and organic remain separate.
-- Ads serve exact Approved Revision and require independent commercial clearance/inventory.
-- protected learning/private-message surfaces are ad-free.
-- per-user Ads frequency/hide data is private from advertisers.
+- Realtime invalidates/refetches; PostgreSQL is source of truth.
+- Sponsored and organic remain separate; protected learning/private-message surfaces are ad-free.
 - workspace/navigation selection is not authorization.
-- private Storage reads re-check business authorization; copied paths are not access.
+- private Storage reads re-check business authorization.
 - authenticated users have no direct DML on public operational tables.
 
-## Historical review chain
+## V1.3 authentication direction
 
-`03/08/09/10/11/13/14/15/16/17` remain useful decision traceability. Pre-Supabase readiness/runbook docs `21–26` explain how controlled implementation was entered. They do not override the applied forward migration record.
+- Google is intended primary authentication.
+- Google name/photo are editable onboarding defaults, not authority.
+- phone is periodic trust/contact verification, not the normal login path.
+- stale phone trust must not remove existing learning/Test/safety access.
+- anonymous marketplace browsing remains deferred.
+- do not add fake OTP or paid phone MFA merely to implement the product rule.
 
 ## Current boundary
 
-The database/backend gate is closed successfully. Do not invent another schema phase merely to delay integration.
+The next gate is **hosted Auth evidence**, not another product/schema brainstorming phase:
 
-Next: use the **exact frozen clickable UI**, wire Supabase Auth/RPC/read projections/Storage, then execute browser E2E and the real concurrent load/security/chaos program.
+1. verify current Supabase Auth docs/changelog;
+2. configure/test real DEV Google OAuth;
+3. verify Google → Supabase → `bootstrap_account` → editable profile → server-derived contexts;
+4. configure hosted DEV test SMS OTP using an authorized Auth-management surface;
+5. prove server-side phone-verification evidence;
+6. implement the minimal durable 90-day phone-trust layer;
+7. run the 25-persona real-auth E2E cohort + complete regression/security gate;
+8. only then proceed to concurrency/load/chaos and launch readiness.
 
-Do not call the system load-tested or production-ready yet: true multi-session concurrency, p50/p95/p99, soak, deadlock/timeout and real file-transfer evidence still remain.
+Do not call the system production-ready yet and do not deploy implicitly.
