@@ -1,340 +1,227 @@
 # Raahi Learning V1.3 — AI Builder Cheat Code v2 Retrofit Gate
 
-Status: **ACTIVE EXECUTION GATE — DO NOT RESTART THE PRODUCT OR CONTINUE RANDOM BUG FIXING.**
+Status: **INTERNAL RETROFIT CLOSED — HOSTED AUTH TECHNOLOGY PROOF IS THE ACTIVE GATE.**
 
 ## 1. Decision
 
-Raahi Learning will **not** return to Gate 0 and redesign the product from scratch.
+Raahi Learning will **not** return to Gate 0 or redesign the product from scratch. The existing domain remains authoritative unless a real contradiction, security/privacy defect, regulatory requirement, failed usability/E2E scenario, pilot evidence, or proven technical impossibility appears.
 
-The existing domain work remains authoritative unless the retrofit discovers a concrete contradiction, security/privacy defect, failed usability evidence, regulatory requirement, pilot evidence, or proven technical impossibility.
-
-Raahi Learning will also **not** continue as an open-ended bug-fixing exercise.
-
-Instead, the project now enters a one-time **AI Builder Cheat Code v2 retrofit** to close the execution layers that the original process underweighted:
+The one-time AI Builder Cheat Code v2 retrofit added the execution layers that the earlier process underweighted:
 
 1. technology proof;
 2. Screen ↔ Backend contracts;
 3. read/write permission symmetry;
 4. side-effects completeness;
 5. one real walking-skeleton E2E journey;
-6. vertical-slice implementation for all remaining work;
+6. vertical-slice implementation for remaining work;
 7. adversarial/persona regression before launch readiness.
 
-The objective is a robust free-to-use platform, not zero-defect theatre. Defects found in DEV are acceptable evidence that gates are working; changing product rules merely to remove failing tests is not.
+The internal contract/test portion of that retrofit is now closed. Do not restart broad feature work while the external Auth proof remains unproven.
 
----
+## 2. Frozen product/domain rules
 
-## 2. What is already strong and remains frozen
-
-The following areas were deeply designed and have held through implementation:
+These remain unchanged:
 
 - Account ≠ Learner;
 - one Account may learn, teach, manage a Learner and represent an Organization;
-- one managing guardian in V1;
+- one managing guardian per Learner in V1;
 - no turning-18 migration;
 - no public Learner directory;
-- controlled Enquiry before unrestricted relationship messaging;
+- controlled Enquiry before contextual relationship messaging;
 - optional Trial;
-- Pending Class Invitation reserves capacity;
+- pending Class Invitation reserves capacity;
 - one Class model for 1:1 and group learning;
 - learner-side authority for Class acceptance/transfer/leave;
 - parent cannot impersonate Learner for Tests;
-- Activity/Test lifecycles and history rules;
+- Activity/Test lifecycle/history rules;
 - education-only governed Ads isolated from private learning;
-- PostgreSQL is operational source of truth;
+- PostgreSQL remains operational source of truth;
 - UI never directly mutates core operational tables;
-- canonical RPCs re-check current authority and state;
-- Realtime only invalidates/refetches;
+- canonical RPCs re-check current authority/state;
+- Realtime invalidates/refetches only;
 - private Storage re-checks current authorization;
-- idempotent consequential commands;
+- consequential commands remain idempotent;
 - no public ratings, attendance or generic progress percentage in V1.
-
-Do **not** reopen these merely because another product implements a different UX.
-
----
 
 ## 3. Defect classification rule
 
-Before fixing any significant failure, classify it:
+Before any significant fix, classify it:
 
-### A. Domain defect
-The rules/entities/relationships/states cannot represent a legitimate required scenario safely.
+- **Domain defect:** rules/entities/relationships/states cannot safely represent a legitimate required scenario. Run full impact analysis: `rules → entities → relationships → states → permissions → UI → tests → architecture/DB`.
+- **Integration defect:** valid layers do not connect correctly. Fix the contract/integration; do not redesign the domain.
+- **Implementation defect:** agreed contract is right but code is wrong. Patch the smallest vertical slice and regress.
+- **Test/harness defect:** product behavior is right but fixture/oracle/harness is stale or wrong. Fix the test, never weaken an invariant.
 
-**Action:** stop and run impact analysis:
-`rules → entities → relationships → states → permissions → UI → tests → architecture/DB`.
+## 4. Gate R1 — Technology proof
 
-### B. Integration defect
-Two individually valid layers do not connect correctly.
+### Proven internally
 
-Examples already found in Raahi:
-- Class creation authority could not populate the responsible-teacher selector;
-- modal actions rendered outside the event-delegation boundary;
-- Notifications projection existed but transitions did not generate notifications.
-
-**Action:** fix the contract/integration. Do not redesign the domain.
-
-### C. Implementation defect
-The agreed contract is correct but code does not implement it correctly.
-
-**Action:** patch the smallest vertical slice and run regressions.
-
-### D. Test/harness defect
-The product behavior is correct but fixture, route inventory, assertion or test harness is stale/wrong.
-
-**Action:** fix the test. Never weaken a business invariant to make the test pass.
-
-Every future defect must receive one of these classifications before a product-rule change is considered.
-
----
-
-## 4. Retrofit Gate R1 — Technology proofs
-
-### Already proven sufficiently
-
-- PostgreSQL canonical RPC/state model;
+- canonical PostgreSQL RPC/state model;
 - RLS/privilege separation;
 - idempotency behavior;
-- capacity/invitation transactional logic;
+- invitation/capacity transactional rules;
 - governed Storage authorization;
 - notification derivation mechanics;
-- private bearer-token invitation patterns;
-- server-derived phone-trust projection from Supabase Auth data in DEV.
+- private bearer-token invitation pattern;
+- server-derived phone-trust projection from Supabase Auth data;
+- 90-day phone-trust command gating in DEV.
 
 ### Still requiring real external proof
 
-1. **Google OAuth**
-   - real Google provider enabled in Supabase DEV;
-   - browser round trip succeeds;
-   - `auth.users` identity resolves to exactly one Raahi Account;
-   - logout/login preserves same Account;
-   - Google name/photo remain onboarding defaults, not authority;
-   - wrong-Google-account and account-link/recovery behavior is tested.
+**Google OAuth**
+- Google provider enabled in hosted Supabase DEV;
+- real browser OAuth round trip succeeds;
+- `auth.users` identity resolves to exactly one Raahi Account;
+- logout/login resolves the same Account;
+- Google name/photo remain onboarding defaults only;
+- wrong-account/recovery behavior is tested.
 
-2. **Phone verification / refresh**
-   - DEV SMS/test-OTP configuration exists outside Raahi code;
-   - signed-in Account can attach/verify phone;
-   - periodic same-phone OTP refresh updates server-owned Auth confirmation evidence;
-   - the browser resumes the interrupted command after successful proof;
-   - no fake OTP bypass exists in Raahi.
+**Phone verification / refresh**
+- hosted DEV SMS/test-OTP configuration exists outside Raahi code;
+- signed-in Google-primary Account can attach/reverify phone;
+- server-owned phone confirmation evidence changes as expected;
+- interrupted trust-sensitive command resumes only after proof and rechecks current state/authority;
+- no fake OTP bypass exists in Raahi.
 
-**Gate R1 cannot be marked PASS until the real browser/Auth round trips exist.**
+**R1 status: PENDING EXTERNAL HOSTED-AUTH PROOF.**
 
----
+## 5. Gate R2 — Screen ↔ Backend contracts + permission symmetry
 
-## 5. Retrofit Gate R2 — Complete Screen ↔ Backend Contract Matrix
+The route/contract audit is complete and the finite internal findings have been closed.
 
-Before further broad implementation, every actionable V1.3 screen must have an explicit contract:
+After closure:
 
-`Screen → data needed → read RPC/projection → read authority → CTA → write RPC → write authority → resulting state → refetch → destination → recovery`.
+- reachable canonical routes: **84**;
+- desktop/mobile live contract: **168/168 PASS**;
+- route/workspace guard failures: **0**;
+- focused V1.3 action contracts: **12/12 PASS**;
+- privileged deep-link checks: **32/32 PASS**;
+- semantic checks: **15/15 PASS**;
+- workspace checks: **154/154 PASS**;
+- interaction checks: **26/26 PASS**.
 
-For each of the 83 canonical routes, record at minimum:
+Closed findings include live `teacher-members`, exact Community report targeting, `community-post` route inventory, capability-aware Organization controls, safe Notification destinations, private invite OAuth query hardening, and stronger test oracles.
 
-- route/workspace;
-- actor/context;
-- source projection(s);
-- required relationship/capability;
-- command(s), if any;
-- idempotency requirement;
-- success destination;
-- stale/conflict recovery;
-- notification/deep-link consequences;
-- file/Storage consequences;
-- empty/error/offline state.
+**R2 status: PASS for the internal/browser/backend contract layer.** The phone interruption/resume path remains part of R1/R4 because it requires real hosted Auth.
 
-### Mandatory symmetry question
+See `45-v1.3-screen-backend-contract-audit.md` and `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`.
 
-For every write:
+## 6. Gate R3 — Side-effects matrix
 
-> **If this actor may perform the write, can the actor legitimately read every input necessary to perform it?**
+The side-effects decision matrix is complete and frozen in `46-v1.3-side-effects-matrix-audit.md`.
 
-A write permission without the minimum safe read projection is an incomplete feature contract.
+Rules remain:
 
-**Gate R2 PASS:** every actionable route is traceable and no unresolved read/write symmetry gap remains.
+- notification failure does not undo committed core state unless a business rule explicitly requires atomic delivery;
+- notifications never grant authority;
+- private message bodies are not copied unnecessarily;
+- Sponsored viewer push is prohibited;
+- expiry correctness does not depend on browser timers or notifications;
+- separate audit is added only where the business row does not preserve enough actor/time/outcome evidence.
 
----
+Non-walking-skeleton side-effect implementation gaps remain deliberately queued for their owning vertical slices after R4. Do **not** implement them as another horizontal notification project.
 
-## 6. Retrofit Gate R3 — Side-Effects Matrix
+**R3 status: AUDIT PASS / IMPLEMENTATION QUEUED BY VERTICAL SLICE.**
 
-Every consequential transition must explicitly answer:
+## 7. Gate R4 — Mandatory real walking skeleton
 
-- who is notified?
-- who must not be notified?
-- notification count/deduplication;
-- notification destination/deep link;
-- audit event;
-- Storage/file impact;
-- background/expiry job impact;
-- analytics/aggregate event, if needed;
-- external message/email/SMS, if any;
-- whether side-effect failure may roll back the main business transition.
-
-Rules:
-
-- private message bodies are not copied unnecessarily into notifications;
-- Ads never create prohibited promotional notifications;
-- delivery failure does not undo a committed core state change unless the business rule explicitly requires atomic delivery;
-- initial action + its initial message must not create duplicate attention alerts;
-- notifications never grant authority.
-
-**Gate R3 PASS:** every core transition has an explicit side-effect decision, including explicit `none` where appropriate.
-
----
-
-## 7. Retrofit Gate R4 — Mandatory walking skeleton
-
-Before any more broad backend expansion, execute one **real** end-to-end journey across actual boundaries.
-
-### Chosen Raahi Learning walking skeleton
-
-Use synthetic DEV identities only.
+Before any more broad expansion, execute this real DEV journey with synthetic identities:
 
 **Learner/guardian side**
 1. Google sign in.
 2. `bootstrap_account` resolves/creates exactly one Raahi Account.
-3. First-use intent creates/selects the Learner context.
-4. Authorized discovery/read projection loads.
+3. First-use intent creates/selects Learner context.
+4. Authorized discovery projection loads.
 5. Send Enquiry through canonical RPC.
 
 **Provider side**
-6. Provider signs in as a distinct real Auth identity.
+6. Distinct provider Auth identity signs in.
 7. Provider sees the Enquiry through authorized projection.
 8. Provider engages/responds.
 9. Provider sends Class Invitation.
 
 **Learner side**
 10. Learner-side Account receives Notification/deep link.
-11. If phone trust is stale/missing, the intended acceptance is preserved.
+11. Missing/stale phone trust preserves the intended acceptance.
 12. Real phone verification completes.
-13. Invitation acceptance resumes and re-checks current server state/capacity/authority.
-14. Class membership is created.
-15. Both sides can open the Class through authorized projections.
-16. One Class contextual message is exchanged.
+13. Acceptance resumes and rechecks current state/capacity/authority.
+14. Membership is created.
+15. Both sides open the Class through authorized projections.
+16. One contextual Class message is exchanged.
 
-### Walking-skeleton evidence required
+Evidence must be actual browser + hosted Auth session + RPCs + PostgreSQL state + projections + notification/deep-link. Fixture-mode business results cannot substitute for a live layer.
 
-- actual browser;
-- actual Supabase Auth session;
-- actual RPCs;
-- actual PostgreSQL state;
-- actual projections;
-- actual notification/deep link;
-- no direct operational-table DML;
-- no fixture-mode business result substituted for a live layer.
+**R4 status: BLOCKED ONLY BY R1 HOSTED-AUTH PROOF.**
 
-**Gate R4 PASS:** the entire journey works end-to-end on DEV and survives refresh/logout/login where relevant.
+## 8. Gate R5 — Vertical slices only after R4
 
----
-
-## 8. Retrofit Gate R5 — From now on, vertical slices only
-
-After R4, remaining work is implemented slice-by-slice. A slice is not complete until all layers pass:
+After the walking skeleton passes, every remaining slice must close:
 
 `database/state → canonical command → projection → permissions → side effects → UI → browser action test → DB/runtime test → old regression suite`.
 
-Do not build multiple backend modules first and postpone their UI integration.
+Queued examples include remaining Enquiry/Trial side effects, Class/Session/Membership/post effects, Activity review effects, Test-correction effects, Organization authority-change effects, Storage browser E2E, and account closure/recovery journeys.
 
-Recommended remaining slices:
+## 9. Gate R6 — Persona/adversarial E2E
 
-1. Google Auth + Account bootstrap/profile defaults;
-2. phone attach/reverify + trust interruption/resume;
-3. first-use intent/context creation;
-4. Learner self-access private invitation flow;
-5. Organization staff invitation + responsible-teacher selection;
-6. contextual Messages + Notifications/deep links;
-7. remaining teacher/institute/community/Ads/admin action wiring;
-8. Storage/browser file-transfer E2E;
-9. account closure/recovery/security journeys.
+After vertical slices, run whole stories including:
 
-Each slice must leave the full previously-passed regression suite green before the next begins.
-
----
-
-## 9. Retrofit Gate R6 — Persona and adversarial E2E
-
-After vertical slices are closed, execute whole stories rather than page checks only.
-
-Minimum personas/conditions:
-
-- brand-new adult learner;
-- parent with one Learner;
-- parent with multiple Learners;
-- Learner without own login;
-- Learner gaining self-access later;
-- teacher;
-- teacher who is also a parent;
-- institute owner;
-- institute staff member with limited capabilities;
+- adult learner;
+- parent with one/multiple Learners;
+- Learner without/with later self-access;
+- teacher and teacher+parent;
+- institute owner and limited-capability staff;
 - invite recipient;
 - Local Manager;
-- advertiser/org operator;
+- advertiser/operator;
 - Platform Admin;
 - wrong Google account;
-- stale phone trust;
-- changed phone;
-- shared device/context switching;
+- stale/changed phone;
+- shared-device context switching;
 - revoked authority;
 - expired/replayed invitation;
 - concurrent last-seat acceptance;
-- unrelated-account/deep-link tampering;
+- unrelated-account deep-link tampering;
 - copied private file URL;
 - direct DML attempt;
-- weak network/retry/duplicate click.
+- weak-network/retry/duplicate-click behavior.
 
-No persona test may obtain authority from UI/workspace selection alone.
+UI/workspace selection never grants authority.
 
----
+## 10. Gate R7 — Reliability/security/launch
 
-## 10. Retrofit Gate R7 — Reliability, security and launch reality
+Before any public launch claim:
 
-Before public launch claim:
-
-- full frozen DB regression suite PASS;
-- V1.3 tests PASS;
+- full frozen DB regressions PASS;
+- V1.3 regressions PASS;
 - browser persona E2E PASS;
-- Security Advisor = 0 material findings;
-- true concurrent last-seat/inventory/Test/idempotency races;
-- real p50/p95/p99 under representative load;
-- connection-pool/lock/deadlock/timeout checks;
-- soak test;
-- Storage upload/download and authorization under real browser sessions;
-- external Auth/SMS failure recovery;
-- no DEV fixed OTP mapping in production;
-- production OAuth redirect/config checklist;
-- production environment/secret review;
-- synthetic data cleanup;
-- explicit go/no-go report.
+- Security Advisor has no material findings;
+- true concurrent races are tested;
+- p50/p95/p99 under representative load are measured;
+- pool/lock/deadlock/timeout behavior is checked;
+- soak and Storage browser authorization are tested;
+- external Auth/SMS failure recovery is tested;
+- no DEV fixed OTP mapping reaches production;
+- production OAuth redirects/secrets/environment are reviewed;
+- synthetic DEV data is cleaned;
+- explicit go/no-go report exists.
 
----
+Security Advisor after migration 1021 currently reports **0 findings**.
 
-## 11. Immediate continuation rule for the current project
+## 11. Immediate continuation rule
 
-**Stop broad feature work and stop random bug hunting.**
+The sequence is now:
 
-Current sequence from this document:
+1. real hosted DEV Google OAuth proof;
+2. real hosted DEV phone attach/reverify proof;
+3. mandatory walking skeleton;
+4. remaining vertical slices only;
+5. persona/adversarial E2E;
+6. reliability/security/load/launch gates.
 
-1. finish the V1.3 Screen ↔ Backend contract matrix;
-2. finish the side-effects matrix;
-3. complete the real Google + phone technology proof when hosted Auth configuration is available;
-4. execute the mandatory walking skeleton;
-5. only then continue remaining work as vertical slices;
-6. finish persona/adversarial E2E;
-7. finish reliability/security/launch gates.
+No more broad backend/frontend work should occur before step 1–3 unless needed specifically to make the technology proof or walking skeleton executable.
 
-Existing migration 1021 and other DEV work are retained; do not roll back merely to recreate history. Any issue discovered during the retrofit is classified before it is fixed.
+## 12. What this retrofit is not
 
----
+It is not restarting brainstorming, recreating the database, chasing cosmetic imperfections, adding fake Auth, or shipping without real cross-layer evidence.
 
-## 12. What this retrofit is NOT
-
-It is not:
-
-- restarting brainstorming;
-- recreating the database;
-- redesigning frozen domain rules;
-- chasing every cosmetic imperfection;
-- trying to achieve an impossible zero-bug implementation;
-- shipping before real Auth/E2E evidence exists.
-
-It is:
-
-> **a finite closure pass that turns a strong domain model into an executable, cross-layer-proven product.**
+It is a finite closure pass that has now reduced the next unknown to the real hosted Auth boundary.
