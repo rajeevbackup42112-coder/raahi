@@ -39,7 +39,7 @@ do $$ declare h text; c int; token text:=current_setting('t.token',true); begin
   select token_hash into h from public.organization_member_invitations where id=current_setting('t.invite')::uuid;
   if h<>app_private.private_invite_hash(token) or h=token then raise exception 'ORG_INVITE_NOT_HASH_ONLY'; end if;
   select count(*) into c from public.idempotency_keys where coalesce(result_json::text,'') like '%'||token||'%'; if c<>0 then raise exception 'ORG_TOKEN_IN_IDEMPOTENCY'; end if;
-  select count(*) into c from public.organization_audit_log where coalesce(metadata::text,'') like '%'||token||'%'; if c<>0 then raise exception 'ORG_TOKEN_IN_AUDIT'; end if;
+  select count(*) into c from public.audit_log where coalesce(metadata::text,'') like '%'||token||'%'; if c<>0 then raise exception 'ORG_TOKEN_IN_AUDIT'; end if;
 end $$;
 
 -- B. Authenticated recipient previews and accepts; intended capabilities are applied.
