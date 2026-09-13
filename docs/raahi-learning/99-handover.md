@@ -14,16 +14,20 @@ Canonical docs: `docs/raahi-learning/`
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
+The 2026-09-13 hosted-Auth read-only preflight has been re-verified: `auth.users=0`, `auth.identities=0`, `public.accounts=0`, duplicate non-empty pending `phone_change` groups = 0, migrations through 1021 are present, and Security Advisor remains 0. No Raahi Learning Vercel deployment was created. Real Google/phone proof is still pending because the authorized browser/Auth-management surface is not currently available. See `49-hosted-auth-preflight-evidence-v1.3.md`.
+
 Do **not** restart product design, rebuild the database, continue random bug fixing, or deploy publicly.
 
 Read next:
 
 1. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-2. `44-ai-builder-v2-retrofit-gate-v1.3.md`
-3. `43-v1.3-implementation-checkpoint.md`
-4. `41-authentication-phone-trust-v1.3.md`
-5. `45-v1.3-screen-backend-contract-audit.md`
-6. `46-v1.3-side-effects-matrix-audit.md`
+2. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md`
+3. `49-hosted-auth-preflight-evidence-v1.3.md`
+4. `44-ai-builder-v2-retrofit-gate-v1.3.md`
+5. `43-v1.3-implementation-checkpoint.md`
+6. `41-authentication-phone-trust-v1.3.md`
+7. `45-v1.3-screen-backend-contract-audit.md`
+8. `46-v1.3-side-effects-matrix-audit.md`
 
 ## Frozen product rules
 
@@ -179,4 +183,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, `44-ai-builder-v2-retrofit-gate-v1.3.md`, `99-handover.md`, and `43-v1.3-implementation-checkpoint.md`. Do not restart product design or broad feature work. The active gate is real hosted DEV Google/phone Auth proof, then the mandatory walking skeleton. No fake OTP and no public deployment.
+> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md`, `49-hosted-auth-preflight-evidence-v1.3.md`, `44-ai-builder-v2-retrofit-gate-v1.3.md`, `99-handover.md`, and `43-v1.3-implementation-checkpoint.md`. Do not restart product design or broad feature work. The active gate is real hosted DEV Google/phone Auth proof, then the mandatory walking skeleton. No fake OTP and no public deployment.
