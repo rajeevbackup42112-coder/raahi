@@ -25,6 +25,8 @@
     <label for="key">Supabase publishable key</label>
     <input id="key" autocomplete="off" placeholder="sb_publishable_...">
     <button id="init">Initialize</button><button id="forget">Forget saved key</button>
+    <button id="resetPersona">Reset expected persona</button>
+    <p class="muted">Use Reset expected persona only after signing out and before deliberately switching to a different DEV Google identity. It clears only this harness's continuity expectations; it does not delete Auth or Raahi data.</p>
     <p id="conn" class="muted">Not initialized.</p>
   </div>
 
@@ -117,6 +119,13 @@
       $('key').value=localStorage.getItem(KEY_STORAGE)||'';
       $('init').onclick=()=>{try{init();}catch(e){log('INIT ERROR',e.message);}};
       $('forget').onclick=()=>{localStorage.removeItem(KEY_STORAGE);$('key').value='';log('KEY','Saved publishable key removed from localStorage.');};
+      $('resetPersona').onclick=async()=>{try{
+        if(client){const {data}=await client.auth.getSession();if(data.session) throw new Error('Sign out before resetting the expected persona.');}
+        localStorage.removeItem(EXPECTED_USER_STORAGE);
+        localStorage.removeItem(EXPECTED_PHONE_STORAGE);
+        $('phone').value='';$('changeOtp').value='';$('smsOtp').value='';
+        log('PERSONA RESET','Expected Auth user and phone continuity state cleared. No server data was changed.');
+      }catch(e){log('PERSONA RESET ERROR',e.message);}};
       $('google').onclick=async()=>{try{
         const c=requireClient();
         const redirectTo=location.origin+location.pathname;
