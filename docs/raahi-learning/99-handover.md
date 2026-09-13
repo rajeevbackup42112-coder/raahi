@@ -10,34 +10,41 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**V1.2 backend remains complete. The bounded V1.3 UX/backend/browser delta is implemented in DEV, and the project has now entered a one-time AI Builder Cheat Code v2 retrofit gate before any further broad implementation.**
+**V1.2 backend is complete. The bounded V1.3 backend/browser delta and the one-time AI Builder Cheat Code v2 internal retrofit are also closed in DEV. The active gate is now real hosted Supabase Auth proof, followed immediately by the mandatory walking skeleton.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
-Do **not** restart product design and do **not** continue random bug fixing. Read `44-ai-builder-v2-retrofit-gate-v1.3.md` and close the missing execution gates: technology proof, complete Screen↔Backend contracts, permission symmetry, side-effects matrix, real walking-skeleton E2E, then vertical slices only.
+Do **not** restart product design, rebuild the database, continue random bug fixing, or deploy publicly.
 
-Read `43-v1.3-implementation-checkpoint.md` for the packaged/browser checkpoint and `44-ai-builder-v2-retrofit-gate-v1.3.md` for the current execution method.
+Read next:
 
-## Product rules that remain frozen
+1. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+2. `44-ai-builder-v2-retrofit-gate-v1.3.md`
+3. `43-v1.3-implementation-checkpoint.md`
+4. `41-authentication-phone-trust-v1.3.md`
+5. `45-v1.3-screen-backend-contract-audit.md`
+6. `46-v1.3-side-effects-matrix-audit.md`
+
+## Frozen product rules
 
 - `Account ≠ Learner`; Learner owns learning history.
 - One Account may learn, teach, manage a Learner and represent an Organization.
-- One active managing guardian per Learner in V1; do not add Family Supporters/multi-guardian hierarchy without new evidence.
+- One active managing guardian per Learner in V1.
 - No turning-18 migration/lifecycle.
 - Active manager owns formal learner-side marketplace/relationship decisions where a manager exists; otherwise active self-access may act.
 - Guardian authority never grants Test-taking impersonation.
 - No public Learner directory.
-- Direct discovery and Learning Request journeys converge on controlled Enquiry.
-- Trial is optional and remains inside Enquiry rather than becoming a mandatory lifecycle.
+- Discovery/Learning Request journeys converge on controlled Enquiry.
+- Trial remains optional inside Enquiry.
 - Pending Class Invitation reserves capacity; Membership begins only after acceptance.
 - One responsible Teacher per Class in V1.
-- Activity unifies Assignment / Practice / Exercise.
-- Test definition locks at first valid Attempt; guardian receives oversight only, not learner Attempt/definition authority.
+- Activity unifies Assignment/Practice/Exercise.
+- Test definition locks at first valid Attempt; guardian receives oversight only.
 - Selected Location changes discovery/community, not existing private Classes/Messages/history.
 - Community remains local/authenticated; no global Community or unrestricted DM.
 - No attendance, generic progress percentage, public star ratings/reviews, institute ERP/payroll, or platform tuition-payment collection.
 - Ads are education-only, Sponsored-labelled, aggregate-only for advertisers and excluded from Class/Activity/Test/private-message surfaces.
-- UI/workspace selection is never authorization; server relationships/capabilities remain authoritative.
+- UI/workspace selection never grants authority.
 - UI does not directly mutate operational tables; canonical RPCs own consequential transitions.
 - Realtime invalidates/refetches only.
 
@@ -50,26 +57,20 @@ Intended production flow:
 Rules:
 
 - Google is primary authentication.
-- Google name/photo are onboarding defaults only; they are not legal verification or authority data.
-- Phone is periodic trust/contact proof, not the normal login method.
-- Roughly 90-day phone freshness is intended.
-- Stale phone trust must not block ordinary existing learning, Test-taking, existing Class access or safety access.
-- Fresh phone trust gates only the selected trust-sensitive/new-relationship actions defined in `41-authentication-phone-trust-v1.3.md`.
+- Google name/photo are onboarding defaults only, not authority/legal verification.
+- Phone is periodic trust/contact proof, not routine login.
+- 90-day phone freshness is the frozen V1.3 policy.
+- Stale phone trust does not block ordinary existing learning, Test-taking, existing Class access, existing contextual messaging or safety actions.
+- Fresh trust gates only selected creation/escalation actions.
 - Do not use paid Advanced Phone MFA merely to implement this rule.
 - Do not add an application fake-OTP bypass.
-- Anonymous marketplace browsing is deferred, not required for V1.3.
+- Anonymous marketplace browsing remains deferred.
 
-### Resolved technical implementation
+### Backend implementation
 
-Supabase Auth's server-owned `auth.users.phone_confirmed_at` is now the durable phone-trust clock. Do **not** add a duplicate Raahi `phone_trust_verified_at` field merely to represent freshness.
+Supabase Auth's server-owned phone confirmation state is the trust clock; no duplicate client-owned Raahi trust timestamp is used.
 
-DEV migration `1020_v13_phone_trust_projection` derives `unverified / stale / fresh` from Auth state and a 90-day window. Runtime marker: `V13_PHONE_TRUST_PROJECTION_PASS`.
-
-DEV migration `1021_v13_phone_trust_command_guards` is applied and the central command-gate invariant passes: `V13_PHONE_TRUST_COMMAND_GATE_CORE_PASS`. Public-RPC/conditional teaching regression coverage for 1021 is still being completed; do not mark the entire 1021 slice closed until those tests and source reconciliation are committed.
-
-## Applied V1.3 backend delta
-
-Applied DEV migrations after the completed V1.2 baseline:
+Applied DEV migrations after V1.2:
 
 - `1015_v13_contextual_inbox_and_org_teacher_picker`
 - `1016_v13_learner_self_access_invitations`
@@ -77,63 +78,57 @@ Applied DEV migrations after the completed V1.2 baseline:
 - `1018_v13_notification_transition_wiring`
 - `1019_v13_notification_initial_enquiry_dedup`
 - `1020_v13_phone_trust_projection`
-- `1021_v13_phone_trust_command_guards` — applied, final public-RPC regression/source checkpoint still open.
+- `1021_v13_phone_trust_command_guards`
 
-Implemented/verified contracts include:
-
-- unified authorized conversation projection;
-- narrow eligible Organization responsible-teacher picker;
-- private expiring Learner self-access invitation issue/preview/accept/revoke;
-- private expiring Organization member invitation issue/preview/accept/revoke;
-- derived best-effort notifications for important Enquiry/Class/Activity/Test transitions;
-- server-derived phone-trust state without a client-supplied trust timestamp;
-- central phone-trust command gating that preserves completed idempotent retries and does not intentionally block protective/de-escalating actions.
-
-Invitation secrets are hash-only at rest, one-time/expiring, and acceptance rechecks current authority. No public Account/Learner directory was added.
-
-## Runtime/security evidence
-
-V1.3 markers currently include:
+Runtime markers include:
 
 - `V13_CONTEXTUAL_INBOX_ORG_PICKER_PASS`
 - `V13_LEARNER_SELF_ACCESS_INVITATION_PASS`
 - `V13_ORGANIZATION_MEMBER_INVITATION_PASS`
 - `V13_NOTIFICATION_TRANSITION_WIRING_PASS`
 - `V13_PHONE_TRUST_PROJECTION_PASS`
-- `V13_PHONE_TRUST_COMMAND_GATE_CORE_PASS`
+- `V13_PHONE_TRUST_COMMAND_GUARDS_PASS`
 
-Touched V1.2 regressions previously rerun successfully:
+Security Advisor after 1021: **0 findings**.
 
-- `REQUESTS_ENQUIRIES_RUNTIME_TESTS_PASS`
-- `CLASS_COMMUNICATION_RUNTIME_TESTS_PASS`
-- `ACTIVITIES_SUBMISSIONS_RUNTIME_TESTS_PASS`
-- `TESTS_ATTEMPTS_RUNTIME_TESTS_PASS`
+## AI Builder v2 internal retrofit closure
 
-Supabase Security Advisor after migration 1020: **0 findings**. Run it again after the full 1021 regression/source checkpoint.
+The finite internal Screen ↔ Backend findings are closed:
 
-Do not claim real load/stress/soak evidence yet.
+- `teacher-members` renderer;
+- exact Community report target;
+- `community-post` included in route inventory;
+- capability-aware Organization controls;
+- safe Notification destinations;
+- private invitation bearer removed from OAuth redirect query and kept only through local same-origin handoff;
+- stronger route/capability/deep-link/test oracles.
 
-## Browser/frontend checkpoint
+The side-effects matrix is complete/frozen. Remaining non-walking-skeleton side-effect implementation stays queued for owning vertical slices after the real walking skeleton.
 
-V1.3 browser integration includes Google-primary entry UX, first-use intent/setup, Add Learner, private Learner login links, private staff invitations, Organization teacher picker, unified Messages and real notification destinations.
+## Browser/frontend evidence
 
-A focused action test found and fixed a real modal event-delegation bug; confirmation modals rendered outside `#app`, so delegation was corrected centrally.
-
-Evidence:
-
-- canonical V1.3 routes: **83**;
-- desktop/mobile live contract: **166/166**;
+- reachable canonical routes: **84**;
+- desktop/mobile live contract: **168/168 PASS**;
 - issues: **0**;
 - guard failures: **0**;
-- focused V1.3 action paths: **7/7 PASS**;
-- no direct browser DML against operational tables;
-- no phone-primary OTP flow in `live.js`;
-- no raw Account-UUID user workflow.
+- focused V1.3 action contracts: **12/12 PASS**;
+- privileged deep-link checks: **32/32 PASS**;
+- semantic checks: **15/15 PASS**;
+- workspace checks: **154/154 PASS**;
+- interaction checks: **26/26 PASS**;
+- no direct operational-table browser DML;
+- no phone-primary login path in `live.js`;
+- no raw Account UUID workflow.
 
-Frozen anchors remain byte-identical:
+Frozen anchors:
 
 - `app.fixture.js`: `6eb67b36931c45aa4113c77005d82c13bb14ec145500e08cfd92130ebcef576c`
 - `styles.css`: `b2d89e454f8e13712d10058c876f5efe2c8c69acf73dd6aade158241900f7bdd`
+
+Current retrofit anchors:
+
+- `app.live-core-v13.js`: `b8fea9446bba5171aa399d709eede2a0403949e96015157aa0ab1db320834a0f`
+- `live.js`: `cdc44f514b1f396799313c977a4a48fe8efad33ae1f6054db776682c977796aa`
 
 ## Source recovery / persistent artifact
 
@@ -143,11 +138,14 @@ GitHub reconstruction:
 node apps/raahi-learning/build-source-v13.mjs
 ```
 
-Required reconstructed tar SHA-256:
+Verified immutable base tar:
 
 `9aa71d002775f719970fcf6d48c324f4f3270ac9f65aa1c7e8a2f9f17c2dc9cc`
 
-See `apps/raahi-learning/SOURCE_BUNDLE_V1.3.md`.
+Verified retrofit patch:
+
+- gzip SHA-256: `8a68163024ef1b100ebc4d56b8b1cfa56bf3459fc9f897952b6ca5602a19afa9`
+- raw SHA-256: `ced0f5ca5b590e8ca344011f8f008c8fa719d57cca6ca3ead63b01a4fc6efc08`
 
 Persistent ChatGPT Library backup:
 
@@ -155,62 +153,30 @@ Persistent ChatGPT Library backup:
 
 ZIP SHA-256:
 
-`c1acb034d81da01379886cbea7311fd500b30375cb48b99c4e8bdde5e6a8e113`
+`379dece3fb33fadd68843823a82917469b77e39b8d24448328b713ff98b246ef`
 
-## Current execution gate — AI Builder v2 retrofit
+## Current execution gate
 
-Read `44-ai-builder-v2-retrofit-gate-v1.3.md`.
+The next unknown is external, not another internal feature list.
 
-The sequence is now:
-
-1. **Finish Screen ↔ Backend contract coverage** for all actionable V1.3 routes.
-2. **Finish read/write permission symmetry review** — a writer must be able to read the minimum safe inputs required for the action.
-3. **Finish the side-effects matrix** for notifications, audit, Storage, deep links, jobs and explicit no-side-effect decisions.
-4. **Finish 1021 public-RPC/conditional-path regression + source reconciliation** without broadening phone-trust gates beyond the frozen policy.
-5. **Complete real DEV Google OAuth technology proof** through an authorized hosted-Auth surface.
-6. **Complete real DEV phone attach/reverify proof** using supported Auth configuration; no Raahi OTP bypass.
-7. **Run the mandatory real walking skeleton:** browser → Auth → Account/bootstrap/context → Enquiry → provider engage → Invitation → phone interruption/resume → Membership → Class/message.
-8. Only after the walking skeleton passes, continue remaining work **one vertical slice at a time**.
-9. Run full persona/adversarial E2E.
-10. Run true concurrency/load/security/chaos and production launch-readiness gates.
+1. Verify hosted DEV Google provider configuration.
+2. Complete a real browser Google → Supabase Auth session round trip.
+3. Prove `bootstrap_account` resolves/creates exactly one Raahi Account and logout/login returns to the same Account.
+4. Verify hosted DEV SMS/test-OTP configuration through an authorized Auth-management surface.
+5. Prove signed-in Google-primary phone attach/reverify and observe server-owned confirmation state.
+6. Run the mandatory walking skeleton:
+   **Google sign-in → Account/bootstrap → Learner context → discovery → Enquiry → provider engage → Class Invitation → phone interruption/resume → Membership → Class → contextual message.**
+7. Only after that passes, continue remaining work one vertical slice at a time.
+8. Then run persona/adversarial E2E, true concurrency/load/security/chaos, and launch-readiness gates.
 
 ### Defect handling rule
 
-Before changing product design, classify each significant failure as:
-
-- Domain defect;
-- Integration defect;
-- Implementation defect;
-- Test/harness defect.
-
-Only a genuine domain defect triggers full impact analysis:
+Before changing product design, classify failures as Domain, Integration, Implementation, or Test/Harness. Only a genuine Domain defect triggers:
 
 `rules → entities → relationships → states → permissions → UI → tests → architecture/DB`.
 
-Do not modify a frozen business rule just to turn a failing test green.
-
-## Primary continuation sources
-
-Read in this order:
-
-1. `44-ai-builder-v2-retrofit-gate-v1.3.md`
-2. `43-v1.3-implementation-checkpoint.md`
-3. `41-authentication-phone-trust-v1.3.md`
-4. `42-v1.3-ui-db-reconciliation.md`
-5. `40-final-product-ux-audit-v1.3-draft.md`
-6. `07-decision-log-v1.md`
-7. `38-backend-implementation-complete-v1.2.md`
-8. `19-consolidated-database-blueprint-v1.2.md`
-9. `20-consolidated-sql-migration-plan-v1.2.md`
-10. `23-final-acceptance-traceability-v1.2.md`
-11. `31-staging-load-security-chaos-plan-v1.2.md`
-
-Historical design/reconciliation files remain decision traceability; they do not override later applied forward migrations or the V1.3 checkpoint.
-
-## Change-control rule
-
-Do not reopen V1.3 because another platform behaves differently. A new business-rule/UX change needs a discovered contradiction, a security/privacy defect, failed E2E/usability evidence, a regulatory requirement, real pilot-user evidence, or a proven technical impossibility.
+Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/44-ai-builder-v2-retrofit-gate-v1.3.md`, `docs/raahi-learning/99-handover.md`, and `43-v1.3-implementation-checkpoint.md`. Do not restart product design or continue random bug fixing. Finish the AI Builder v2 retrofit in order: Screen↔Backend contracts + permission symmetry → side-effects matrix → close 1021 regression/source reconciliation → real Google/phone technology proof → mandatory real walking skeleton → vertical slices only → persona/adversarial E2E → load/security/launch gates. Do not add fake OTP or deploy publicly.
+> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, `44-ai-builder-v2-retrofit-gate-v1.3.md`, `99-handover.md`, and `43-v1.3-implementation-checkpoint.md`. Do not restart product design or broad feature work. The active gate is real hosted DEV Google/phone Auth proof, then the mandatory walking skeleton. No fake OTP and no public deployment.
