@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Raahi Learning V1.3 Hosted Auth Proof</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;max-width:980px;margin:32px auto;padding:0 18px;line-height:1.45;background:#f7f8fa;color:#15171a}
+    .warn{border:2px solid #b42318;background:#fff0ee;padding:14px;border-radius:10px}
+    .card{background:white;border:1px solid #ddd;border-radius:10px;padding:16px;margin:14px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+    label{display:block;font-weight:600;margin:8px 0 4px} input{width:100%;box-sizing:border-box;padding:9px}
+    button{padding:9px 12px;margin:5px 5px 5px 0;cursor:pointer} code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    pre{white-space:pre-wrap;word-break:break-word;background:#111;color:#eee;padding:12px;border-radius:8px;max-height:430px;overflow:auto}
+    .ok{color:#067647}.bad{color:#b42318}.muted{color:#667085}
+  </style>
+</head>
+<body>
+  <h1>Raahi Learning V1.3 — Hosted Auth Proof</h1>
+  <div class="warn"><strong>TEST ONLY.</strong> This page calls real hosted Supabase Auth/RPCs. It has no fixture business results and no fake OTP. Do not publish it as a user-facing Raahi page.</div>
+
+  <div class="card">
+    <h2>Connection</h2>
+    <p>Canonical project: <code>iiwwmqokaeflaenhlyip</code></p>
+    <label for="key">Supabase publishable key</label>
+    <input id="key" autocomplete="off" placeholder="sb_publishable_...">
+    <button id="init">Initialize</button><button id="forget">Forget saved key</button>
+    <p id="conn" class="muted">Not initialized.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Google / Account</h2>
+      <button id="google">Real Google OAuth</button>
+      <button id="snapshot">Session snapshot</button>
+      <button id="bootstrap">Bootstrap + context</button>
+      <button id="signout">Sign out</button>
+    </div>
+
+    <div class="card">
+      <h2>First phone attachment</h2>
+      <p class="muted">Run the SQL duplicate-pending-phone preflight from doc 48 before this step.</p>
+      <label for="phone">DEV E.164 phone</label><input id="phone" placeholder="+91...">
+      <button id="attach">Send phone-change OTP</button>
+      <label for="changeOtp">OTP</label><input id="changeOtp" inputmode="numeric" autocomplete="one-time-code">
+      <button id="verifyChange">Verify phone_change</button>
+    </div>
+
+    <div class="card">
+      <h2>Periodic same-phone refresh</h2>
+      <p class="muted">Uses the already-confirmed phone. It deliberately disables user creation.</p>
+      <button id="sendSms">Send SMS OTP</button>
+      <label for="smsOtp">OTP</label><input id="smsOtp" inputmode="numeric" autocomplete="one-time-code">
+      <button id="verifySms">Verify sms</button>
+    </div>
+
+    <div class="card">
+      <h2>Trust / identity</h2>
+      <button id="trust">get_my_phone_trust()</button>
+      <button id="context">get_my_account_context()</button>
+      <button id="clearLog">Clear log</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Evidence log</h2>
+    <pre id="log"></pre>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+  <script>
+    (()=>{
+      'use strict';
+      const URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+      const KEY_STORAGE='raahi.learning.v13.auth-proof.publishable-key';
+      const EXPECTED_USER_STORAGE='raahi.learning.v13.auth-proof.expected-user-id';
+      const EXPECTED_PHONE_STORAGE='raahi.learning.v13.auth-proof.expected-phone';
+      let client=null;
+      const $=id=>document.getElementById(id);
+      const log=(label,value)=>{
+        const body=typeof value==='string'?value:JSON.stringify(value,null,2);
+        $('log').textContent+=`\n[${new Date().toISOString()}] ${label}\n${body}\n`;
+        $('log').scrollTop=$('log').scrollHeight;
+      };
+      const safeUser=u=>u?{
+        id:u.id,email:u.email||null,phone:u.phone||null,phone_confirmed_at:u.phone_confirmed_at||null,
+        app_provider:u.app_metadata?.provider||null,providers:u.app_metadata?.providers||null,
+        identities:(u.identities||[]).map(i=>({provider:i.provider,identity_id:i.id,provider_id:i.identity_id||null}))
+      }:null;
+      const requireClient=()=>{if(!client) throw new Error('Initialize the Supabase client first.'); return client;};
+      const rpc=async(name,args={})=>{const {data,error}=await requireClient().rpc(name,args); if(error) throw error; return data;};
+      async function currentUser(){const {data,error}=await requireClient().auth.getUser(); if(error) throw error; return data.user;}
+      async function continuity(stage,user){
+        const expected=localStorage.getItem(EXPECTED_USER_STORAGE);
+        if(expected && user?.id!==expected) throw new Error(`${stage}: AUTH USER ID MISMATCH. expected ${expected}, received ${user?.id||'null'}`);
+        if(!expected && user?.id) localStorage.setItem(EXPECTED_USER_STORAGE,user.id);
+        const expectedPhone=localStorage.getItem(EXPECTED_PHONE_STORAGE);
+        if(expectedPhone && user?.phone && user.phone!==expectedPhone) throw new Error(`${stage}: CONFIRMED PHONE CHANGED unexpectedly.`);
+      }
+      async function snapshot(label='SESSION SNAPSHOT'){
+        const c=requireClient();
+        const {data,error}=await c.auth.getSession(); if(error) throw error;
+        const user=data.session?.user||null;
+        if(user) await continuity(label,user);
+        log(label,{session_present:!!data.session,user:safeUser(user)});
+        return user;
+      }
+      function init(){
+        const key=$('key').value.trim();
+        if(!key) throw new Error('Publishable key is required.');
+        localStorage.setItem(KEY_STORAGE,key);
+        client=window.supabase.createClient(URL,key,{auth:{persistSession:true,detectSessionInUrl:true,autoRefreshToken:true}});
+        $('conn').textContent='Initialized against canonical Learning DEV.';
+        $('conn').className='ok';
+        setTimeout(()=>snapshot('INITIAL SESSION').catch(e=>log('INITIAL SESSION ERROR',e.message)),0);
+      }
+      $('key').value=localStorage.getItem(KEY_STORAGE)||'';
+      $('init').onclick=()=>{try{init();}catch(e){log('INIT ERROR',e.message);}};
+      $('forget').onclick=()=>{localStorage.removeItem(KEY_STORAGE);$('key').value='';log('KEY','Saved publishable key removed from localStorage.');};
+      $('google').onclick=async()=>{try{
+        const c=requireClient();
+        const redirectTo=location.origin+location.pathname;
+        log('GOOGLE OAUTH START',{redirectTo});
+        const {error}=await c.auth.signInWithOAuth({provider:'google',options:{redirectTo}}); if(error) throw error;
+      }catch(e){log('GOOGLE OAUTH ERROR',e.message);}};
+      $('snapshot').onclick=()=>snapshot().catch(e=>log('SNAPSHOT ERROR',e.message));
+      $('bootstrap').onclick=async()=>{try{
+        const u=await currentUser(); await continuity('BOOTSTRAP BEFORE',u);
+        let context;
+        try{context=await rpc('get_my_account_context');}
+        catch(e){
+          if(!/ACCOUNT_NOT_FOUND/i.test(e.message||'')) throw e;
+          const name=u?.user_metadata?.display_name||u?.user_metadata?.name||'Raahi User';
+          const boot=await rpc('bootstrap_account',{p_display_name:name}); log('BOOTSTRAP RESULT',boot);
+          context=await rpc('get_my_account_context');
+        }
+        log('ACCOUNT CONTEXT',context);
+      }catch(e){log('BOOTSTRAP/CONTEXT ERROR',e.message);}};
+      $('signout').onclick=async()=>{try{const {error}=await requireClient().auth.signOut();if(error)throw error;log('SIGN OUT','Success. Expected user ID is intentionally retained for continuity proof.');}catch(e){log('SIGN OUT ERROR',e.message);}};
+      $('attach').onclick=async()=>{try{
+        const c=requireClient(), phone=$('phone').value.trim(); if(!phone) throw new Error('Phone required.');
+        const before=await currentUser(); await continuity('PHONE ATTACH BEFORE',before);
+        localStorage.setItem(EXPECTED_PHONE_STORAGE,phone);
+        log('PHONE ATTACH START',{auth_user_id:before.id,phone,warning:'Requires SQL duplicate-pending preflight from doc 48.'});
+        const {data,error}=await c.auth.updateUser({phone}); if(error) throw error;
+        log('PHONE CHANGE OTP SENT',{returned_user:safeUser(data.user)});
+      }catch(e){log('PHONE ATTACH ERROR',e.message);}};
+      $('verifyChange').onclick=async()=>{try{
+        const c=requireClient(),phone=$('phone').value.trim(),token=$('changeOtp').value.trim();
+        if(!phone||!token) throw new Error('Phone and OTP required.');
+        const {data,error}=await c.auth.verifyOtp({phone,token,type:'phone_change'}); if(error) throw error;
+        await continuity('PHONE_CHANGE VERIFY',data.user);
+        log('PHONE_CHANGE VERIFIED',{user:safeUser(data.user),session_present:!!data.session});
+        log('PHONE TRUST AFTER ATTACH',await rpc('get_my_phone_trust'));
+        log('ACCOUNT CONTEXT AFTER ATTACH',await rpc('get_my_account_context'));
+      }catch(e){log('PHONE_CHANGE VERIFY ERROR',e.message);}};
+      $('sendSms').onclick=async()=>{try{
+        const c=requireClient(),u=await currentUser(); await continuity('SMS REFRESH BEFORE',u);
+        if(!u.phone) throw new Error('Current Auth user has no confirmed phone.');
+        localStorage.setItem(EXPECTED_PHONE_STORAGE,u.phone);
+        log('SMS REFRESH START',{auth_user_id:u.id,phone:u.phone,phone_confirmed_at:u.phone_confirmed_at});
+        const {error}=await c.auth.signInWithOtp({phone:u.phone,options:{shouldCreateUser:false}}); if(error) throw error;
+        log('SMS OTP SENT','No user/session is accepted as proof until verifyOtp succeeds.');
+      }catch(e){log('SMS SEND ERROR',e.message);}};
+      $('verifySms').onclick=async()=>{try{
+        const c=requireClient(),beforeExpected=localStorage.getItem(EXPECTED_USER_STORAGE),phone=localStorage.getItem(EXPECTED_PHONE_STORAGE),token=$('smsOtp').value.trim();
+        if(!beforeExpected||!phone||!token) throw new Error('Expected user, confirmed phone and OTP are required.');
+        const {data,error}=await c.auth.verifyOtp({phone,token,type:'sms'}); if(error) throw error;
+        await continuity('SMS VERIFY',data.user);
+        log('SMS VERIFIED',{user:safeUser(data.user),session_present:!!data.session});
+        log('PHONE TRUST AFTER SMS',await rpc('get_my_phone_trust'));
+        log('ACCOUNT CONTEXT AFTER SMS',await rpc('get_my_account_context'));
+      }catch(e){log('SMS VERIFY ERROR',e.message);}};
+      $('trust').onclick=async()=>{try{log('PHONE TRUST',await rpc('get_my_phone_trust'));}catch(e){log('PHONE TRUST ERROR',e.message);}};
+      $('context').onclick=async()=>{try{log('ACCOUNT CONTEXT',await rpc('get_my_account_context'));}catch(e){log('ACCOUNT CONTEXT ERROR',e.message);}};
+      $('clearLog').onclick=()=>{$('log').textContent='';};
+      if($('key').value && window.supabase){try{init();}catch(e){log('AUTO INIT ERROR',e.message);}}
+    })();
+  </script>
+</body>
+</html>
