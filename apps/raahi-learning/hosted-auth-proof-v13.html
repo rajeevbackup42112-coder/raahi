@@ -89,6 +89,7 @@
         app_provider:u.app_metadata?.provider||null,providers:u.app_metadata?.providers||null,
         identities:(u.identities||[]).map(i=>({provider:i.provider,identity_id:i.id,provider_id:i.identity_id||null}))
       }:null;
+      const normalizePhone=value=>String(value||'').trim().replace(/^\+/,'').replace(/\D/g,'');
       const requireClient=()=>{if(!client) throw new Error('Initialize the Supabase client first.'); return client;};
       const rpc=async(name,args={})=>{const {data,error}=await requireClient().rpc(name,args); if(error) throw error; return data;};
       async function currentUser(){const {data,error}=await requireClient().auth.getUser(); if(error) throw error; return data.user;}
@@ -97,7 +98,7 @@
         if(expected && user?.id!==expected) throw new Error(`${stage}: AUTH USER ID MISMATCH. expected ${expected}, received ${user?.id||'null'}`);
         if(!expected && user?.id) localStorage.setItem(EXPECTED_USER_STORAGE,user.id);
         const expectedPhone=localStorage.getItem(EXPECTED_PHONE_STORAGE);
-        if(expectedPhone && user?.phone && user.phone!==expectedPhone) throw new Error(`${stage}: CONFIRMED PHONE CHANGED unexpectedly.`);
+        if(expectedPhone && user?.phone && normalizePhone(user.phone)!==normalizePhone(expectedPhone)) throw new Error(`${stage}: CONFIRMED PHONE CHANGED unexpectedly. expected ${expectedPhone}, received ${user.phone}`);
       }
       async function snapshot(label='SESSION SNAPSHOT'){
         const c=requireClient();
