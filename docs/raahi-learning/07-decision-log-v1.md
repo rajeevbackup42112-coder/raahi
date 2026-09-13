@@ -142,6 +142,26 @@ This document records high-impact product decisions so future chats/agents do no
 - AI tutor;
 - complex calendar/attendance.
 
+## V1.3 authentication amendment
+
+This amendment changes authentication UX only; it does not reopen the domain model above.
+
+- **Primary production sign-in:** Google via Supabase Auth.
+- Google authentication proves Account identity/session only. It never grants Raahi role/capability/relationship authority.
+- Google-provided name and photo are editable onboarding defaults, not legal verification or permission truth.
+- Google photo is never automatically public; explicit opt-in import into Raahi-controlled media is required.
+- Phone verification becomes an **Account trust signal**, not the repeated primary login flow.
+- Phone trust uses a 90-day freshness policy for selected trust-sensitive actions only.
+- Stale phone trust must not block existing Class/Activity/Test/history access, existing contextual messaging, Leave/Transfer, or Report/Block/safety actions.
+- New trust/authority/public/commercial transitions may require fresh phone proof as specified in `41-authentication-phone-trust-v1.3.md`.
+- Phone change invalidates previous trust freshness.
+- V1.3 does **not** use paid Advanced Phone MFA merely to implement this freshness policy.
+- A public phone-login fallback is not added unless separately approved later.
+- DEV may use Supabase-supported fixed test OTP mappings; production test OTP mappings are forbidden.
+- External Google OAuth credentials and a production SMS provider remain configuration/service boundaries, not database assumptions.
+- The final V1.3 UX review does **not** re-open one-managing-guardian, public learner directory, unrestricted DM, public ratings, anonymous Community, or other intentionally deferred V1 complexity.
+- Logged-out marketplace discovery is deferred until acquisition evidence justifies the additional anonymous surface.
+
 ## Change-control rule
 
 A future agent should not reintroduce a removed entity/state/role because it “sounds standard”. First demonstrate a concrete scenario that cannot be represented safely with the frozen simpler model. Then perform impact analysis across business rules, entities, relationships, states, permissions, money, matching/discovery, UI and tests before changing the model.
