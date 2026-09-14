@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raahi Learning V1.3 Provider Proof</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:30px auto;padding:0 18px;background:#f7f8fa;color:#17181a}.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:16px;margin:14px 0}button{padding:10px 14px;cursor:pointer}pre{background:#111;color:#eee;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto}.warn{border:2px solid #b42318;background:#fff0ee;padding:12px;border-radius:10px}</style>
+</head>
+<body>
+<h1>Raahi Learning V1.3 — R4 Provider Proof</h1>
+<div class="warn"><strong>DEV TEST ONLY.</strong> This calls real canonical RPCs. It is hard-guarded to Rajeev 2 and Dhanbad.</div>
+<div class="card"><p>Expected Auth: <code>fa74b514-e805-4a7e-9c2c-b89845478d79</code></p><p>Expected Account: <code>75c8b6df-145a-43f4-8719-0935e39f3efd</code></p><p>Dhanbad: <code>028ee066-2130-45d6-8e17-6ceb9b0f1f80</code></p><button id="inspect">Inspect only</button> <button id="run">Run provider setup</button></div>
+<div class="card"><h2>Evidence</h2><pre id="log"></pre></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script>
+(()=>{'use strict';
+const URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+const KEY='sb_publishable_bz0YgDXY-WkKxZnogGsfUg_Qgl7E-Wi';
+const AUTH='fa74b514-e805-4a7e-9c2c-b89845478d79';
+const ACCOUNT='75c8b6df-145a-43f4-8719-0935e39f3efd';
+const LOCATION='028ee066-2130-45d6-8e17-6ceb9b0f1f80';
+const c=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const log=(label,v)=>{document.getElementById('log').textContent+=`\n[${new Date().toISOString()}] ${label}\n${typeof v==='string'?v:JSON.stringify(v,null,2)}\n`;};
+const rpc=async(name,args={})=>{const {data,error}=await c.rpc(name,args);if(error)throw error;return data;};
+async function guard(){
+ const {data,error}=await c.auth.getUser(); if(error)throw error; const u=data.user;
+ if(!u||u.id!==AUTH)throw new Error(`AUTH_ID_MISMATCH:${u?.id||'none'}`);
+ const ctx=await rpc('get_my_account_context');
+ if(ctx?.account?.account_id!==ACCOUNT)throw new Error(`ACCOUNT_ID_MISMATCH:${ctx?.account?.account_id||'none'}`);
+ const trust=await rpc('get_my_phone_trust'); if(trust?.state!=='fresh')throw new Error(`PHONE_TRUST_NOT_FRESH:${trust?.state||'none'}`);
+ const {data:loc,error:le}=await c.rpc('list_live_locations'); if(le)throw le;
+ if(!(loc||[]).some(x=>x.location_id===LOCATION))throw new Error('DHANBAD_NOT_LIVE');
+ log('GUARD PASS',{auth_user_id:u.id,account_id:ACCOUNT,phone:u.phone||null,phone_confirmed_at:u.phone_confirmed_at||null,phone_trust:trust,location_id:LOCATION});
+ return {u,ctx,trust};
+}
+async function inspect(){try{await guard();log('ACCOUNT CONTEXT',await rpc('get_my_account_context'));}catch(e){log('INSPECT ERROR',e.message);}}
+async function run(){try{
+ await guard();
+ const enabled=await rpc('enable_teaching',{p_idempotency_key:'r4-provider-enable-teaching-v1'});log('ENABLE TEACHING',enabled);
+ const profile=await rpc('upsert_teacher_profile',{p_headline:'Mathematics tutor in Dhanbad',p_bio:'DEV R4 provider proof profile.',p_experience_summary:'Raahi Learning V1.3 walking-skeleton test provider.',p_visibility_status:'visible',p_idempotency_key:'r4-provider-profile-v1'});log('TEACHER PROFILE',profile);
+ const option=await rpc('publish_teaching_option',{p_organization_id:null,p_title:'Mathematics tuition — Classes 6–10',p_category:'Mathematics',p_description:'DEV R4 walking-skeleton teaching option for Dhanbad.',p_teaching_mode:'both',p_area_or_venue_text:'Dhanbad',p_fee_display_text:'Contact for details',p_location_ids:[LOCATION],p_idempotency_key:'r4-provider-option-v1'});log('TEACHING OPTION',option);
+ const {data:discovery,error:de}=await c.rpc('discover_teaching_options',{p_location_id:LOCATION,p_query:'Mathematics'});if(de)throw de;log('DISCOVERY AFTER PUBLISH',discovery);
+ log('ACCOUNT CONTEXT AFTER PROVIDER SETUP',await rpc('get_my_account_context'));
+ }catch(e){log('PROVIDER SETUP ERROR',e.message);}}
+document.getElementById('inspect').onclick=inspect;document.getElementById('run').onclick=run;
+setTimeout(inspect,200);
+})();
+</script>
+</body></html>
