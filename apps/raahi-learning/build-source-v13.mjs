@@ -39,67 +39,16 @@ const expectedFiles = {
 
 const pieces = [
   ...Array.from({ length: 11 }, (_, i) => `part${String(i).padStart(2, '0')}.b64`),
-  'part11-00.b64',
-  'part11-01.b64',
-  'part11-02.b64',
-  'part11-03-00.b64',
-  'part11-03-01.b64',
-  'part11-03-02.b64',
-  'part11-03-03-00.b64',
-  'part11-03-03-01.b64',
-  'part11-03-03-02.b64',
-  'part11-03-03-03.b64',
-  'part11-03-03-04.b64',
-  'part11-03-03-05.b64',
+  'part11-00.b64','part11-01.b64','part11-02.b64','part11-03-00.b64','part11-03-01.b64','part11-03-02.b64',
+  'part11-03-03-00.b64','part11-03-03-01.b64','part11-03-03-02.b64','part11-03-03-03.b64','part11-03-03-04.b64','part11-03-03-05.b64',
 ];
-
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-
-for (const name of pieces) {
-  if (!fs.existsSync(path.join(bundleDir, name))) throw new Error(`Missing source bundle piece: ${name}`);
-}
+for (const name of pieces) if (!fs.existsSync(path.join(bundleDir,name))) throw new Error(`Missing source bundle piece: ${name}`);
 if (!fs.existsSync(retrofitPatchB64)) throw new Error('Missing retrofit-v13.patch.b64');
-
-const base64 = pieces.map(name => fs.readFileSync(path.join(bundleDir, name), 'utf8').trim()).join('');
-const tarBytes = Buffer.from(base64, 'base64');
-const baseTarSha = sha256(tarBytes);
-if (baseTarSha !== expectedBaseTarSha256) throw new Error(`Base source bundle hash mismatch: ${baseTarSha}`);
-
-fs.rmSync(outputDir, { recursive: true, force: true });
-fs.mkdirSync(outputDir, { recursive: true });
-const tmpTar = path.join(outputDir, '.frontend-source-v1.3.tar.gz');
-fs.writeFileSync(tmpTar, tarBytes);
-execFileSync('tar', ['-xzf', tmpTar, '-C', outputDir], { stdio: 'inherit' });
-fs.rmSync(tmpTar, { force: true });
-
-const patchGz = Buffer.from(fs.readFileSync(retrofitPatchB64, 'utf8').trim(), 'base64');
-const patchGzSha = sha256(patchGz);
-if (patchGzSha !== expectedRetrofitPatchGzSha256) throw new Error(`Compressed retrofit patch hash mismatch: ${patchGzSha}`);
-const patchBytes = zlib.gunzipSync(patchGz);
-const patchSha = sha256(patchBytes);
-if (patchSha !== expectedRetrofitPatchSha256) throw new Error(`Retrofit patch hash mismatch: ${patchSha}`);
-const tmpPatch = path.join(outputDir, '.v13-retrofit.patch');
-fs.writeFileSync(tmpPatch, patchBytes);
-execFileSync('patch', ['-p1', '-i', tmpPatch], { cwd: outputDir, stdio: 'inherit' });
-fs.rmSync(tmpPatch, { force: true });
-
-for (const [relativePath, expected] of Object.entries(expectedFiles)) {
-  const filePath = path.join(outputDir, relativePath);
-  if (!fs.existsSync(filePath)) throw new Error(`Missing reconstructed file: ${relativePath}`);
-  const actual = sha256(fs.readFileSync(filePath));
-  if (actual !== expected) throw new Error(`Reconstructed hash mismatch for ${relativePath}: ${actual}`);
-}
-
-const devPhoneSignIn = path.join(appDir, 'dev-phone-signin-v13.html');
-if (!fs.existsSync(devPhoneSignIn)) throw new Error('Missing dev-phone-signin-v13.html');
-fs.copyFileSync(devPhoneSignIn, path.join(outputDir, 'dev-phone-signin-v13.html'));
-
-const providerProof = path.join(appDir, 'provider-proof-v13.html');
-if (!fs.existsSync(providerProof)) throw new Error('Missing provider-proof-v13.html');
-fs.copyFileSync(providerProof, path.join(outputDir, 'provider-proof-v13.html'));
-
-const learnerProof = path.join(appDir, 'learner-proof-v13.html');
-if (!fs.existsSync(learnerProof)) throw new Error('Missing learner-proof-v13.html');
-fs.copyFileSync(learnerProof, path.join(outputDir, 'learner-proof-v13.html'));
-
+const base64=pieces.map(name=>fs.readFileSync(path.join(bundleDir,name),'utf8').trim()).join('');
+const tarBytes=Buffer.from(base64,'base64'),baseTarSha=sha256(tarBytes);if(baseTarSha!==expectedBaseTarSha256)throw new Error(`Base source bundle hash mismatch: ${baseTarSha}`);
+fs.rmSync(outputDir,{recursive:true,force:true});fs.mkdirSync(outputDir,{recursive:true});const tmpTar=path.join(outputDir,'.frontend-source-v1.3.tar.gz');fs.writeFileSync(tmpTar,tarBytes);execFileSync('tar',['-xzf',tmpTar,'-C',outputDir],{stdio:'inherit'});fs.rmSync(tmpTar,{force:true});
+const patchGz=Buffer.from(fs.readFileSync(retrofitPatchB64,'utf8').trim(),'base64'),patchGzSha=sha256(patchGz);if(patchGzSha!==expectedRetrofitPatchGzSha256)throw new Error(`Compressed retrofit patch hash mismatch: ${patchGzSha}`);const patchBytes=zlib.gunzipSync(patchGz),patchSha=sha256(patchBytes);if(patchSha!==expectedRetrofitPatchSha256)throw new Error(`Retrofit patch hash mismatch: ${patchSha}`);const tmpPatch=path.join(outputDir,'.v13-retrofit.patch');fs.writeFileSync(tmpPatch,patchBytes);execFileSync('patch',['-p1','-i',tmpPatch],{cwd:outputDir,stdio:'inherit'});fs.rmSync(tmpPatch,{force:true});
+for(const[relativePath,expected]of Object.entries(expectedFiles)){const filePath=path.join(outputDir,relativePath);if(!fs.existsSync(filePath))throw new Error(`Missing reconstructed file: ${relativePath}`);const actual=sha256(fs.readFileSync(filePath));if(actual!==expected)throw new Error(`Reconstructed hash mismatch for ${relativePath}: ${actual}`);}
+for(const name of ['dev-phone-signin-v13.html','provider-proof-v13.html','learner-proof-v13.html','r4-learner-manager-proof-v13.html']){const source=path.join(appDir,name);if(!fs.existsSync(source))throw new Error(`Missing ${name}`);fs.copyFileSync(source,path.join(outputDir,name));}
 console.log(`RAAHI_LEARNING_V13_RETROFIT_RECONSTRUCTED base=${baseTarSha} patch=${patchSha}`);
