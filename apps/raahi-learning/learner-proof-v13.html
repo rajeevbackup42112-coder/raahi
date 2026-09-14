@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raahi Learning V1.3 Learner Proof</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:30px auto;padding:0 18px;background:#f7f8fa;color:#17181a}.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:16px;margin:14px 0}button{padding:10px 14px;cursor:pointer}pre{background:#111;color:#eee;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto}.warn{border:2px solid #b42318;background:#fff0ee;padding:12px;border-radius:10px}</style>
+</head>
+<body>
+<h1>Raahi Learning V1.3 — R4 Learner Proof</h1>
+<div class="warn"><strong>DEV TEST ONLY.</strong> This calls real canonical RPCs. It is hard-guarded to Rajeev 1, the known learner, Rajeev 2 as provider, and Dhanbad.</div>
+<div class="card"><p>Expected Auth: <code>580f39b5-4341-4473-af7d-301b8245263b</code></p><p>Expected Account: <code>8c96dbc0-9627-48e2-86a1-3ec72e42e7ec</code></p><p>Learner: <code>c47ca00d-26dd-48c3-a7e4-5be33d2fad06</code></p><p>Dhanbad: <code>028ee066-2130-45d6-8e17-6ceb9b0f1f80</code></p><button id="inspect">Inspect only</button> <button id="run">Run discovery + enquiry</button></div>
+<div class="card"><h2>Evidence</h2><pre id="log"></pre></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script>
+(()=>{'use strict';
+const URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+const KEY='sb_publishable_bz0YgDXY-WkKxZnogGsfUg_Qgl7E-Wi';
+const AUTH='580f39b5-4341-4473-af7d-301b8245263b';
+const ACCOUNT='8c96dbc0-9627-48e2-86a1-3ec72e42e7ec';
+const LEARNER='c47ca00d-26dd-48c3-a7e4-5be33d2fad06';
+const PROVIDER='75c8b6df-145a-43f4-8719-0935e39f3efd';
+const LOCATION='028ee066-2130-45d6-8e17-6ceb9b0f1f80';
+const c=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const log=(label,v)=>{document.getElementById('log').textContent+=`\n[${new Date().toISOString()}] ${label}\n${typeof v==='string'?v:JSON.stringify(v,null,2)}\n`;};
+const rpc=async(name,args={})=>{const {data,error}=await c.rpc(name,args);if(error)throw error;return data;};
+async function guard(){
+ const {data,error}=await c.auth.getUser();if(error)throw error;const u=data.user;
+ if(!u||u.id!==AUTH)throw new Error(`AUTH_ID_MISMATCH:${u?.id||'none'}`);
+ const ctx=await rpc('get_my_account_context');
+ if(ctx?.account?.account_id!==ACCOUNT)throw new Error(`ACCOUNT_ID_MISMATCH:${ctx?.account?.account_id||'none'}`);
+ if(!(ctx?.learners||[]).some(x=>x.learner_id===LEARNER||x.id===LEARNER))throw new Error('EXPECTED_LEARNER_NOT_IN_CONTEXT');
+ const {data:loc,error:le}=await c.rpc('list_live_locations');if(le)throw le;
+ if(!(loc||[]).some(x=>x.location_id===LOCATION))throw new Error('DHANBAD_NOT_LIVE');
+ log('GUARD PASS',{auth_user_id:u.id,account_id:ACCOUNT,learner_id:LEARNER,location_id:LOCATION});
+ return {u,ctx};
+}
+async function discovery(){
+ const {data,error}=await c.rpc('discover_teaching_options',{p_location_id:LOCATION,p_query:'Mathematics'});if(error)throw error;
+ const matches=(data||[]).filter(x=>x.provider_id===PROVIDER);
+ log('DISCOVERY',data||[]);
+ if(matches.length!==1)throw new Error(`EXPECTED_ONE_RAJEEV2_OPTION_FOUND:${matches.length}`);
+ return matches[0];
+}
+async function inspect(){try{await guard();log('ACCOUNT CONTEXT',await rpc('get_my_account_context'));await discovery();}catch(e){log('INSPECT ERROR',e.message);}}
+async function run(){try{
+ await guard();
+ const selected=await rpc('set_selected_location',{p_location_id:LOCATION,p_idempotency_key:'r4-learner-select-dhanbad-v1'});log('SELECT LOCATION',selected);
+ const option=await discovery();
+ const enquiry=await rpc('send_enquiry',{p_learner_id:LEARNER,p_teaching_option_id:option.teaching_option_id,p_location_id:LOCATION,p_opening_message:'Looking for Classes 6–10 mathematics tuition in Dhanbad.',p_idempotency_key:'r4-learner-send-enquiry-v1'});log('SEND ENQUIRY',enquiry);
+ log('MY ENQUIRIES',await rpc('get_my_enquiries'));
+ log('ACCOUNT CONTEXT AFTER ENQUIRY',await rpc('get_my_account_context'));
+ }catch(e){log('LEARNER FLOW ERROR',e.message);}}
+document.getElementById('inspect').onclick=inspect;document.getElementById('run').onclick=run;
+setTimeout(inspect,200);
+})();
+</script>
+</body></html>
