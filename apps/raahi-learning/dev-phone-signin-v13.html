@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Raahi Learning V1.3 DEV Existing Phone Sign-in</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;max-width:760px;margin:32px auto;padding:0 18px;line-height:1.45;background:#f7f8fa;color:#15171a}
+    .warn{border:2px solid #b42318;background:#fff0ee;padding:14px;border-radius:10px}.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:16px;margin:14px 0}
+    label{display:block;font-weight:600;margin:8px 0 4px}input{width:100%;box-sizing:border-box;padding:9px}button{padding:9px 12px;margin:5px 5px 5px 0;cursor:pointer}
+    pre{white-space:pre-wrap;word-break:break-word;background:#111;color:#eee;padding:12px;border-radius:8px;max-height:460px;overflow:auto}.ok{color:#067647}.muted{color:#667085}
+  </style>
+</head>
+<body>
+  <h1>Raahi Learning — DEV Existing Phone Sign-in</h1>
+  <div class="warn"><strong>TEST ONLY.</strong> This helper uses real hosted Supabase Auth. It never creates a user and accepts only an already-confirmed phone. Do not expose it as a user-facing Raahi route.</div>
+  <div class="card">
+    <p>Canonical project: <code>iiwwmqokaeflaenhlyip</code></p>
+    <label for="key">Supabase publishable key</label><input id="key" autocomplete="off" placeholder="sb_publishable_...">
+    <button id="init">Initialize</button><button id="signout">Sign out</button>
+    <p id="conn" class="muted">Not initialized.</p>
+  </div>
+  <div class="card">
+    <label for="phone">Existing confirmed DEV phone (E.164)</label><input id="phone" placeholder="+91...">
+    <button id="send">Send mapped SMS OTP</button>
+    <label for="otp">OTP</label><input id="otp" inputmode="numeric" autocomplete="one-time-code">
+    <button id="verify">Verify + establish session</button>
+    <button id="snapshot">Session snapshot</button>
+    <button id="trust">Phone trust</button>
+    <button id="context">Account context</button>
+  </div>
+  <div class="card"><h2>Evidence log</h2><pre id="log"></pre></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+  <script>
+  (()=>{
+    'use strict';
+    const URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+    const KEY_STORAGE='raahi.learning.v13.auth-proof.publishable-key';
+    let client=null;
+    const $=id=>document.getElementById(id);
+    const log=(label,value)=>{const body=typeof value==='string'?value:JSON.stringify(value,null,2);$('log').textContent+=`\n[${new Date().toISOString()}] ${label}\n${body}\n`;};
+    const safeUser=u=>u?{id:u.id,email:u.email||null,phone:u.phone||null,phone_confirmed_at:u.phone_confirmed_at||null,providers:u.app_metadata?.providers||null,identities:(u.identities||[]).map(i=>({provider:i.provider,identity_id:i.id,provider_id:i.identity_id||null}))}:null;
+    const requireClient=()=>{if(!client)throw new Error('Initialize first.');return client;};
+    const rpc=async(name,args={})=>{const {data,error}=await requireClient().rpc(name,args);if(error)throw error;return data;};
+    function init(){const key=$('key').value.trim();if(!key)throw new Error('Publishable key required.');localStorage.setItem(KEY_STORAGE,key);client=window.supabase.createClient(URL,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});$('conn').textContent='Initialized against canonical Learning DEV.';$('conn').className='ok';}
+    $('key').value=localStorage.getItem(KEY_STORAGE)||'';
+    $('init').onclick=()=>{try{init();}catch(e){log('INIT ERROR',e.message)}};
+    $('send').onclick=async()=>{try{const phone=$('phone').value.trim();if(!phone)throw new Error('Phone required.');const {error}=await requireClient().auth.signInWithOtp({phone,options:{shouldCreateUser:false}});if(error)throw error;log('OTP REQUESTED',{phone,shouldCreateUser:false});}catch(e){log('OTP REQUEST ERROR',e.message)}};
+    $('verify').onclick=async()=>{try{const phone=$('phone').value.trim(),token=$('otp').value.trim();if(!phone||!token)throw new Error('Phone and OTP required.');const {data,error}=await requireClient().auth.verifyOtp({phone,token,type:'sms'});if(error)throw error;log('SMS VERIFIED',{session_present:!!data.session,user:safeUser(data.user)});log('PHONE TRUST',await rpc('get_my_phone_trust'));log('ACCOUNT CONTEXT',await rpc('get_my_account_context'));}catch(e){log('VERIFY ERROR',e.message)}};
+    $('snapshot').onclick=async()=>{try{const {data,error}=await requireClient().auth.getSession();if(error)throw error;log('SESSION SNAPSHOT',{session_present:!!data.session,user:safeUser(data.session?.user||null)});}catch(e){log('SNAPSHOT ERROR',e.message)}};
+    $('trust').onclick=async()=>{try{log('PHONE TRUST',await rpc('get_my_phone_trust'));}catch(e){log('PHONE TRUST ERROR',e.message)}};
+    $('context').onclick=async()=>{try{log('ACCOUNT CONTEXT',await rpc('get_my_account_context'));}catch(e){log('ACCOUNT CONTEXT ERROR',e.message)}};
+    $('signout').onclick=async()=>{try{const {error}=await requireClient().auth.signOut();if(error)throw error;log('SIGN OUT','Success');}catch(e){log('SIGN OUT ERROR',e.message)}};
+    if($('key').value&&window.supabase){try{init();}catch(e){log('AUTO INIT ERROR',e.message)}}
+  })();
+  </script>
+</body>
+</html>
