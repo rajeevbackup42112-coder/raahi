@@ -90,4 +90,8 @@ for (const [relativePath, expected] of Object.entries(expectedFiles)) {
   if (actual !== expected) throw new Error(`Reconstructed hash mismatch for ${relativePath}: ${actual}`);
 }
 
+const devPhoneSignIn = path.join(appDir, 'dev-phone-signin-v13.html');
+if (!fs.existsSync(devPhoneSignIn)) throw new Error('Missing dev-phone-signin-v13.html');
+fs.copyFileSync(devPhoneSignIn, path.join(outputDir, 'dev-phone-signin-v13.html'));
+
 console.log(`RAAHI_LEARNING_V13_RETROFIT_RECONSTRUCTED base=${baseTarSha} patch=${patchSha}`);
