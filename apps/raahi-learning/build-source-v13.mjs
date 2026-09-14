@@ -98,4 +98,8 @@ const providerProof = path.join(appDir, 'provider-proof-v13.html');
 if (!fs.existsSync(providerProof)) throw new Error('Missing provider-proof-v13.html');
 fs.copyFileSync(providerProof, path.join(outputDir, 'provider-proof-v13.html'));
 
+const learnerProof = path.join(appDir, 'learner-proof-v13.html');
+if (!fs.existsSync(learnerProof)) throw new Error('Missing learner-proof-v13.html');
+fs.copyFileSync(learnerProof, path.join(outputDir, 'learner-proof-v13.html'));
+
 console.log(`RAAHI_LEARNING_V13_RETROFIT_RECONSTRUCTED base=${baseTarSha} patch=${patchSha}`);
