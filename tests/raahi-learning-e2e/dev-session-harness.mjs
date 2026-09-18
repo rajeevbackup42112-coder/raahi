@@ -127,6 +127,14 @@ async function main() {
     report.deployment = await waitForDeployment(commit);
     report.checks.push({ check: 'exact_dev_commit_deployed', pass: true });
 
+    const unauthenticated = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'ensure_personas', run_id: rid, passwords: {} }),
+    });
+    assert(unauthenticated.status === 403, 'IDENTITY_FACTORY_UNAUTHENTICATED_GUARD_FAILED_' + unauthenticated.status);
+    report.checks.push({ check: 'identity_factory_rejects_unauthenticated', pass: true });
+
     const oidc = await githubOidcToken();
     const passwords = Object.fromEntries(PERSONA_KEYS.map((key) => [key, makePassword()]));
     const ensured = await edgeCall(oidc, { action: 'ensure_personas', run_id: rid, passwords });
