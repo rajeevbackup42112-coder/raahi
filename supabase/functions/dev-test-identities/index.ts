@@ -36,6 +36,12 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     unrelated: { email: 'e2e.r4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000203', display_name: 'R4 E2E Unrelated Account', scenario: 'R4 privacy actor' },
     admin: { email: 'e2e.r4.admin@dev.learning.myraahi.co.in', phone: '+919100000204', display_name: 'R4 E2E Platform Admin', scenario: 'R4 fixture admin' },
   },
+  ui: {
+    learner: { email: 'e2e.ui.learner@dev.learning.myraahi.co.in', phone: '+919100000301', display_name: 'UI E2E Learner', scenario: 'UI convergence learner' },
+    teacher: { email: 'e2e.ui.teacher@dev.learning.myraahi.co.in', phone: '+919100000302', display_name: 'UI E2E Teacher', scenario: 'UI convergence teacher' },
+    parent: { email: 'e2e.ui.parent@dev.learning.myraahi.co.in', phone: '+919100000303', display_name: 'UI E2E Parent', scenario: 'UI convergence parent' },
+    unrelated: { email: 'e2e.ui.unrelated@dev.learning.myraahi.co.in', phone: '+919100000304', display_name: 'UI E2E Unrelated', scenario: 'UI convergence privacy actor' },
+  },
   cohort: {
     adult_learner: { email: 'e2e.cohort.adult_learner@dev.learning.myraahi.co.in', phone: '+919100001001', display_name: 'Cohort Adult Learner', scenario: 'adult learner' },
     parent_single: { email: 'e2e.cohort.parent_single@dev.learning.myraahi.co.in', phone: '+919100001002', display_name: 'Cohort Parent Single', scenario: 'parent managing one learner' },
