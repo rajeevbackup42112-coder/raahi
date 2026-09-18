@@ -10,24 +10,26 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**V1.2 backend is complete. The bounded V1.3 backend/browser delta and the one-time AI Builder Cheat Code v2 internal retrofit are also closed in DEV. The active gate is now real hosted Supabase Auth proof, followed immediately by the mandatory walking skeleton.**
+**V1.2 backend, the bounded V1.3 backend/browser delta, the AI Builder v2 retrofit, hosted Auth core proof, the DEV genuine-session harness, and the mandatory R4 walking skeleton are all closed/proven in DEV. The active sequence is representative persona expansion → frozen-prototype UI/interaction convergence → remaining vertical slices → adversarial/reliability/security/launch gates.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
-The 2026-09-13 hosted-Auth read-only preflight has been re-verified: `auth.users=0`, `auth.identities=0`, `public.accounts=0`, duplicate non-empty pending `phone_change` groups = 0, migrations through 1021 are present, and Security Advisor remains 0. No Raahi Learning Vercel deployment was created. Real Google/phone proof is still pending because the authorized browser/Auth-management surface is not currently available. See `49-hosted-auth-preflight-evidence-v1.3.md`.
+The old 2026-09-13 zero-Auth preflight is historical only. Real hosted Google/phone identities now exist, Auth→Account continuity is proven, the original Rajeev R4 phone-interruption/resume chain remains durable, and the final Class-message / notification / copied-link privacy boundary is autonomously proven in isolated cloud browsers. The normal regression foundation now uses DEV-only OIDC-protected test identities with genuine Supabase sessions and intact RLS. See `50-dev-test-identity-session-harness-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`.
 
 Do **not** restart product design, rebuild the database, continue random bug fixing, or deploy publicly.
 
 Read next:
 
-1. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-2. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md`
-3. `49-hosted-auth-preflight-evidence-v1.3.md`
-4. `44-ai-builder-v2-retrofit-gate-v1.3.md`
-5. `43-v1.3-implementation-checkpoint.md`
-6. `41-authentication-phone-trust-v1.3.md`
-7. `45-v1.3-screen-backend-contract-audit.md`
-8. `46-v1.3-side-effects-matrix-audit.md`
+1. `52-master-lifecycle-gates-traceability-v1.3.md`
+2. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+3. `50-dev-test-identity-session-harness-v1.3.md`
+4. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+5. `44-ai-builder-v2-retrofit-gate-v1.3.md`
+6. `45-v1.3-screen-backend-contract-audit.md`
+7. `46-v1.3-side-effects-matrix-audit.md`
+8. `41-authentication-phone-trust-v1.3.md`
+9. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression runbook)
+10. `49-hosted-auth-preflight-evidence-v1.3.md` (historical preflight only)
 
 ## Frozen product rules
 
@@ -161,17 +163,19 @@ ZIP SHA-256:
 
 ## Current execution gate
 
-The next unknown is external, not another internal feature list.
+R4 is closed. Do **not** repeat the manual Rajeev multi-browser walking skeleton unless a regression specifically requires provider-smoke evidence.
 
-1. Verify hosted DEV Google provider configuration.
-2. Complete a real browser Google → Supabase Auth session round trip.
-3. Prove `bootstrap_account` resolves/creates exactly one Raahi Account and logout/login returns to the same Account.
-4. Verify hosted DEV SMS/test-OTP configuration through an authorized Auth-management surface.
-5. Prove signed-in Google-primary phone attach/reverify and observe server-owned confirmation state.
-6. Run the mandatory walking skeleton:
-   **Google sign-in → Account/bootstrap → Learner context → discovery → Enquiry → provider engage → Class Invitation → phone interruption/resume → Membership → Class → contextual message.**
-7. Only after that passes, continue remaining work one vertical slice at a time.
-8. Then run persona/adversarial E2E, true concurrency/load/security/chaos, and launch-readiness gates.
+Current sequence:
+
+1. expand the DEV deterministic persona/session harness from the four foundational actors to a bounded representative cohort;
+2. prove isolated genuine sessions and authority boundaries for that cohort;
+3. begin screen-by-screen and interaction-by-interaction convergence against the frozen V1.3 UI artifact;
+4. every defect is classified Domain / Integration / Implementation / Test-Harness before a fix;
+5. close remaining work one vertical slice at a time;
+6. then run adversarial/recovery/race testing;
+7. finally complete reliability, security, load, provider-smoke and launch-readiness gates.
+
+The R4 on-demand workflow is `.github/workflows/raahi-learning-r4-class-thread.yml`. It is regression evidence, not an ordinary per-commit mutation suite.
 
 ### Defect handling rule
 
@@ -183,4 +187,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md`, `49-hosted-auth-preflight-evidence-v1.3.md`, `44-ai-builder-v2-retrofit-gate-v1.3.md`, `99-handover.md`, and `43-v1.3-implementation-checkpoint.md`. Do not restart product design or broad feature work. The active gate is real hosted DEV Google/phone Auth proof, then the mandatory walking skeleton. No fake OTP and no public deployment.
+> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/52-master-lifecycle-gates-traceability-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, `50-dev-test-identity-session-harness-v1.3.md`, `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, and `99-handover.md`. Do not restart product design, hosted-Auth setup, or R4. The active sequence is representative persona expansion, then frozen-prototype UI/interaction convergence using autonomous genuine DEV sessions. Keep Google/SMS as small provider-smoke suites; no fake OTP and no public deployment.
