@@ -121,6 +121,12 @@
       if (route === 'manager-home') {
         return replaceFirstPageTitle(rendered, `${selectedLocationName()} Overview`);
       }
+      if (route === 'ads-eligibility') {
+        return replaceFirstPageTitle(rendered, 'Advertising eligibility');
+      }
+      if (route === 'ads-inventory') {
+        return replaceFirstPageTitle(rendered, 'Ads Inventory');
+      }
       return rendered;
     };
 
