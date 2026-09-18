@@ -5,6 +5,7 @@ on:
     branches:
       - raahi-learning-implementation-v1
     paths:
+      - 'apps/raahi-learning/live-product-fix-v13.js'
       - 'supabase/functions/dev-test-identities/**'
       - 'tests/raahi-learning-e2e/cohort-20-session-proof.mjs'
       - '.github/workflows/raahi-learning-cohort-20.yml'
