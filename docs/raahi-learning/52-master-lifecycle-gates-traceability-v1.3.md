@@ -1,0 +1,76 @@
+# Raahi Learning V1.3 — Master Lifecycle Gate Status + Traceability Spine
+
+Status: **ACTIVE CONTROL DOCUMENT**  
+Date: 2026-09-18
+
+Purpose: provide one compact resume point for the AI Product Lifecycle Master Cheat Code v2.0 without duplicating the canonical product/domain documents.
+
+## 1. Lifecycle gate status
+
+| Gate | Status | Evidence / note |
+|---|---|---|
+| Existing-project truth reconstruction | PROVEN | GitHub, migrations, deployed DEV artifact and Supabase state were read before resuming implementation. |
+| Problem / scope / non-goals | PROVEN | Frozen Raahi Learning product documents. |
+| Actors / ownership / authority | PROVEN | Account ≠ Learner; manager/self/provider/Organization/admin authority frozen and implemented. |
+| Rules / invariants / state lifecycles | PROVEN | AI Builder v2 retrofit + model/runtime suites. |
+| Product freeze | PROVEN | Domain changes require explicit contradiction/impact analysis. |
+| Architecture / source of truth | PROVEN | UI → canonical RPC → PostgreSQL; projections for reads; Realtime invalidation only. |
+| Screen ↔ backend contracts | PROVEN | Docs 45/47; live contract and guard suites. |
+| Side-effects decision matrix | PROVEN AS AUDIT | Doc 46; implementation continues only inside owning vertical slices. |
+| Hosted Google + initial phone technology proof | PROVEN | Real Supabase Google/phone identities and continuity evidence. |
+| Periodic same-phone refresh provider smoke | QUEUED | Keep in pre-launch Auth smoke suite; not an ordinary regression dependency. |
+| DEV test identity/session harness | PROVEN | Doc 50; genuine sessions, OIDC-protected fixture boundary, RLS retained, isolated browsers. |
+| Mandatory walking skeleton | PROVEN | Doc 51; includes Class message, notification Open deep link and unrelated denial. |
+| Representative persona expansion | ACTIVE NEXT | Grow from four foundational personas to a bounded representative set before broad regression. |
+| UI / interaction convergence | NOT STARTED AFTER R4 | Compare deployed live product to frozen V1.3 artifact screen-by-screen using autonomous browser harness. |
+| Remaining vertical slices | PARTIAL / QUEUED | Close only one slice at a time with command/projection/permission/side-effect/UI/runtime evidence. |
+| Adversarial / recovery / race testing | QUEUED | Includes revoked authority, copied links, retries, last-seat races, stale trust, shared-device context. |
+| Reliability / load / security / launch | QUEUED | No public launch claim until these gates pass. |
+
+## 2. Defect rule
+
+Every failure is classified before a fix:
+
+- **Domain** — legitimate required scenario cannot be represented safely; run full impact analysis.
+- **Integration** — correct layers do not connect.
+- **Implementation** — agreed contract is correct but code/UI is wrong.
+- **Test-Harness** — product is correct but fixture/oracle/runner is wrong.
+
+Only Domain defects reopen frozen product design.
+
+## 3. Critical traceability spine
+
+| Rule / invariant | Canonical transition / read | UI surface | Scenario / proof |
+|---|---|---|---|
+| Auth user maps to exactly one Raahi Account | `bootstrap_account`, `get_my_account_context` | hosted sign-in / Account bootstrap | real Google Auth continuity proof |
+| Learner owns learning history; Account authority is explicit | `create_learner`, learner-access commands, account context | Learning profiles / learner context | manager→self handoff + R4 chain |
+| New direct provider relationship begins as controlled Enquiry | `send_enquiry`, `engage_enquiry`, `send_enquiry_message`, Enquiry projections | Explore / Enquiry / Messages | R4 relationship chain |
+| Pending Invitation reserves capacity; Membership only after acceptance | `send_class_invitation`, `accept_class_invitation`, Class projections | Class Invitation / My Classes | R4 capacity + exactly-one Membership proof |
+| Sensitive acceptance requires fresh phone trust without changing authority | `get_my_phone_trust`, `accept_class_invitation` guard | phone-check interruption/resume | Rajeev 4 hosted phone attach + resumed acceptance |
+| Class messages exist only inside an authorized Class+Learner relationship | `send_class_learner_message`, `get_class_learner_thread` | Class message | autonomous R4 browser proof |
+| Notification never grants authority | derived `class_message` notification + projection recheck | Notifications → Open | teacher Open button routes to authorized deep link |
+| Copied private link must fail closed for unrelated Account | `get_class_learner_thread` authorization + RLS | copied Class-thread URL | unrelated projection/RLS/browser denial |
+| UI/workspace choice never grants authority | server-derived context/capability projections | role/workspace switcher | route/workspace guard suites |
+| Browser never owns core operational state | canonical RPCs only | all consequential actions | contract/runtime audits; no direct browser DML |
+
+## 4. Testing architecture
+
+Normal product regression:
+
+`GitHub Actions / isolated Chromium → DEV-only test login → genuine Supabase Auth session → normal Raahi UI → canonical RPC/RLS → PostgreSQL`.
+
+Provider ceremony testing remains separate:
+
+`small real Google / SMS-OTP smoke suite`.
+
+Do not return to repeated manual Google login as the ordinary regression mechanism.
+
+## 5. Immediate sequence
+
+1. expand the deterministic persona harness to a representative bounded cohort;
+2. prove those personas can establish isolated genuine sessions without authority leakage;
+3. begin frozen-prototype UI convergence with browser evidence;
+4. close defects by classification and vertical slice;
+5. then expand to adversarial/recovery/race/load/security gates.
+
+Do not restart product discovery or recreate already-proven architecture/database work.
