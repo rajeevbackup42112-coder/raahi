@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // V1.3 workspace-convergence regression anchor — no business-rule change.
+  // V1.3 combined regression anchor — workspace + cohort; no business-rule change.
   const PENDING_ACTION_KEY = 'raahi.learning.pending-trust-action.v13';
   const PHONE_FLOW_KEY = 'raahi.learning.phone-flow.v13';
 
