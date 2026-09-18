@@ -115,13 +115,19 @@ async function main(){
     report.deployment=await waitDeployment(sha);
     const token=await oidc();
     const passwords={org_owner:pwd(),staff_profile:pwd(),staff_ads:pwd(),unrelated:pwd()};
-    const ensured=await edge(token,{action:'ensure_personas',suite:'ui4',run_id:run,passwords});
+    const ensured=await edge(token,{action:'ensure_personas',suite:'ui4_staff',run_id:run,passwords});
     const specs=Object.fromEntries(ensured.personas.map(x=>[x.key,x]));
 
+    const bootstrapNames={
+      org_owner:'UI4 Staff E2E Owner',
+      staff_profile:'UI4 Staff E2E Profile',
+      staff_ads:'UI4 Staff E2E Ads',
+      unrelated:'UI4 Staff E2E Unrelated'
+    };
     for(const key of Object.keys(passwords)){
       const c=client(); const {data,error}=await c.auth.signInWithPassword({email:specs[key].email,password:passwords[key]});if(error)throw error;
       assert(data.session,'SESSION_MISSING_'+key);
-      const context=await boot(c,specs[key].display_name);
+      const context=await boot(c,bootstrapNames[key]);
       sessions[key]={client:c,spec:specs[key],context,password:passwords[key]};
     }
 
