@@ -88,17 +88,18 @@ async function authBrowser(browser,email,password,viewport){
 }
 
 async function chooseRole(page,role){
+  const select=page.locator('[data-live-role-select]').first();
+  await select.waitFor({state:'visible',timeout:15000});
+  const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
   const candidates=role==='parent'?['parent','learner']:[role];
-  for(const candidate of candidates){
-    const el=page.locator('[data-live-role="'+candidate+'"]');
-    if(await el.count()){await el.first().click();await page.waitForTimeout(800);return candidate;}
-    const select=page.locator('[data-role-select]');
-    if(await select.count()){
-      const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
-      if(values.includes(candidate)){await select.selectOption(candidate);await page.waitForTimeout(800);return candidate;}
-    }
-  }
-  return 'implicit-default';
+  const candidate=candidates.find(x=>values.includes(x));
+  assert(candidate,'AUTHORIZED_WORKSPACE_OPTION_MISSING_'+role+' options='+values.join(','));
+  await select.selectOption(candidate);
+  const expected=candidate==='institute'?'org-home':'home';
+  await page.waitForURL(u=>u.origin===DEV_ORIGIN&&u.hash==='#/'+expected,{timeout:15000});
+  await page.waitForTimeout(900);
+  assert((await select.inputValue())===candidate,'AUTHORIZED_WORKSPACE_SELECTION_DID_NOT_STICK_'+candidate);
+  return candidate;
 }
 
 async function fixtureMetrics(browser,item,viewport){
@@ -106,14 +107,14 @@ async function fixtureMetrics(browser,item,viewport){
   const page=await ctx.newPage();
   await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
   await page.locator('h1').first().waitFor({timeout:30000});
-  if(item.fixtureRole==='institute' && (await page.locator('h1').first().innerText()).trim()==='Switch workspace'){
-    const switcher=page.getByRole('button',{name:'Institute'}).first();
-    if(await switcher.count()){
-      await switcher.click();
-      await page.waitForTimeout(150);
-      await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
-      await page.locator('h1').first().waitFor({timeout:30000});
-    }
+  if((await page.locator('h1').first().innerText()).trim()==='Switch workspace'){
+    const label=item.fixtureRole==='institute'?'Institute':'Parent / Guardian';
+    const switcher=page.getByRole('button',{name:label}).first();
+    assert(await switcher.count(),'FIXTURE_WORKSPACE_SWITCH_MISSING_'+item.fixtureRole);
+    await switcher.click();
+    await page.waitForTimeout(150);
+    await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
+    await page.locator('h1').first().waitFor({timeout:30000});
   }
   const m=await page.evaluate(()=>{
     const box=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {x:r.x,y:r.y,w:r.width,h:r.height,display:cs.display}};
