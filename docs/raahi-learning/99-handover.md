@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**V1.2 backend, the bounded V1.3 backend/browser delta, the AI Builder v2 retrofit, hosted Auth core proof, the DEV genuine-session harness, the mandatory R4 walking skeleton, the 20-persona cohort, and V1.3 workspace UI/capability convergence are closed/proven in DEV. The active sequence is side-effect vertical slices from doc 46 → adversarial/recovery/race testing → reliability/security/load/provider-smoke/launch gates.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and side-effect slices SE-01 through SE-06 are closed/proven in DEV. SE-07 released Test correction is IMPLEMENTED through migration 1030 plus UI/test-harness support, but its dedicated E2E proof has NOT yet been created/run. Resume exactly at SE-07 proof. After SE-07: SE-08 Organization authority-change notifications → combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,16 +20,16 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `52-master-lifecycle-gates-traceability-v1.3.md`
-2. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
-3. `50-dev-test-identity-session-harness-v1.3.md`
-4. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-5. `44-ai-builder-v2-retrofit-gate-v1.3.md`
-6. `45-v1.3-screen-backend-contract-audit.md`
-7. `46-v1.3-side-effects-matrix-audit.md`
-8. `41-authentication-phone-trust-v1.3.md`
-9. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression runbook)
-10. `49-hosted-auth-preflight-evidence-v1.3.md` (historical preflight only)
+1. `65-current-execution-handover-se07-v1.3.md` — **exact resume point**
+2. `46-v1.3-side-effects-matrix-audit.md`
+3. `64-activity-submission-side-effect-closure-v1.3.md`
+4. `59-exact-build-combined-regression-anchor-v1.3.md`
+5. `52-master-lifecycle-gates-traceability-v1.3.md`
+6. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+7. `50-dev-test-identity-session-harness-v1.3.md`
+8. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+9. `41-authentication-phone-trust-v1.3.md`
+10. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression only)
 
 ## Frozen product rules
 
@@ -163,18 +163,30 @@ ZIP SHA-256:
 
 ## Current execution gate
 
-R4 is closed. Do **not** repeat the manual Rajeev multi-browser walking skeleton unless a regression specifically requires provider-smoke evidence.
+**Resume at SE-07 proof. Do not redo SE-01 through SE-06.**
 
-Current sequence:
+Current exact state:
 
-1. workspace convergence is proven across core learner/teacher, managed-parent/Organization, Local Manager/Platform Admin, Raahi Ads and bounded Organization staff capabilities (docs 54–58);
-2. establish/maintain one exact-build combined regression anchor;
-3. implement doc-46 side-effect gaps one owning-domain vertical slice at a time: Enquiry/Trial → Class/Session/Membership/posts → Activity → Test correction → Organization authority changes;
-4. every defect is classified Domain / Integration / Implementation / Test-Harness before a fix;
-5. then run adversarial/recovery/race testing;
-6. finally complete reliability, security, load, provider-smoke and launch-readiness gates.
+- migrations applied through `1030_v13_test_correction_side_effects`;
+- SE-01/02 closed in doc 60;
+- SE-03 closed in doc 61;
+- SE-04 closed in doc 62;
+- SE-05 closed in doc 63;
+- SE-06 closed in doc 64;
+- SE-07 backend notification logic is implemented in migration 1030;
+- `test_results_corrected` Notifications UI Open routing is implemented in `live-product-fix-v13.js`;
+- isolated `sidefx_test` DEV personas plus protected `inspect_test_correction_audit` exist in `dev-test-identities`;
+- Supabase Edge Function `dev-test-identities` version 15 is active and contains the SE-07 test support;
+- **SE-07 E2E runner/workflow/proof artifact/closure doc do not yet exist**;
+- doc 46 must continue to show SE-07 as GAP until that proof passes.
 
-The R4 on-demand workflow is `.github/workflows/raahi-learning-r4-class-thread.yml`. It is regression evidence, not an ordinary per-commit mutation suite.
+Last product-affecting implementation commit at handover:
+
+`8c68f057b27ae352a6fe5283c5534bd7f34b1113`
+
+The DEV static artifact was verified serving that exact commit. Documentation-only handover commits after it may advance the Git branch without requiring a new Cloudflare product build; inspect the branch read-only before resuming.
+
+Exact next steps are specified in `65-current-execution-handover-se07-v1.3.md`.
 
 ### Defect handling rule
 
@@ -186,4 +198,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/52-master-lifecycle-gates-traceability-v1.3.md`, `46-v1.3-side-effects-matrix-audit.md`, `57-raahi-ads-ui-convergence-proof-v1.3.md`, `58-organization-staff-capability-proof-v1.3.md`, and `99-handover.md`. Do not restart product design, hosted-Auth setup, R4, or workspace convergence. Continue doc-46 side-effect gaps one owning-domain vertical slice at a time. Keep Google/SMS as small provider-smoke suites; no fake OTP and no public deployment.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/65-current-execution-handover-se07-v1.3.md`, then `99-handover.md`, `46-v1.3-side-effects-matrix-audit.md`, `64-activity-submission-side-effect-closure-v1.3.md`, migration `1030_v13_test_correction_side_effects.sql`, current `live-product-fix-v13.js`, and current `dev-test-identities/index.ts`. Do a read-only verification of branch head, DEV build-meta, migration 1030, Edge Function version/content, and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-06. SE-07 is implemented but NOT proven: create the dedicated Test-correction E2E runner/workflow, prove visible-results notification + hidden-results no-notification + idempotent retry + audit actor/history + browser Open authorization + unrelated denial, then document and mark SE-07 PASS. Only then continue to SE-08. No public deployment; no fake OTP; no browser injection.
