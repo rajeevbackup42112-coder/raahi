@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and side-effect slices SE-01 through SE-07 are closed/proven in DEV. Resume at SE-08 Organization authority-change notifications, then combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and every side-effect slice SE-01 through SE-08 are closed/proven in DEV. Resume at combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,10 +20,10 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `66-test-correction-side-effect-closure-v1.3.md` — **latest closed slice / exact SE-08 predecessor**
+1. `67-organization-authority-side-effect-closure-v1.3.md` — **latest closed slice / exact continuation point**
 2. `46-v1.3-side-effects-matrix-audit.md`
-3. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
-4. `64-activity-submission-side-effect-closure-v1.3.md`
+3. `66-test-correction-side-effect-closure-v1.3.md`
+4. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
 5. `59-exact-build-combined-regression-anchor-v1.3.md`
 6. `52-master-lifecycle-gates-traceability-v1.3.md`
 7. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
@@ -164,32 +164,35 @@ ZIP SHA-256:
 
 ## Current execution gate
 
-**Resume at SE-08 Organization authority-change notifications. Do not redo SE-01 through SE-07.**
+**Resume at combined regression. Do not redo SE-01 through SE-08.**
 
 Current exact state:
 
-- migrations applied through `1030_v13_test_correction_side_effects`;
+- migrations applied through `1031_v13_organization_authority_side_effects`;
 - SE-01/02 closed in doc 60;
 - SE-03 closed in doc 61;
 - SE-04 closed in doc 62;
 - SE-05 closed in doc 63;
 - SE-06 closed in doc 64;
-- SE-07 backend notification logic is implemented in migration 1030;
-- `test_results_corrected` Notifications UI Open routing is implemented in `live-product-fix-v13.js`;
-- isolated `sidefx_test` DEV personas plus protected `inspect_test_correction_audit` exist in `dev-test-identities`;
-- Supabase Edge Function `dev-test-identities` version 15 is active and contains the SE-07 test support;
-- SE-07 dedicated runner/workflow passed on final hardened run `35348046502` at exact deployed commit `53d7a96f...`;
-- the final artifact digest is `sha256:b0646ae23a34a12c606dd98c6b52cc4abf6da6bfb0add7e624fad6f695b311ff`;
-- doc 66 records the closure and doc 46 marks SE-07 PASS;
-- the next vertical slices are SE-08A capability-change notification and SE-08B member-removal notification.
+- SE-07 is closed by migration 1030 and doc 66;
+- SE-08A capability change and SE-08B member removal are closed by migration 1031 and doc 67;
+- Organization notifications are generic and carry only `organization_id` plus `organization_member_id`;
+- notification Open refreshes current Account context and re-enters the ordinary authorized Organization workspace RPC;
+- a removed member is immediately denied the former workspace and the stale signed-in browser fails safely;
+- isolated `sidefx_org` personas plus protected `inspect_organization_authority_audit` exist in `dev-test-identities`;
+- Supabase Edge Function `dev-test-identities` version 16 is active;
+- final SE-08 run `35350835314` passed at exact deployed commit `92608284f...`;
+- final artifact digest: `sha256:571620b89ad467da0ffa8d5c0b26ae88d51913837833412f1fecd41562c1dc94`;
+- doc 46 now marks every side-effect gap SE-01 through SE-08 PASS;
+- the next execution gate is combined regression, followed by adversarial/recovery/race testing.
 
 Last product-affecting implementation commit at handover:
 
-`8c68f057b27ae352a6fe5283c5534bd7f34b1113`
+`1dc6134b28dee570dfde24461132edcdf86858c3`
 
-The DEV static artifact was verified serving that exact commit. Documentation-only handover commits after it may advance the Git branch without requiring a new Cloudflare product build; inspect the branch read-only before resuming.
+The authoritative final run verified the DEV static artifact serving exact commit `92608284f22c68d68b69b6dc7a28d077e08818ed`; commits after `1dc6134...` through that SHA hardened only the proof runner. Documentation-only handover commits may advance the Git branch without requiring a new Cloudflare product build; inspect the branch read-only before resuming.
 
-The latest closure evidence is in doc 66. Continue from the two remaining SE-08 rows in doc 46; doc 65 is historical SE-07 execution context only.
+The latest closure evidence is in doc 67. Continue from the combined-regression gate; docs 65 and 66 are historical predecessor context.
 
 ### Defect handling rule
 
@@ -201,4 +204,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `66-test-correction-side-effect-closure-v1.3.md`, and `46-v1.3-side-effects-matrix-audit.md`. Do a read-only verification of branch head, DEV build-meta, migration ceiling, Edge Function version/content and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-07. SE-07 is closed by hardened run `35348046502`. Continue at SE-08A Organization capability-change notification, then SE-08B member-removal notification. Prove generic recipient-safe notification, no unrelated signal, correct audit actor/history, idempotent retry, safe Open/deep-link authorization and immediate denial after removal. No public deployment; no fake OTP; no browser injection.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `67-organization-authority-side-effect-closure-v1.3.md`, `59-exact-build-combined-regression-anchor-v1.3.md`, and `46-v1.3-side-effects-matrix-audit.md`. Do a read-only verification of branch head, DEV build-meta, migration ceiling, Edge Function version/content and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-08. SE-08 is closed by run `35350835314` at exact deployed commit `92608284f...`. Continue at combined regression, then adversarial/recovery/race testing. No public deployment; no fake OTP; no browser injection.
