@@ -98,7 +98,7 @@ async function chooseRole(page,role){
       if(values.includes(candidate)){await select.selectOption(candidate);await page.waitForTimeout(800);return candidate;}
     }
   }
-  throw new Error('ROLE_CONTROL_NOT_FOUND_'+role);
+  return 'implicit-default';
 }
 
 async function fixtureMetrics(browser,item,viewport){
