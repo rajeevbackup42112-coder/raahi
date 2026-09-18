@@ -95,17 +95,17 @@ async function authBrowser(browser,email,password,viewport){
 }
 
 async function chooseLiveRole(page,role){
-  const candidates=[role];
-  for(const candidate of candidates){
-    const el=page.locator('[data-live-role="'+candidate+'"]');
-    if(await el.count()){await el.first().click();await page.waitForTimeout(900);return candidate;}
-    const select=page.locator('[data-live-role-select], [data-role-select]').first();
-    if(await select.count()){
-      const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
-      if(values.includes(candidate)){await select.selectOption(candidate);await page.waitForTimeout(900);return candidate;}
-    }
-  }
-  return 'implicit-default';
+  const select=page.locator('[data-live-role-select]').first();
+  await select.waitFor({state:'visible',timeout:15000});
+  const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
+  assert(values.includes(role),'AUTHORIZED_WORKSPACE_OPTION_MISSING_'+role+' options='+values.join(','));
+  await select.selectOption(role);
+  const expected=role==='platform'?'platform-home':role==='manager'?'manager-home':null;
+  if(expected) await page.waitForURL(u=>u.origin===DEV_ORIGIN&&u.hash==='#/'+expected,{timeout:15000});
+  await page.waitForTimeout(900);
+  const selected=await select.inputValue();
+  assert(selected===role,'AUTHORIZED_WORKSPACE_SELECTION_DID_NOT_STICK_'+role+'_actual_'+selected);
+  return role;
 }
 
 async function fixtureMetrics(browser,item,viewport){
