@@ -202,13 +202,22 @@
     }
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
         if (t.dataset.liveFixOpenInvite) {
           live.selected.invitationId = t.dataset.liveFixOpenInvite;
           api.go('invitation');
+          return;
+        }
+        if (t.dataset.liveFixOpenTrialNotification) {
+          const n = arr(live.data.notifications).find(x => (x.notification_id || x.id) === t.dataset.liveFixOpenTrialNotification);
+          const enquiryId = n?.payload?.enquiry_id || null;
+          if (!enquiryId) throw new Error('Trial notification no longer has a valid Enquiry destination.');
+          live.selected.enquiryId = enquiryId;
+          live.routeLoads.clear();
+          api.go('trial');
           return;
         }
         if (t.dataset.liveFixAcceptInvite) {
@@ -251,6 +260,20 @@
       if (route === 'teacher-home') {
         const heading = document.querySelector('.main h1');
         if (heading) heading.style.fontSize = window.innerWidth <= 720 ? '28px' : '36px';
+      }
+      if (route === 'notifications') {
+        const cards = [...document.querySelectorAll('.main .stack > .card')];
+        arr(live.data.notifications).forEach((n, index) => {
+          if (!/^trial_(scheduled|rescheduled|cancelled)$/.test(n.notification_type || '')) return;
+          const card = cards[index];
+          const row = card?.querySelector('.row');
+          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification]')) return;
+          const button = document.createElement('button');
+          button.className = 'primary-btn small';
+          button.textContent = 'Open';
+          button.dataset.liveFixOpenTrialNotification = n.notification_id || n.id;
+          row.prepend(button);
+        });
       }
       if (route === 'learners' || route === 'org-members') {
         document.querySelectorAll('.main .card .between').forEach(el => {
