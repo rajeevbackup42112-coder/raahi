@@ -1,0 +1,60 @@
+name: Raahi Learning R4 Class Thread Proof
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'tests/raahi-learning-e2e/r4-class-thread-proof.mjs'
+      - '.github/workflows/raahi-learning-r4-class-thread.yml'
+      - 'apps/raahi-learning/live-thread-deeplink-v13.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-r4-class-thread
+  cancel-in-progress: true
+
+jobs:
+  r4-class-thread:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install deterministic harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run R4 Class-thread proof
+        working-directory: tests/raahi-learning-e2e
+        run: node r4-class-thread-proof.mjs
+
+      - name: Upload R4 sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-r4-class-thread-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-r4/
+          if-no-files-found: warn
+          retention-days: 30
