@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**V1.2 backend, the bounded V1.3 backend/browser delta, the AI Builder v2 retrofit, hosted Auth core proof, the DEV genuine-session harness, and the mandatory R4 walking skeleton are all closed/proven in DEV. The active sequence is representative persona expansion → frozen-prototype UI/interaction convergence → remaining vertical slices → adversarial/reliability/security/launch gates.**
+**V1.2 backend, the bounded V1.3 backend/browser delta, the AI Builder v2 retrofit, hosted Auth core proof, the DEV genuine-session harness, and the mandatory R4 walking skeleton are all closed/proven in DEV. The 20-persona genuine-session cohort is now proven. The active sequence is frozen-prototype UI/interaction convergence → remaining vertical slices → adversarial/reliability/security/launch gates.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -167,13 +167,11 @@ R4 is closed. Do **not** repeat the manual Rajeev multi-browser walking skeleton
 
 Current sequence:
 
-1. expand the DEV deterministic persona/session harness from the four foundational actors to a bounded representative cohort;
-2. prove isolated genuine sessions and authority boundaries for that cohort;
-3. begin screen-by-screen and interaction-by-interaction convergence against the frozen V1.3 UI artifact;
-4. every defect is classified Domain / Integration / Implementation / Test-Harness before a fix;
-5. close remaining work one vertical slice at a time;
-6. then run adversarial/recovery/race testing;
-7. finally complete reliability, security, load, provider-smoke and launch-readiness gates.
+1. begin screen-by-screen and interaction-by-interaction convergence against the frozen V1.3 UI artifact using the proven 20-persona genuine-session cohort;
+2. every defect is classified Domain / Integration / Implementation / Test-Harness before a fix;
+3. close remaining work one vertical slice at a time;
+4. then run adversarial/recovery/race testing;
+5. finally complete reliability, security, load, provider-smoke and launch-readiness gates.
 
 The R4 on-demand workflow is `.github/workflows/raahi-learning-r4-class-thread.yml`. It is regression evidence, not an ordinary per-commit mutation suite.
 
@@ -187,4 +185,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/52-master-lifecycle-gates-traceability-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, `50-dev-test-identity-session-harness-v1.3.md`, `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, and `99-handover.md`. Do not restart product design, hosted-Auth setup, or R4. The active sequence is representative persona expansion, then frozen-prototype UI/interaction convergence using autonomous genuine DEV sessions. Keep Google/SMS as small provider-smoke suites; no fake OTP and no public deployment.
+> Continue Raahi Learning V1.3 from `raahi-learning-implementation-v1`. Read `docs/raahi-learning/52-master-lifecycle-gates-traceability-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, `50-dev-test-identity-session-harness-v1.3.md`, `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`, and `99-handover.md`. Do not restart product design, hosted-Auth setup, or R4. The active sequence is frozen-prototype UI/interaction convergence using the proven 20-persona genuine DEV-session cohort. Keep Google/SMS as small provider-smoke suites; no fake OTP and no public deployment.
