@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Raahi Learning DEV Test Login</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;max-width:680px;margin:42px auto;padding:0 18px;background:#f7f8fa;color:#15171a}
+    .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px;margin:14px 0}
+    .guard{border:2px solid #067647;background:#ecfdf3}.blocked{border-color:#b42318;background:#fff0ee}
+    label{display:block;font-weight:650;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:10px}
+    button{padding:10px 14px;margin-top:14px;cursor:pointer}.muted{color:#667085}pre{white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <h1>Raahi Learning — DEV Test Session</h1>
+  <div id="guard" class="card guard"><strong>RAAHI_DEV_TEST_LOGIN_V13</strong><p class="muted">Checking DEV-only guard…</p></div>
+  <div id="login" class="card" hidden>
+    <p>This page is for automated non-production testing only. It creates no roles and bypasses no permissions.</p>
+    <label for="email">Test persona email</label><input id="email" type="email" autocomplete="username">
+    <label for="password">Ephemeral test password</label><input id="password" type="password" autocomplete="current-password">
+    <button id="signin">Establish genuine DEV session</button>
+    <p id="status" class="muted"></p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+  <script>
+  (() => {
+    'use strict';
+    const EXPECTED_HOST='dev.learning.myraahi.co.in';
+    const EXPECTED_URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+    const PUBLISHABLE_KEY='sb_publishable_bz0YgDXY-WkKxZnogGsfUg_Qgl7E-Wi';
+    const guard=document.getElementById('guard');
+    const login=document.getElementById('login');
+    const status=document.getElementById('status');
+
+    function block(reason){
+      guard.classList.add('blocked');
+      guard.innerHTML='<strong>DEV TEST LOGIN BLOCKED</strong><p>'+reason+'</p>';
+      throw new Error(reason);
+    }
+    if(location.hostname!==EXPECTED_HOST) block('This test login is allowed only on the canonical Raahi Learning DEV hostname.');
+    const projectRef=new URL(EXPECTED_URL).hostname.split('.')[0];
+    if(projectRef!=='iiwwmqokaeflaenhlyip') block('Unexpected Supabase project reference.');
+
+    guard.querySelector('p').textContent='DEV guard passed. Normal Supabase Auth and normal Raahi authorization remain active.';
+    login.hidden=false;
+    const client=window.supabase.createClient(EXPECTED_URL,PUBLISHABLE_KEY,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
+    });
+
+    document.getElementById('signin').onclick=async()=>{
+      status.textContent='Signing in…';
+      const email=document.getElementById('email').value.trim();
+      const password=document.getElementById('password').value;
+      const {data,error}=await client.auth.signInWithPassword({email,password});
+      document.getElementById('password').value='';
+      if(error){status.textContent='Sign-in failed: '+error.message;return;}
+      if(!data.session||!data.user){status.textContent='Sign-in failed: session was not issued.';return;}
+      status.textContent='Genuine DEV session established. Opening Raahi…';
+      location.replace('/#/home');
+    };
+  })();
+  </script>
+</body>
+</html>
