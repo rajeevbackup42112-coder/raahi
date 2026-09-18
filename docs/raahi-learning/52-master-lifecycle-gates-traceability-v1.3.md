@@ -22,8 +22,8 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | DEV test identity/session harness | PROVEN | Doc 50; genuine sessions, OIDC-protected fixture boundary, RLS retained, isolated browsers. |
 | Mandatory walking skeleton | PROVEN | Doc 51; includes Class message, notification Open deep link and unrelated denial. |
 | Representative persona expansion | PROVEN | 20 genuine DEV identities/sessions, unique Accounts, own-row RLS allow/cross-row deny, 20 isolated Chromium sign-ins. See doc 53. |
-| UI / interaction convergence | ACTIVE | Core learner/teacher, managed-parent/Organization, and Local Manager/Platform Admin convergence are proven. Advertiser/Raahi Ads and bounded Organization staff capability surfaces are next. See docs 54–56. |
-| Remaining vertical slices | PARTIAL / QUEUED | Close only one slice at a time with command/projection/permission/side-effect/UI/runtime evidence. |
+| UI / interaction convergence | PROVEN FOR V1.3 WORKSPACE SURFACES | Core learner/teacher, managed-parent/Organization, Local Manager/Platform Admin, Raahi Ads, and bounded Organization staff capability surfaces are proven. See docs 54–58. |
+| Remaining vertical slices | ACTIVE | Side-effect gaps from doc 46 are the current execution queue. Close one owning-domain slice at a time with command/projection/permission/notification/audit/UI/runtime evidence. |
 | Adversarial / recovery / race testing | QUEUED | Includes revoked authority, copied links, retries, last-seat races, stale trust, shared-device context. |
 | Reliability / load / security / launch | QUEUED | No public launch claim until these gates pass. |
 
@@ -67,9 +67,9 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. converge advertiser/Raahi Ads workspace using real Organization advertising authority;
-2. converge bounded capability-specific Organization staff surfaces;
-3. close remaining vertical slices by classification;
+1. establish one exact-build combined regression anchor across model, genuine-session, cohort, UI and capability suites;
+2. implement side-effect gaps by owning vertical slice: Enquiry/Trial → Class/Session/Membership/posts → Activity → Test correction → Organization authority changes;
+3. for each slice prove notification count/dedup, destination authorization, audit/history where required and failure isolation;
 4. then expand to adversarial/recovery/race/load/security gates.
 
 Do not restart product discovery or recreate already-proven architecture/database work.
