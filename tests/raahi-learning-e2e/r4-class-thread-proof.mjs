@@ -242,12 +242,21 @@ async function main(){
       await teacherBrowser.page.goto(DEV_ORIGIN+'/#/notifications',{waitUntil:'domcontentloaded'});
       await teacherBrowser.page.getByText('New Class message',{exact:true}).first().waitFor({timeout:30000});
       await teacherBrowser.page.screenshot({path:path.join(ARTIFACT_DIR,'r4-teacher-notification.png'),fullPage:true});
-      await teacherBrowser.page.goto(deepLink,{waitUntil:'domcontentloaded'});
+      await teacherBrowser.page.getByRole('button',{name:'Open'}).first().click();
+      await teacherBrowser.page.locator('#live-class-message').waitFor({timeout:30000});
       await teacherBrowser.page.getByText(messageBody,{exact:true}).waitFor({timeout:30000});
       await teacherBrowser.page.getByText(self.display_name,{exact:false}).first().waitFor({timeout:30000});
+      const notificationDeepLink=teacherBrowser.page.url();
+      const parsedNotificationDeepLink=new URL(notificationDeepLink);
+      assert(parsedNotificationDeepLink.origin===DEV_ORIGIN,'NOTIFICATION_DEEPLINK_WRONG_ORIGIN');
+      assert(parsedNotificationDeepLink.hash.includes('#/class-thread?'),'NOTIFICATION_DID_NOT_OPEN_CLASS_THREAD '+notificationDeepLink);
+      assert(parsedNotificationDeepLink.hash.includes('class_id='+encodeURIComponent(cls.class_id)),'NOTIFICATION_DEEPLINK_CLASS_ID_MISSING');
+      assert(parsedNotificationDeepLink.hash.includes('learner_id='+encodeURIComponent(self.learner_id)),'NOTIFICATION_DEEPLINK_LEARNER_ID_MISSING');
+      assert(!notificationDeepLink.includes(messageBody)&&!notificationDeepLink.includes('@')&&!/access_token|password=/i.test(notificationDeepLink),'NOTIFICATION_DEEPLINK_CONTAINS_SENSITIVE_DATA');
+      report.notification_deep_link=parsedNotificationDeepLink.origin+parsedNotificationDeepLink.pathname+parsedNotificationDeepLink.hash;
       await teacherBrowser.page.screenshot({path:path.join(ARTIFACT_DIR,'r4-teacher-deeplink-authorized.png'),fullPage:true});
       await teacherBrowser.ctx.close();
-      report.checks.push({check:'teacher_notification_visible_and_deeplink_authorized',pass:true});
+      report.checks.push({check:'teacher_notification_open_button_routes_to_authorized_deeplink',pass:true});
 
       let denyError=null;
       try{await rpc(unrelated.client,'get_class_learner_thread',{p_class_id:cls.class_id,p_learner_id:self.learner_id});}
@@ -260,7 +269,7 @@ async function main(){
       assert(Array.isArray(threadRows)&&threadRows.length===0,'UNRELATED_RLS_LEAKED_THREAD');
 
       const unrelatedBrowser=await signInBrowser(browser,unrelated.email,passwords.unrelated);
-      await unrelatedBrowser.page.goto(deepLink,{waitUntil:'domcontentloaded'});
+      await unrelatedBrowser.page.goto(report.notification_deep_link,{waitUntil:'domcontentloaded'});
       await unrelatedBrowser.page.getByText('Class conversation unavailable',{exact:true}).waitFor({timeout:30000});
       const deniedBody=await unrelatedBrowser.page.locator('body').innerText();
       assert(!deniedBody.includes(messageBody),'UNRELATED_BROWSER_LEAKED_MESSAGE_BODY');
