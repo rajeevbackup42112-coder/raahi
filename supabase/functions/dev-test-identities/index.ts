@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_lifecycle: {
+    learner: { email: 'e2e.sidefxlife.learner@dev.learning.myraahi.co.in', phone: '+919100000731', display_name: 'Lifecycle E2E Learner', scenario: 'Class membership lifecycle learner' },
+    teacher: { email: 'e2e.sidefxlife.teacher@dev.learning.myraahi.co.in', phone: '+919100000732', display_name: 'Lifecycle E2E Teacher', scenario: 'Class membership lifecycle provider' },
+    unrelated: { email: 'e2e.sidefxlife.unrelated@dev.learning.myraahi.co.in', phone: '+919100000733', display_name: 'Lifecycle E2E Unrelated', scenario: 'Class membership lifecycle privacy actor' },
+  },
   sidefx_posts: {
     learner: { email: 'e2e.sidefxposts.learner@dev.learning.myraahi.co.in', phone: '+919100000721', display_name: 'Post SideFX E2E Learner', scenario: 'Class post side-effect learner' },
     teacher: { email: 'e2e.sidefxposts.teacher@dev.learning.myraahi.co.in', phone: '+919100000722', display_name: 'Post SideFX E2E Teacher', scenario: 'Class post side-effect provider' },
@@ -373,6 +378,48 @@ Deno.serve(async (req: Request) => {
           reason:row.reason,
           metadata:row.metadata,
           created_at:row.created_at,
+        }))
+      });
+    }
+
+    if (action === 'inspect_class_lifecycle_audit') {
+      if (suite !== 'sidefx_lifecycle') throw new Error('CLASS_LIFECYCLE_AUDIT_SUITE_NOT_ALLOWED');
+      const membershipIds = Array.isArray(body?.membership_ids) ? body.membership_ids.map(String) : [];
+      const classIds = Array.isArray(body?.class_ids) ? body.class_ids.map(String) : [];
+      const valid = (x:string)=>/^[0-9a-f-]{36}$/i.test(x);
+      if (membershipIds.length>10 || classIds.length>10 || membershipIds.some((x:string)=>!valid(x)) || classIds.some((x:string)=>!valid(x))) {
+        throw new Error('INVALID_CLASS_LIFECYCLE_TARGET_IDS');
+      }
+
+      let membershipAudits:any[] = [];
+      let classAudits:any[] = [];
+      if (membershipIds.length) {
+        const q = await admin.from('audit_log')
+          .select('id,actor_account_id,action_type,target_type,target_id,learner_id,metadata,created_at')
+          .eq('target_type','class_membership')
+          .in('target_id',membershipIds)
+          .in('action_type',['class.membership_leave','class.membership_remove','class.membership_transfer'])
+          .order('created_at',{ascending:true});
+        if (q.error) throw q.error;
+        membershipAudits=q.data || [];
+      }
+      if (classIds.length) {
+        const q = await admin.from('audit_log')
+          .select('id,actor_account_id,action_type,target_type,target_id,metadata,created_at')
+          .eq('target_type','class')
+          .in('target_id',classIds)
+          .in('action_type',['class.activate','class.complete'])
+          .order('created_at',{ascending:true});
+        if (q.error) throw q.error;
+        classAudits=q.data || [];
+      }
+
+      return response(200,{
+        ok:true,run_id:runId,suite,
+        audit_rows:[...membershipAudits,...classAudits].map((row:any)=>({
+          id:row.id,actor_account_id:row.actor_account_id,action_type:row.action_type,
+          target_type:row.target_type,target_id:row.target_id,learner_id:row.learner_id || null,
+          metadata:row.metadata,created_at:row.created_at,
         }))
       });
     }
