@@ -88,10 +88,16 @@ async function authBrowser(browser,email,password,viewport){
 }
 
 async function chooseRole(page,role){
-  const el=page.locator('[data-live-role="'+role+'"]');
-  if(await el.count()){await el.first().click();await page.waitForTimeout(800);return;}
-  const select=page.locator('[data-role-select]');
-  if(await select.count()){await select.selectOption(role);await page.waitForTimeout(800);return;}
+  const candidates=role==='parent'?['parent','learner']:[role];
+  for(const candidate of candidates){
+    const el=page.locator('[data-live-role="'+candidate+'"]');
+    if(await el.count()){await el.first().click();await page.waitForTimeout(800);return candidate;}
+    const select=page.locator('[data-role-select]');
+    if(await select.count()){
+      const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
+      if(values.includes(candidate)){await select.selectOption(candidate);await page.waitForTimeout(800);return candidate;}
+    }
+  }
   throw new Error('ROLE_CONTROL_NOT_FOUND_'+role);
 }
 
@@ -217,8 +223,9 @@ async function main(){
       for(const viewport of VIEWPORTS){
         const parent=await authBrowser(browser,sessions.parent.spec.email,passwords.parent,viewport);
         const orgb=await authBrowser(browser,sessions.org_owner.spec.email,passwords.org_owner,viewport);
-        await chooseRole(parent.page,'parent');
-        await chooseRole(orgb.page,'institute');
+        const parentLiveRole=await chooseRole(parent.page,'parent');
+        const orgLiveRole=await chooseRole(orgb.page,'institute');
+        report.checks.push({check:'live_workspace_mapping_'+viewport.name,pass:true,parent_live_role:parentLiveRole,org_live_role:orgLiveRole});
 
         for(const item of ROUTES){
           const gold=await fixtureMetrics(browser,item,viewport);
