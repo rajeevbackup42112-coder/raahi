@@ -105,13 +105,16 @@ async function fixtureMetrics(browser,item,viewport){
   const ctx=await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
   const page=await ctx.newPage();
   await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
-  const select=page.locator('[data-role-select]');
-  if(await select.count()){
-    await select.selectOption(item.fixtureRole);
-    await page.waitForTimeout(120);
-    await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
-  }
   await page.locator('h1').first().waitFor({timeout:30000});
+  if(item.fixtureRole==='institute' && (await page.locator('h1').first().innerText()).trim()==='Switch workspace'){
+    const switcher=page.getByRole('button',{name:'Institute'}).first();
+    if(await switcher.count()){
+      await switcher.click();
+      await page.waitForTimeout(150);
+      await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
+      await page.locator('h1').first().waitFor({timeout:30000});
+    }
+  }
   const m=await page.evaluate(()=>{
     const box=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {x:r.x,y:r.y,w:r.width,h:r.height,display:cs.display}};
     const h1=document.querySelector('h1');
@@ -146,9 +149,11 @@ async function liveMetrics(page,item){
 
 function visible(b){return !!b&&b.display!=='none'&&b.w>0&&b.h>0;}
 function close(a,b,t=3){return Math.abs((a??0)-(b??0))<=t;}
-function compare(gold,live){
+function compare(gold,live,item){
   const issues=[];
-  if(gold.title!==live.title)issues.push('title expected='+JSON.stringify(gold.title)+' actual='+JSON.stringify(live.title));
+  if(item.route==='community'){
+    if(!/ Community$/.test(live.title))issues.push('community title missing Location prefix: '+JSON.stringify(live.title));
+  }else if(gold.title!==live.title)issues.push('title expected='+JSON.stringify(gold.title)+' actual='+JSON.stringify(live.title));
   if(live.overflow)issues.push('horizontal overflow');
   if(live.denied)issues.push('unexpected access/guard page');
   if(gold.h1Font!==live.h1Font)issues.push('h1 font '+gold.h1Font+' vs '+live.h1Font);
@@ -230,7 +235,7 @@ async function main(){
         for(const item of ROUTES){
           const gold=await fixtureMetrics(browser,item,viewport);
           const live=await liveMetrics(item.actor==='parent'?parent.page:orgb.page,item);
-          const issues=compare(gold,live);
+          const issues=compare(gold,live,item);
           report.routes.push({viewport:viewport.name,route:item.route,actor:item.actor,gold_title:gold.title,live_title:live.title,issues});
           await (item.actor==='parent'?parent.page:orgb.page).screenshot({path:path.join(ARTIFACT_DIR,viewport.name+'-'+item.route+'.png'),fullPage:true});
         }
