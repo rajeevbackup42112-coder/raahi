@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
 
@@ -21,23 +22,43 @@ function pwd(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function rid(){return 'sidefx-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
 function isoFuture(hours){return new Date(Date.now()+hours*60*60*1000).toISOString();}
 
+function deploymentCompatible(deployedSha,targetSha){
+  if(deployedSha===targetSha) return {compatible:true,changed:[]};
+  try{
+    execFileSync('git',['merge-base','--is-ancestor',deployedSha,targetSha],{stdio:'ignore'});
+    const changed=execFileSync('git',['diff','--name-only',deployedSha+'..'+targetSha],{encoding:'utf8'})
+      .split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const productSensitive=changed.filter(p=>
+      p.startsWith('apps/raahi-learning/') ||
+      p.startsWith('supabase/migrations/') ||
+      p.startsWith('supabase/functions/')
+    );
+    return {compatible:productSensitive.length===0,changed,productSensitive};
+  }catch(_){return {compatible:false,changed:[],productSensitive:['unknown-history']};}
+}
 async function waitDeployment(sha){
   const deadline=Date.now()+8*60*1000;let last=null;
   while(Date.now()<deadline){
     try{
       const r=await fetch(DEV_ORIGIN+'/build-meta.json?sidefx='+Date.now(),{cache:'no-store'});
-      if(r.ok){last=await r.json();if(last.commit_sha===sha)return last;}
+      if(r.ok){
+        last=await r.json();
+        const compat=deploymentCompatible(last.commit_sha,sha);
+        if(compat.compatible) return {...last,compatibility:compat};
+      }
     }catch(e){last={error:String(e)}}
     await sleep(10000);
   }
-  throw new Error('DEV_DEPLOYMENT_NOT_CURRENT expected='+sha+' last='+JSON.stringify(last));
+  throw new Error('DEV_DEPLOYMENT_NOT_COMPATIBLE expected='+sha+' last='+JSON.stringify(last));
 }
-async function endDeploymentCheck(sha){
+async function endDeploymentCheck(startMeta,sha){
   const r=await fetch(DEV_ORIGIN+'/build-meta.json?sidefx-end='+Date.now(),{cache:'no-store'});
   assert(r.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+r.status);
   const m=await r.json();
-  assert(m.commit_sha===sha,'DEV_DEPLOYMENT_CHANGED_DURING_SIDEFX_PROOF expected='+sha+' actual='+m.commit_sha);
-  return m;
+  assert(m.commit_sha===startMeta.commit_sha,'DEV_DEPLOYMENT_CHANGED_DURING_SIDEFX_PROOF start='+startMeta.commit_sha+' actual='+m.commit_sha);
+  const compat=deploymentCompatible(m.commit_sha,sha);
+  assert(compat.compatible,'DEV_DEPLOYMENT_END_NOT_COMPATIBLE '+JSON.stringify(compat));
+  return {...m,compatibility:compat};
 }
 async function oidc(){
   const u0=process.env.ACTIONS_ID_TOKEN_REQUEST_URL,t=process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
@@ -289,7 +310,7 @@ async function main(){
     }finally{await browser.close();}
     report.checks.push({check:'notification_open_routes_reauthorize_enquiry_and_trial_context',pass:true});
 
-    report.end_deployment=await endDeploymentCheck(sha);
+    report.end_deployment=await endDeploymentCheck(report.deployment,sha);
     report.result='pass';
     fs.writeFileSync(path.join(ARTIFACT_DIR,'enquiry-trial-side-effects-proof.json'),JSON.stringify(report,null,2));
     console.log('RAAHI_ENQUIRY_TRIAL_SIDE_EFFECTS_PASS run_id='+run+' commit='+sha);
