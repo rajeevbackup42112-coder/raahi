@@ -236,7 +236,10 @@ async function main(){
       assert(/does not include manage_profile/i.test(view.body),'ADS_STAFF_PROFILE_NOT_DENIED');
       report.browser.push({actor:'staff_ads',route:'org-profile',allowed:false,title:view.title});
 
-      const unrelatedOptions=await workspaceOptions(unrelated.page);
+      const unrelatedSelect=unrelated.page.locator('[data-live-role-select]').first();
+      const unrelatedOptions=await unrelatedSelect.count()
+        ? await unrelatedSelect.locator('option').evaluateAll(xs=>xs.map(x=>x.value))
+        : [];
       assert(!unrelatedOptions.includes('institute')&&!unrelatedOptions.includes('ads'),'UNRELATED_PRIVILEGED_WORKSPACE_LEAK '+unrelatedOptions.join(','));
       view=await openRoute(unrelated.page,'org-home');
       assert(/Workspace unavailable|Changing the URL cannot grant access/i.test(view.body),'UNRELATED_DEEP_LINK_NOT_DENIED');
