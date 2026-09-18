@@ -89,23 +89,31 @@ async function authBrowser(browser,email,password,viewport){
 }
 
 async function chooseLiveRole(page,role){
-  const el=page.locator('[data-live-role="'+role+'"]');
-  if(await el.count()){await el.first().click();await page.waitForTimeout(700);return;}
-  const select=page.locator('[data-role-select]');
-  if(await select.count()){await select.selectOption(role);await page.waitForTimeout(700);return;}
+  const select=page.locator('[data-live-role-select]').first();
+  await select.waitFor({state:'visible',timeout:15000});
+  const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
+  assert(values.includes(role),'AUTHORIZED_WORKSPACE_OPTION_MISSING_'+role+' options='+values.join(','));
+  await select.selectOption(role);
+  const expected=role==='teacher'?'teacher-home':'home';
+  await page.waitForURL(u=>u.origin===DEV_ORIGIN&&u.hash==='#/'+expected,{timeout:15000});
+  await page.waitForTimeout(900);
+  assert((await select.inputValue())===role,'AUTHORIZED_WORKSPACE_SELECTION_DID_NOT_STICK_'+role);
 }
 
 async function fixtureMetrics(browser,item,viewport){
   const ctx=await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
   const page=await ctx.newPage();
   await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
-  const select=page.locator('[data-role-select]');
-  if(await select.count()){
-    await select.selectOption(item.fixtureRole);
-    await page.waitForTimeout(100);
-    await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
-  }
   await page.locator('h1').first().waitFor({timeout:30000});
+  if((await page.locator('h1').first().innerText()).trim()==='Switch workspace'){
+    const label=item.fixtureRole==='parent'?'Parent / Guardian':'Teacher';
+    const btn=page.getByRole('button',{name:label}).first();
+    assert(await btn.count(),'FIXTURE_WORKSPACE_SWITCH_MISSING_'+item.fixtureRole);
+    await btn.click();
+    await page.waitForTimeout(150);
+    await page.goto(DEV_ORIGIN+'/?fixture=1#/'+item.route,{waitUntil:'domcontentloaded'});
+    await page.locator('h1').first().waitFor({timeout:30000});
+  }
   const m=await page.evaluate(()=> {
     const box=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return {x:r.x,y:r.y,w:r.width,h:r.height,display:cs.display,position:cs.position}};
     return {
