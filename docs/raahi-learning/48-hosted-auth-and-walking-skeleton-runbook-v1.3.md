@@ -1,12 +1,12 @@
 # Raahi Learning V1.3 — Hosted Auth + Walking Skeleton Runbook
 
-Status: **EXECUTION RUNBOOK — ACTIVE GATE R1 → R4**
+Status: **R4 CLOSED — RETAINED AS HISTORICAL / REGRESSION RUNBOOK**
 
 Project: `iiwwmqokaeflaenhlyip`  
 Region: `ap-south-1`  
 Supabase URL: `https://iiwwmqokaeflaenhlyip.supabase.co`
 
-This runbook is deliberately narrow. It proves the external Auth boundaries and then one complete user-value chain. It must not become another broad implementation pass.
+This runbook is deliberately narrow. It proves the external Auth boundaries and then one complete user-value chain. It must not become another broad implementation pass.\n\n**Completion note (2026-09-18):** the mandatory walking skeleton is now PROVEN. See `50-dev-test-identity-session-harness-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Keep this file as the exact regression/runbook specification; do not treat its old preflight language as the current project state.
 
 ## 1. Known starting state
 
@@ -352,8 +352,15 @@ R4 passes only if all of these are simultaneously true:
 - no fake OTP exists;
 - cleanup leaves only intentional DEV test identities/data.
 
-## 12. Current external blocker
+## 12. Historical blocker resolution
 
-At this checkpoint, the connected Supabase plugin exposes database/project operations but not the hosted Auth provider/test-OTP configuration endpoint, and the authorized Remote Desktop device is offline.
+The former external Auth/browser blocker is resolved for the mandatory walking skeleton:
 
-Therefore the only legitimate next external action is to obtain an authorized hosted-Auth/browser surface (Supabase Dashboard/Management API plus browser) and execute this runbook. Until then, do not start another horizontal product implementation pass and do not deploy.
+- real hosted Google identities were established;
+- real hosted phone attachment/trust interruption-resume was proven;
+- the original R4 authority/Invitation/Membership chain remains durable;
+- the final Class-message / notification / copied-link privacy boundary is now autonomously proven with genuine DEV sessions and isolated cloud browsers.
+
+Periodic same-phone refresh remains a small provider-smoke case for pre-launch Auth regression. It does not reopen R4.
+
+Current continuation is controlled by `52-master-lifecycle-gates-traceability-v1.3.md`.
