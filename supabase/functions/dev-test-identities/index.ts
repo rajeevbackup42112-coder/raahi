@@ -48,6 +48,12 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     unrelated: { email: 'e2e.ui2.unrelated@dev.learning.myraahi.co.in', phone: '+919100000403', display_name: 'UI2 E2E Unrelated', scenario: 'UI2 privacy actor' },
     staff: { email: 'e2e.ui2.staff@dev.learning.myraahi.co.in', phone: '+919100000404', display_name: 'UI2 E2E Staff', scenario: 'organization staff UI convergence' },
   },
+  ui3: {
+    manager: { email: 'e2e.ui3.manager@dev.learning.myraahi.co.in', phone: '+919100000501', display_name: 'UI3 E2E Local Manager', scenario: 'Local Manager UI convergence' },
+    admin: { email: 'e2e.ui3.admin@dev.learning.myraahi.co.in', phone: '+919100000502', display_name: 'UI3 E2E Platform Admin', scenario: 'Platform Admin UI convergence' },
+    ads_operator: { email: 'e2e.ui3.ads@dev.learning.myraahi.co.in', phone: '+919100000503', display_name: 'UI3 E2E Ads Operator', scenario: 'Ads operator UI convergence' },
+    safety: { email: 'e2e.ui3.safety@dev.learning.myraahi.co.in', phone: '+919100000504', display_name: 'UI3 E2E Safety Reviewer', scenario: 'Safety reviewer UI convergence' },
+  },
   cohort: {
     adult_learner: { email: 'e2e.cohort.adult_learner@dev.learning.myraahi.co.in', phone: '+919100001001', display_name: 'Cohort Adult Learner', scenario: 'adult learner' },
     parent_single: { email: 'e2e.cohort.parent_single@dev.learning.myraahi.co.in', phone: '+919100001002', display_name: 'Cohort Parent Single', scenario: 'parent managing one learner' },
