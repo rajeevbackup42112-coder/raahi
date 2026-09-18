@@ -1,4 +1,5 @@
 name: Raahi Learning UI Convergence Core
+# Exact-build convergence proof; runner rechecks build-meta at completion.
 
 on:
   push:
