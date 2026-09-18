@@ -74,6 +74,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     teacher: { email: 'e2e.sidefxtest.teacher@dev.learning.myraahi.co.in', phone: '+919100000752', display_name: 'Test SideFX E2E Teacher', scenario: 'Released Test correction provider' },
     unrelated: { email: 'e2e.sidefxtest.unrelated@dev.learning.myraahi.co.in', phone: '+919100000753', display_name: 'Test SideFX E2E Unrelated', scenario: 'Released Test correction privacy actor' },
   },
+  sidefx_org: {
+    owner: { email: 'e2e.sidefxorg.owner@dev.learning.myraahi.co.in', phone: '+919100000761', display_name: 'Organization SideFX E2E Owner', scenario: 'Organization authority transition owner' },
+    member: { email: 'e2e.sidefxorg.member@dev.learning.myraahi.co.in', phone: '+919100000762', display_name: 'Organization SideFX E2E Member', scenario: 'Organization authority transition member' },
+    unrelated: { email: 'e2e.sidefxorg.unrelated@dev.learning.myraahi.co.in', phone: '+919100000763', display_name: 'Organization SideFX E2E Unrelated', scenario: 'Organization authority transition privacy actor' },
+  },
   sidefx_activity: {
     learner: { email: 'e2e.sidefxactivity.learner@dev.learning.myraahi.co.in', phone: '+919100000741', display_name: 'Activity E2E Learner', scenario: 'Activity submission side-effect learner' },
     teacher: { email: 'e2e.sidefxactivity.teacher@dev.learning.myraahi.co.in', phone: '+919100000742', display_name: 'Activity E2E Teacher', scenario: 'Activity submission side-effect provider' },
@@ -477,6 +482,30 @@ Deno.serve(async (req: Request) => {
         audit_rows:(audits || []).map((row:any)=>({
           id:row.id,actor_account_id:row.actor_account_id,action_type:row.action_type,
           target_type:row.target_type,target_id:row.target_id,metadata:row.metadata,created_at:row.created_at
+        }))
+      });
+    }
+
+    if (action === 'inspect_organization_authority_audit') {
+      if (suite !== 'sidefx_org') throw new Error('ORGANIZATION_AUTHORITY_INSPECTION_SUITE_NOT_ALLOWED');
+      const organizationMemberId = String(body?.organization_member_id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(organizationMemberId)) throw new Error('INVALID_ORGANIZATION_MEMBER_ID');
+
+      const { data: audits, error: auditError } = await admin
+        .from('audit_log')
+        .select('id,actor_account_id,action_type,target_type,target_id,organization_id,metadata,created_at')
+        .eq('target_type','organization_member')
+        .eq('target_id',organizationMemberId)
+        .in('action_type',['organization.member_capability_change','organization.member_remove'])
+        .order('created_at',{ascending:true});
+      if (auditError) throw auditError;
+
+      return response(200,{
+        ok:true,run_id:runId,suite,
+        audit_rows:(audits || []).map((row:any)=>({
+          id:row.id,actor_account_id:row.actor_account_id,action_type:row.action_type,
+          target_type:row.target_type,target_id:row.target_id,organization_id:row.organization_id,
+          metadata:row.metadata,created_at:row.created_at
         }))
       });
     }

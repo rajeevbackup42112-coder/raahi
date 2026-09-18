@@ -1,0 +1,53 @@
+name: Raahi Learning Organization Authority Side Effects
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'supabase/migrations/20260918131336_1031_v13_organization_authority_side_effects.sql'
+      - 'apps/raahi-learning/live-product-fix-v13.js'
+      - 'supabase/functions/dev-test-identities/**'
+      - 'tests/raahi-learning-e2e/organization-authority-side-effects.mjs'
+      - '.github/workflows/raahi-learning-organization-authority-side-effects.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-organization-authority-side-effects
+  cancel-in-progress: true
+
+jobs:
+  side-effects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install deterministic harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+      - name: Run Organization authority side-effect proof
+        working-directory: tests/raahi-learning-e2e
+        run: node organization-authority-side-effects.mjs
+      - name: Upload sanitized Organization authority evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-organization-authority-side-effects-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-sidefx-organization-authority/
+          if-no-files-found: warn
+          retention-days: 30
