@@ -1,13 +1,13 @@
 # Raahi Learning V1.3 — Hosted Auth Preflight Evidence
 
-Status: **R1 PRECHECK COMPLETE — EXTERNAL BROWSER/AUTH-CONFIG BOUNDARY REMAINS**
+Status: **HISTORICAL PREFLIGHT — EXTERNAL BOUNDARY LATER RESOLVED**
 
 Date: 2026-09-13  
 Repository: `rajeevbackup42112-coder/raahi`  
 Branch: `raahi-learning-implementation-v1`  
 Supabase DEV: `iiwwmqokaeflaenhlyip` (`ap-south-1`)
 
-This is execution evidence only. It does not replace `47-ai-builder-v2-internal-retrofit-closure-v1.3.md` or `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` and does not change frozen product rules.
+This is execution evidence only. It does not replace `47-ai-builder-v2-internal-retrofit-closure-v1.3.md` or `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` and does not change frozen product rules.\n\n**Historical note:** the zero-user/preflight state below was true on 2026-09-13. Hosted Google/phone proof and R4 were subsequently completed. Current evidence is in `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`; do not use this file as the current-state handover.
 
 ## Verified read-only state
 
