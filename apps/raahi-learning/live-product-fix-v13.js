@@ -247,6 +247,10 @@
       if (route === 'phone-check' || route === 'otp') {
         if (live.__phoneTrustV13?.state === 'fresh' && loadPendingAction()) setTimeout(() => {}, 0);
       }
+      if (route === 'teacher-home') {
+        const heading = document.querySelector('.main h1');
+        if (heading) heading.style.fontSize = window.innerWidth <= 720 ? '28px' : '36px';
+      }
       if (route === 'learners' || route === 'org-members') {
         document.querySelectorAll('.main .card .between').forEach(el => {
           el.style.flexWrap = 'wrap';
