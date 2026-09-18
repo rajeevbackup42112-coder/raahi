@@ -43,6 +43,16 @@ jobs:
         working-directory: tests/raahi-learning-e2e
         run: npm install --ignore-scripts
 
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Preserve generated lockfile for pinning
+        working-directory: tests/raahi-learning-e2e
+        run: |
+          mkdir -p artifacts
+          cp package-lock.json artifacts/package-lock.generated.json
+
       - name: Install Chromium
         working-directory: tests/raahi-learning-e2e
         run: npx playwright install --with-deps chromium
