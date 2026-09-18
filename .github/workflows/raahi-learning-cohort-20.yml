@@ -1,0 +1,60 @@
+name: Raahi Learning 20 Persona Cohort
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'supabase/functions/dev-test-identities/**'
+      - 'tests/raahi-learning-e2e/cohort-20-session-proof.mjs'
+      - '.github/workflows/raahi-learning-cohort-20.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-cohort-20
+  cancel-in-progress: true
+
+jobs:
+  cohort-20:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install deterministic harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run 20-persona genuine-session proof
+        working-directory: tests/raahi-learning-e2e
+        run: node cohort-20-session-proof.mjs
+
+      - name: Upload sanitized cohort evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-cohort-20-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-cohort/
+          if-no-files-found: warn
+          retention-days: 30
