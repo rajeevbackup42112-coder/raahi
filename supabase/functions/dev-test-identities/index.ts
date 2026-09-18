@@ -17,18 +17,22 @@ const GITHUB_JWKS = createRemoteJWKSet(
 const PERSONAS = {
   learner: {
     email: 'e2e.learner@dev.learning.myraahi.co.in',
+    phone: '+919100000101',
     display_name: 'E2E Learner Account',
   },
   teacher: {
     email: 'e2e.teacher@dev.learning.myraahi.co.in',
+    phone: '+919100000102',
     display_name: 'E2E Teacher Account',
   },
   unrelated: {
     email: 'e2e.unrelated@dev.learning.myraahi.co.in',
+    phone: '+919100000103',
     display_name: 'E2E Unrelated Account',
   },
   admin: {
     email: 'e2e.admin@dev.learning.myraahi.co.in',
+    phone: '+919100000104',
     display_name: 'E2E Platform Admin',
   },
 } as const;
@@ -109,20 +113,24 @@ async function ensurePersona(
     const { data, error } = await admin.auth.admin.updateUserById(existing.id, {
       password,
       email_confirm: true,
+      phone: spec.phone,
+      phone_confirm: true,
       user_metadata: metadata,
     });
     if (error) throw error;
-    return { key, auth_user_id: data.user.id, email: spec.email, created: false };
+    return { key, auth_user_id: data.user.id, email: spec.email, phone: spec.phone, created: false };
   }
 
   const { data, error } = await admin.auth.admin.createUser({
     email: spec.email,
     password,
     email_confirm: true,
+    phone: spec.phone,
+    phone_confirm: true,
     user_metadata: metadata,
   });
   if (error) throw error;
-  return { key, auth_user_id: data.user.id, email: spec.email, created: true };
+  return { key, auth_user_id: data.user.id, email: spec.email, phone: spec.phone, created: true };
 }
 
 async function ensureAdminCapability(admin: ReturnType<typeof createClient>) {
