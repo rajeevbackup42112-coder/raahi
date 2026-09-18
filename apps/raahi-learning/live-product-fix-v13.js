@@ -202,7 +202,7 @@
     }
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -284,6 +284,18 @@
           }
           return;
         }
+        if (t.dataset.liveFixOpenTestCorrectionNotification) {
+          const n = arr(live.data.notifications).find(x => (x.notification_id || x.id) === t.dataset.liveFixOpenTestCorrectionNotification);
+          const p = n?.payload || {};
+          const testId = p.test_id || null;
+          const classId = p.class_id || null;
+          if (!testId || !classId) throw new Error('Test correction notification no longer has a valid authorized destination.');
+          live.selected.testId = testId;
+          live.selected.classId = classId;
+          live.routeLoads.clear();
+          api.go('test-results');
+          return;
+        }
         if (t.dataset.liveFixAcceptInvite) {
           const invitationId = t.dataset.liveFixAcceptInvite;
           await runSensitiveAction({ rpc:'accept_class_invitation', params:{ p_invitation_id:invitationId, p_idempotency_key:idk('accept-invite') }, successRoute:'join-success' }, 'join-success', 'Class joined');
@@ -331,7 +343,7 @@
           const type = n.notification_type || '';
           const card = cards[index];
           const row = card?.querySelector('.row');
-          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification]')) return;
+          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification]')) return;
           if (/^trial_(scheduled|rescheduled|cancelled)$/.test(type)) {
             const button = document.createElement('button');
             button.className = 'primary-btn small';
@@ -361,6 +373,12 @@
             button.className = 'primary-btn small';
             button.textContent = 'Open';
             button.dataset.liveFixOpenActivitySubmissionNotification = n.notification_id || n.id;
+            row.prepend(button);
+          } else if (type === 'test_results_corrected') {
+            const button = document.createElement('button');
+            button.className = 'primary-btn small';
+            button.textContent = 'Open';
+            button.dataset.liveFixOpenTestCorrectionNotification = n.notification_id || n.id;
             row.prepend(button);
           }
         });
