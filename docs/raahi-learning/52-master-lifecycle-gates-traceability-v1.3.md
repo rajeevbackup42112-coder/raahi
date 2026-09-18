@@ -22,7 +22,7 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | DEV test identity/session harness | PROVEN | Doc 50; genuine sessions, OIDC-protected fixture boundary, RLS retained, isolated browsers. |
 | Mandatory walking skeleton | PROVEN | Doc 51; includes Class message, notification Open deep link and unrelated denial. |
 | Representative persona expansion | PROVEN | 20 genuine DEV identities/sessions, unique Accounts, own-row RLS allow/cross-row deny, 20 isolated Chromium sign-ins. See doc 53. |
-| UI / interaction convergence | ACTIVE NEXT | Compare deployed live product to frozen V1.3 artifact screen-by-screen using autonomous browser harness. |
+| UI / interaction convergence | ACTIVE | Core learner/teacher, managed-parent/Organization, and Local Manager/Platform Admin convergence are proven. Advertiser/Raahi Ads and bounded Organization staff capability surfaces are next. See docs 54–56. |
 | Remaining vertical slices | PARTIAL / QUEUED | Close only one slice at a time with command/projection/permission/side-effect/UI/runtime evidence. |
 | Adversarial / recovery / race testing | QUEUED | Includes revoked authority, copied links, retries, last-seat races, stale trust, shared-device context. |
 | Reliability / load / security / launch | QUEUED | No public launch claim until these gates pass. |
@@ -67,8 +67,9 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. begin frozen-prototype UI convergence with browser evidence using the proven 20-persona cohort;
-2. close defects by classification and vertical slice;
-3. then expand to adversarial/recovery/race/load/security gates.
+1. converge advertiser/Raahi Ads workspace using real Organization advertising authority;
+2. converge bounded capability-specific Organization staff surfaces;
+3. close remaining vertical slices by classification;
+4. then expand to adversarial/recovery/race/load/security gates.
 
 Do not restart product discovery or recreate already-proven architecture/database work.
