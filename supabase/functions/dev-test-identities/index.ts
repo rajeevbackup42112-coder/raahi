@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_test: {
+    learner: { email: 'e2e.sidefxtest.learner@dev.learning.myraahi.co.in', phone: '+919100000751', display_name: 'Test SideFX E2E Learner', scenario: 'Released Test correction learner' },
+    teacher: { email: 'e2e.sidefxtest.teacher@dev.learning.myraahi.co.in', phone: '+919100000752', display_name: 'Test SideFX E2E Teacher', scenario: 'Released Test correction provider' },
+    unrelated: { email: 'e2e.sidefxtest.unrelated@dev.learning.myraahi.co.in', phone: '+919100000753', display_name: 'Test SideFX E2E Unrelated', scenario: 'Released Test correction privacy actor' },
+  },
   sidefx_activity: {
     learner: { email: 'e2e.sidefxactivity.learner@dev.learning.myraahi.co.in', phone: '+919100000741', display_name: 'Activity E2E Learner', scenario: 'Activity submission side-effect learner' },
     teacher: { email: 'e2e.sidefxactivity.teacher@dev.learning.myraahi.co.in', phone: '+919100000742', display_name: 'Activity E2E Teacher', scenario: 'Activity submission side-effect provider' },
@@ -447,6 +452,31 @@ Deno.serve(async (req: Request) => {
           revision_id:row.id,submission_id:row.submission_id,revision_number:row.revision_number,
           performed_by_account_id:row.performed_by_account_id,submitted_at:row.submitted_at,
           review_outcome:row.review_outcome,reviewed_by_account_id:row.reviewed_by_account_id,reviewed_at:row.reviewed_at
+        }))
+      });
+    }
+
+    if (action === 'inspect_test_correction_audit') {
+      if (suite !== 'sidefx_test') throw new Error('TEST_CORRECTION_INSPECTION_SUITE_NOT_ALLOWED');
+      const questionIds = Array.isArray(body?.question_ids) ? body.question_ids.map(String) : [];
+      if (!questionIds.length || questionIds.some((id:string)=>!/^[0-9a-f-]{36}$/i.test(id))) {
+        throw new Error('INVALID_TEST_QUESTION_IDS');
+      }
+
+      const { data: audits, error: auditError } = await admin
+        .from('audit_log')
+        .select('id,actor_account_id,action_type,target_type,target_id,metadata,created_at')
+        .eq('target_type','test_question')
+        .in('target_id',questionIds)
+        .eq('action_type','test.answer_key_correct')
+        .order('created_at',{ascending:true});
+      if (auditError) throw auditError;
+
+      return response(200,{
+        ok:true,run_id:runId,suite,
+        audit_rows:(audits || []).map((row:any)=>({
+          id:row.id,actor_account_id:row.actor_account_id,action_type:row.action_type,
+          target_type:row.target_type,target_id:row.target_id,metadata:row.metadata,created_at:row.created_at
         }))
       });
     }
