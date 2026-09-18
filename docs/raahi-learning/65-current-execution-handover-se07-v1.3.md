@@ -29,7 +29,7 @@ No public production deployment has been authorized.
 
 ## 2. Exact Git / deployment state
 
-Exact branch head at handover:
+Last **product-affecting** implementation commit at handover:
 
 `8c68f057b27ae352a6fe5283c5534bd7f34b1113`
 
@@ -37,11 +37,16 @@ Commit message:
 
 `Add Test correction side-effect personas and audit inspector`
 
-Cloudflare DEV `build-meta.json` serves the same exact commit:
+Cloudflare DEV `build-meta.json` was verified serving that exact product commit:
 
 `8c68f057b27ae352a6fe5283c5534bd7f34b1113`
 
-Therefore the current static DEV artifact and branch head are aligned.
+After that verification, documentation-only handover commits were added, including:
+
+- `7d4df0dde2f4f58659300794304f8d590883d233` — this detailed SE-07 handover;
+- `25095e13f142af1928d11d684d9db91c573219dd` — canonical `99-handover.md` updated to point here.
+
+Therefore the Git branch may be ahead of the deployed static commit by documentation-only changes. This is intentional. In the next chat, inspect the latest branch head read-only and compare product-sensitive files before deciding whether a Cloudflare rebuild is required.
 
 ## 3. Supabase migration state
 
@@ -121,7 +126,9 @@ On head `8c68f057...`, the following runs were already **SUCCESS**:
 - Core UI Convergence — run `35344097542`
 - Privileged UI Convergence — run `35344097614`
 
-The 20-Persona Cohort run `35344097573` was still **IN PROGRESS** at the moment this handover was captured. Poll it in the next chat; do not restart the cohort merely because this document records it as in progress.
+The 20-Persona Cohort run `35344097573` subsequently completed **SUCCESS** on the same product commit `8c68f057...`.
+
+So the full recorded head-regression set listed above, including the 20-persona cohort, is green for the last product-affecting handover commit.
 
 ## 6. Current active slice — SE-07 released Test correction
 
