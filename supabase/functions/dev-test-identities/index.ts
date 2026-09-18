@@ -14,30 +14,29 @@ const GITHUB_JWKS = createRemoteJWKSet(
   new URL('https://token.actions.githubusercontent.com/.well-known/jwks')
 );
 
-const PERSONAS = {
-  learner: {
-    email: 'e2e.learner@dev.learning.myraahi.co.in',
-    phone: '+919100000101',
-    display_name: 'E2E Learner Account',
+const PERSONA_SETS = {
+  core: {
+    learner: { email: 'e2e.learner@dev.learning.myraahi.co.in', phone: '+919100000101', display_name: 'E2E Learner Account' },
+    teacher: { email: 'e2e.teacher@dev.learning.myraahi.co.in', phone: '+919100000102', display_name: 'E2E Teacher Account' },
+    unrelated: { email: 'e2e.unrelated@dev.learning.myraahi.co.in', phone: '+919100000103', display_name: 'E2E Unrelated Account' },
+    admin: { email: 'e2e.admin@dev.learning.myraahi.co.in', phone: '+919100000104', display_name: 'E2E Platform Admin' },
   },
-  teacher: {
-    email: 'e2e.teacher@dev.learning.myraahi.co.in',
-    phone: '+919100000102',
-    display_name: 'E2E Teacher Account',
-  },
-  unrelated: {
-    email: 'e2e.unrelated@dev.learning.myraahi.co.in',
-    phone: '+919100000103',
-    display_name: 'E2E Unrelated Account',
-  },
-  admin: {
-    email: 'e2e.admin@dev.learning.myraahi.co.in',
-    phone: '+919100000104',
-    display_name: 'E2E Platform Admin',
+  r4: {
+    learner: { email: 'e2e.r4.learner@dev.learning.myraahi.co.in', phone: '+919100000201', display_name: 'R4 E2E Learner Account' },
+    teacher: { email: 'e2e.r4.teacher@dev.learning.myraahi.co.in', phone: '+919100000202', display_name: 'R4 E2E Teacher Account' },
+    unrelated: { email: 'e2e.r4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000203', display_name: 'R4 E2E Unrelated Account' },
+    admin: { email: 'e2e.r4.admin@dev.learning.myraahi.co.in', phone: '+919100000204', display_name: 'R4 E2E Platform Admin' },
   },
 } as const;
 
-type PersonaKey = keyof typeof PERSONAS;
+type SuiteKey = keyof typeof PERSONA_SETS;
+type PersonaKey = keyof typeof PERSONA_SETS.core;
+
+function requireSuite(value: unknown): SuiteKey {
+  const suite = String(value || 'core') as SuiteKey;
+  if (!Object.prototype.hasOwnProperty.call(PERSONA_SETS, suite)) throw new Error('TEST_SUITE_NOT_ALLOWED');
+  return suite;
+}
 
 function response(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
@@ -95,15 +94,17 @@ async function findAuthUserByEmail(admin: ReturnType<typeof createClient>, email
 
 async function ensurePersona(
   admin: ReturnType<typeof createClient>,
+  suite: SuiteKey,
   key: PersonaKey,
   password: string,
   runId: string,
 ) {
-  const spec = PERSONAS[key];
+  const spec = PERSONA_SETS[suite][key];
   const existing = await findAuthUserByEmail(admin, spec.email);
   const metadata = {
     ...(existing?.user_metadata || {}),
     raahi_test_harness: true,
+    raahi_test_suite: suite,
     raahi_test_persona: key,
     raahi_test_run_id: runId,
     display_name: spec.display_name,
@@ -133,8 +134,8 @@ async function ensurePersona(
   return { key, auth_user_id: data.user.id, email: spec.email, phone: spec.phone, created: true };
 }
 
-async function ensureAdminCapability(admin: ReturnType<typeof createClient>) {
-  const authUser = await findAuthUserByEmail(admin, PERSONAS.admin.email);
+async function ensureAdminCapability(admin: ReturnType<typeof createClient>, suite: SuiteKey) {
+  const authUser = await findAuthUserByEmail(admin, PERSONA_SETS[suite].admin.email);
   if (!authUser) throw new Error('ADMIN_TEST_AUTH_USER_NOT_FOUND');
 
   const { data: account, error: accountError } = await admin
@@ -190,6 +191,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const action = String(body?.action || '');
     const runId = String(body?.run_id || '').trim();
+    const suite = requireSuite(body?.suite);
 
     if (!/^[A-Za-z0-9._-]{6,120}$/.test(runId)) {
       return response(400, { ok: false, error: 'INVALID_RUN_ID' });
@@ -204,26 +206,27 @@ Deno.serve(async (req: Request) => {
     if (action === 'ensure_personas') {
       const supplied = body?.passwords || {};
       const results = [];
-      for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
-        results.push(await ensurePersona(admin, key, requirePassword(supplied[key]), runId));
+      for (const key of Object.keys(PERSONA_SETS[suite]) as PersonaKey[]) {
+        results.push(await ensurePersona(admin, suite, key, requirePassword(supplied[key]), runId));
       }
       console.log('[dev-test-identities] ensured personas', {
         run_id: runId,
+        suite,
         repository: claims.repository,
         ref: claims.ref,
         personas: results.map((x) => x.key),
       });
-      return response(200, { ok: true, run_id: runId, personas: results });
+      return response(200, { ok: true, run_id: runId, suite, personas: results });
     }
 
     if (action === 'ensure_admin_capability') {
-      const result = await ensureAdminCapability(admin);
+      const result = await ensureAdminCapability(admin, suite);
       console.log('[dev-test-identities] ensured admin capability', {
         run_id: runId,
         repository: claims.repository,
         ref: claims.ref,
       });
-      return response(200, { ok: true, run_id: runId, admin: result });
+      return response(200, { ok: true, run_id: runId, suite, admin: result });
     }
 
     return response(400, { ok: false, error: 'UNKNOWN_ACTION' });
