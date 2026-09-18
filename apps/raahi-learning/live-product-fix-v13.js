@@ -202,7 +202,7 @@
     }
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -218,6 +218,15 @@
           live.selected.enquiryId = enquiryId;
           live.routeLoads.clear();
           api.go('trial');
+          return;
+        }
+        if (t.dataset.liveFixOpenClassSessionNotification) {
+          const n = arr(live.data.notifications).find(x => (x.notification_id || x.id) === t.dataset.liveFixOpenClassSessionNotification);
+          const classId = n?.payload?.class_id || null;
+          if (!classId) throw new Error('Class Session notification no longer has a valid Class destination.');
+          live.selected.classId = classId;
+          live.routeLoads.clear();
+          api.go('class-detail');
           return;
         }
         if (t.dataset.liveFixAcceptInvite) {
@@ -264,15 +273,23 @@
       if (route === 'notifications') {
         const cards = [...document.querySelectorAll('.main .stack > .card')];
         arr(live.data.notifications).forEach((n, index) => {
-          if (!/^trial_(scheduled|rescheduled|cancelled)$/.test(n.notification_type || '')) return;
+          const type = n.notification_type || '';
           const card = cards[index];
           const row = card?.querySelector('.row');
-          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification]')) return;
-          const button = document.createElement('button');
-          button.className = 'primary-btn small';
-          button.textContent = 'Open';
-          button.dataset.liveFixOpenTrialNotification = n.notification_id || n.id;
-          row.prepend(button);
+          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification]')) return;
+          if (/^trial_(scheduled|rescheduled|cancelled)$/.test(type)) {
+            const button = document.createElement('button');
+            button.className = 'primary-btn small';
+            button.textContent = 'Open';
+            button.dataset.liveFixOpenTrialNotification = n.notification_id || n.id;
+            row.prepend(button);
+          } else if (/^class_session_(scheduled|cancelled)$/.test(type)) {
+            const button = document.createElement('button');
+            button.className = 'primary-btn small';
+            button.textContent = 'Open';
+            button.dataset.liveFixOpenClassSessionNotification = n.notification_id || n.id;
+            row.prepend(button);
+          }
         });
       }
       if (route === 'learners' || route === 'org-members') {
