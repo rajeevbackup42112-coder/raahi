@@ -238,6 +238,17 @@
       if (route === 'phone-check' || route === 'otp') {
         if (live.__phoneTrustV13?.state === 'fresh' && loadPendingAction()) setTimeout(() => {}, 0);
       }
+      if (route === 'learners' || route === 'org-members') {
+        document.querySelectorAll('.main .card .between').forEach(el => {
+          el.style.flexWrap = 'wrap';
+          el.style.gap = '12px';
+        });
+        document.querySelectorAll('.main .card .row').forEach(el => {
+          el.style.flexWrap = 'wrap';
+          el.style.gap = '8px';
+          el.style.maxWidth = '100%';
+        });
+      }
     };
 
     api.render();
