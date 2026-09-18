@@ -1,0 +1,52 @@
+name: Raahi Learning Organization Staff Boundaries
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'apps/raahi-learning/live-product-fix-v13.js'
+      - 'supabase/functions/dev-test-identities/**'
+      - 'tests/raahi-learning-e2e/org-staff-capability-boundaries.mjs'
+      - '.github/workflows/raahi-learning-org-staff-boundaries.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-org-staff-boundaries
+  cancel-in-progress: true
+
+jobs:
+  boundaries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install deterministic harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+      - name: Run bounded Organization staff capability proof
+        working-directory: tests/raahi-learning-e2e
+        run: node org-staff-capability-boundaries.mjs
+      - name: Upload Organization staff evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-org-staff-boundaries-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-org-staff-capabilities/
+          if-no-files-found: warn
+          retention-days: 30
