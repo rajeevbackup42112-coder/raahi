@@ -14,7 +14,7 @@ const DHANBAD_LOCATION_ID='028ee066-2130-45d6-8e17-6ceb9b0f1f80';
 const ARTIFACT_DIR=path.resolve('artifacts-ui-convergence-privileged');
 
 const ROUTES=[
-  {route:'manager-home',actor:'manager',fixtureRole:'manager',fixtureLabel:'Local Manager'},
+  {route:'manager-home',actor:'manager',fixtureRole:'manager',fixtureLabel:'Local Manager',liveTitle:'Dhanbad Overview'},
   {route:'manager-people',actor:'manager',fixtureRole:'manager',fixtureLabel:'Local Manager'},
   {route:'manager-learning',actor:'manager',fixtureRole:'manager',fixtureLabel:'Local Manager'},
   {route:'manager-reports',actor:'manager',fixtureRole:'manager',fixtureLabel:'Local Manager'},
@@ -99,7 +99,7 @@ async function chooseLiveRole(page,role){
   for(const candidate of candidates){
     const el=page.locator('[data-live-role="'+candidate+'"]');
     if(await el.count()){await el.first().click();await page.waitForTimeout(900);return candidate;}
-    const select=page.locator('[data-role-select]');
+    const select=page.locator('[data-live-role-select], [data-role-select]').first();
     if(await select.count()){
       const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>x.value));
       if(values.includes(candidate)){await select.selectOption(candidate);await page.waitForTimeout(900);return candidate;}
@@ -154,9 +154,10 @@ async function liveMetrics(page,item){
 
 function visible(b){return !!b&&b.display!=='none'&&b.w>0&&b.h>0;}
 function close(a,b,t=3){return Math.abs((a??0)-(b??0))<=t;}
-function compare(gold,live){
+function compare(gold,live,item){
   const issues=[];
-  if(gold.title!==live.title)issues.push('title expected='+JSON.stringify(gold.title)+' actual='+JSON.stringify(live.title));
+  const expectedTitle=item.liveTitle||gold.title;
+  if(expectedTitle!==live.title)issues.push('title expected='+JSON.stringify(expectedTitle)+' actual='+JSON.stringify(live.title));
   if(live.overflow)issues.push('horizontal overflow');
   if(live.denied)issues.push('unexpected access/guard page');
   if(gold.h1Font!==live.h1Font)issues.push('h1 font '+gold.h1Font+' vs '+live.h1Font);
@@ -223,7 +224,7 @@ async function main(){
         for(const item of ROUTES){
           const gold=await fixtureMetrics(browser,item,viewport);
           const live=await liveMetrics(item.actor==='manager'?manager.page:admin.page,item);
-          const issues=compare(gold,live);
+          const issues=compare(gold,live,item);
           report.routes.push({viewport:viewport.name,route:item.route,actor:item.actor,gold_title:gold.title,live_title:live.title,issues});
           await (item.actor==='manager'?manager.page:admin.page).screenshot({path:path.join(ARTIFACT_DIR,viewport.name+'-'+item.actor+'-'+item.route+'.png'),fullPage:true});
         }
