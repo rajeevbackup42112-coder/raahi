@@ -157,8 +157,8 @@ async function main(){
   try{
     report.deployment=await waitDeployment(sha);
     const token=await oidc();
-    const passwords={org_owner:pwd(),staff_profile:pwd(),staff_ads:pwd(),unrelated:pwd()};
-    const ensured=await edge(token,{action:'ensure_personas',suite:'ui4',run_id:run,passwords});
+    const passwords={org_owner:pwd()};
+    const ensured=await edge(token,{action:'ensure_personas',suite:'ui4_ads',run_id:run,passwords});
     const specs=Object.fromEntries(ensured.personas.map(x=>[x.key,x]));
     const c=client();
     const {data,error}=await c.auth.signInWithPassword({email:specs.org_owner.email,password:passwords.org_owner});if(error)throw error;
