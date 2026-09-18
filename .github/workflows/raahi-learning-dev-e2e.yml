@@ -1,0 +1,61 @@
+name: Raahi Learning DEV E2E Harness
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'apps/raahi-learning/**'
+      - 'supabase/migrations/**'
+      - 'supabase/functions/dev-test-identities/**'
+      - 'tests/raahi-learning-e2e/**'
+      - '.github/workflows/raahi-learning-dev-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-dev-e2e
+  cancel-in-progress: false
+
+jobs:
+  genuine-session-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+
+      - name: Guard branch and target
+        shell: bash
+        run: |
+          test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+          test "https://dev.learning.myraahi.co.in" = "https://dev.learning.myraahi.co.in"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned E2E dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm install --ignore-scripts
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run genuine-session DEV harness
+        working-directory: tests/raahi-learning-e2e
+        run: node dev-session-harness.mjs
+
+      - name: Upload sanitized harness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-dev-harness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts/
+          if-no-files-found: warn
+          retention-days: 14
