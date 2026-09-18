@@ -284,7 +284,12 @@ async function main(){
       const card=signedIn.page.locator('.card').filter({hasText:'Test results updated'}).first();
       await card.getByRole('button',{name:'Open'}).click();
       await signedIn.page.waitForURL(url=>url.origin===DEV_ORIGIN&&url.hash==='#/test-results',{timeout:15000});
-      await signedIn.page.getByText(visible.title,{exact:true}).waitFor({timeout:15000});
+      const resultTitle=signedIn.page.getByText(visible.title,{exact:true});
+      await resultTitle.waitFor({timeout:15000});
+      await signedIn.page.waitForTimeout(1500);
+      assert(await resultTitle.isVisible(),'AUTHORIZED_TEST_RESULT_DID_NOT_REMAIN_VISIBLE_AFTER_SETTLE');
+      assert(!(await signedIn.page.getByText('Loading current authorized data...',{exact:true}).isVisible().catch(()=>false)),'AUTHORIZED_TEST_RESULT_RETURNED_TO_ROUTE_LOADING_STATE');
+      assert(!(await signedIn.page.getByText('Loading...',{exact:true}).isVisible().catch(()=>false)),'AUTHORIZED_TEST_RESULT_RETURNED_TO_CARD_LOADING_STATE');
       await signedIn.page.screenshot({path:path.join(ARTIFACT_DIR,'learner-test-correction-open.png'),fullPage:true});
       await signedIn.context.close();
     }finally{await browser.close();}
