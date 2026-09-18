@@ -23,6 +23,8 @@
     const selectedLearner = () => currentLearners().find(x => x.learner_id === live.selected.learnerId) || currentLearners()[0] || null;
     const errorText = e => e?.message || e?.details || e?.hint || String(e || 'Unknown error');
     const isPhoneGate = e => /PHONE_TRUST_REQUIRED/i.test(errorText(e));
+    const selectedLocationName = () => live.context?.selected_location?.name || arr(live.data.locations).find(x => x.state === 'live')?.name || 'Choose location';
+    const replaceFirstPageTitle = (html, title) => String(html || '').replace(/<h1>[\s\S]*?<\/h1>/, `<h1>${h(title)}</h1>`);
 
     async function rpc(name, params={}) {
       const { data, error } = await live.client.rpc(name, params);
@@ -106,7 +108,17 @@
           return pagePhoneCheck();
         }
       }
-      return originalRender(route, coreApi);
+      const rendered = originalRender(route, coreApi);
+      if (route === 'home' && ['learner','student','parent'].includes(coreApi.state.role)) {
+        return replaceFirstPageTitle(rendered, 'Learn locally. Keep learning together.');
+      }
+      if (route === 'community') {
+        return replaceFirstPageTitle(rendered, `${selectedLocationName()} Community`);
+      }
+      if (route === 'teacher-home') {
+        return replaceFirstPageTitle(rendered, 'Teach locally, without chasing leads.');
+      }
+      return rendered;
     };
 
     live.rightbarHtml = function(coreApi) {
