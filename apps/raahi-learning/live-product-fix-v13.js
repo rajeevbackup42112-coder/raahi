@@ -202,7 +202,7 @@
     }
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -256,6 +256,34 @@
           api.go(providerRole ? 'teacher-class' : 'class-detail');
           return;
         }
+        if (t.dataset.liveFixOpenActivitySubmissionNotification) {
+          const n = arr(live.data.notifications).find(x => (x.notification_id || x.id) === t.dataset.liveFixOpenActivitySubmissionNotification);
+          const type = n?.notification_type || '';
+          const p = n?.payload || {};
+          const classId = p.class_id || null;
+          const activityId = p.activity_id || null;
+          const learnerId = p.learner_id || null;
+          if (!classId || !activityId || !learnerId) throw new Error('Activity notification no longer has a valid authorized destination.');
+          live.selected.classId = classId;
+          live.selected.learnerId = learnerId;
+          live.selected.activityId = activityId;
+          live.selected.enquiryId = null;
+          live.selected.testId = null;
+          live.selected.teachingOptionId = null;
+          live.selected.communityPostId = null;
+          live.selected.adCampaignId = null;
+          live.routeLoads.clear();
+          if (type === 'activity_submission_received') {
+            live.data.activity = await rpc('get_activity_detail',{ p_activity_id:activityId, p_learner_id:learnerId });
+            const loc = live.context?.selected_location?.location_id || arr(live.data.locations).find(x => x.state === 'live')?.location_id || '';
+            const key = ['submission-review',classId,learnerId,'',activityId,'','','','',loc].join('|');
+            live.routeLoads.set(key,'done');
+            api.go('submission-review');
+          } else {
+            api.go('activity');
+          }
+          return;
+        }
         if (t.dataset.liveFixAcceptInvite) {
           const invitationId = t.dataset.liveFixAcceptInvite;
           await runSensitiveAction({ rpc:'accept_class_invitation', params:{ p_invitation_id:invitationId, p_idempotency_key:idk('accept-invite') }, successRoute:'join-success' }, 'join-success', 'Class joined');
@@ -303,7 +331,7 @@
           const type = n.notification_type || '';
           const card = cards[index];
           const row = card?.querySelector('.row');
-          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification]')) return;
+          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification]')) return;
           if (/^trial_(scheduled|rescheduled|cancelled)$/.test(type)) {
             const button = document.createElement('button');
             button.className = 'primary-btn small';
@@ -327,6 +355,12 @@
             button.className = 'primary-btn small';
             button.textContent = 'Open';
             button.dataset.liveFixOpenClassLifecycleNotification = n.notification_id || n.id;
+            row.prepend(button);
+          } else if (/^activity_submission_(received|reviewed|changes_requested)$/.test(type)) {
+            const button = document.createElement('button');
+            button.className = 'primary-btn small';
+            button.textContent = 'Open';
+            button.dataset.liveFixOpenActivitySubmissionNotification = n.notification_id || n.id;
             row.prepend(button);
           }
         });
