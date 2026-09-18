@@ -153,6 +153,8 @@ function compare(gold,live,item){
   const issues=[];
   if(item.route==='community'){
     if(!/ Community$/.test(live.title))issues.push('community title missing Location prefix: '+JSON.stringify(live.title));
+  }else if(item.route==='org-home'){
+    if(!live.title || live.title==='Switch workspace')issues.push('organization home title invalid: '+JSON.stringify(live.title));
   }else if(gold.title!==live.title)issues.push('title expected='+JSON.stringify(gold.title)+' actual='+JSON.stringify(live.title));
   if(live.overflow)issues.push('horizontal overflow');
   if(live.denied)issues.push('unexpected access/guard page');
