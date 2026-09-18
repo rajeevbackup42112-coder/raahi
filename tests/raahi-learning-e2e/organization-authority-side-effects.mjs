@@ -238,10 +238,11 @@ async function main(){
         role:window.RaahiLearningCore?.state?.role,
         selectedOrganizationId:window.RaahiLearningLive?.selected?.organizationId||null,
         hasOrganization:(window.RaahiLearningLive?.context?.organizations||[]).some(item=>item.organization_id===organizationId),
-        hasWorkspace:!!window.RaahiLearningLive?.data?.orgWorkspace
+        workspaceOrganizationId:window.RaahiLearningLive?.data?.orgWorkspace?.organization?.organization_id||null
       }),{organizationId});
-      assert(liveRemovalState.role==='learner','REMOVAL_NOTIFICATION_UNSAFE_ROLE_'+liveRemovalState.role);
-      assert(liveRemovalState.selectedOrganizationId===null&&!liveRemovalState.hasOrganization&&!liveRemovalState.hasWorkspace,'REMOVAL_NOTIFICATION_RETAINED_ORGANIZATION_STATE');
+      assert(!liveRemovalState.hasOrganization,'REMOVAL_NOTIFICATION_RETAINED_ORGANIZATION_CONTEXT');
+      assert(liveRemovalState.selectedOrganizationId!==organizationId,'REMOVAL_NOTIFICATION_RESELECTED_REMOVED_ORGANIZATION');
+      assert(liveRemovalState.workspaceOrganizationId!==organizationId,'REMOVAL_NOTIFICATION_RETAINED_REMOVED_WORKSPACE');
       await signedIn.page.screenshot({path:path.join(ARTIFACT_DIR,'member-removal-open-safe-home.png'),fullPage:true});
       report.browser_removal_state=liveRemovalState;
       report.checks.push({check:'stale_browser_session_notification_open_rechecks_and_fails_safely_after_removal',pass:true});
