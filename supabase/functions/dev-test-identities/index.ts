@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_class: {
+    learner: { email: 'e2e.sidefxclass.learner@dev.learning.myraahi.co.in', phone: '+919100000711', display_name: 'Class SideFX E2E Learner', scenario: 'Class Session side-effect learner' },
+    teacher: { email: 'e2e.sidefxclass.teacher@dev.learning.myraahi.co.in', phone: '+919100000712', display_name: 'Class SideFX E2E Teacher', scenario: 'Class Session side-effect provider' },
+    unrelated: { email: 'e2e.sidefxclass.unrelated@dev.learning.myraahi.co.in', phone: '+919100000713', display_name: 'Class SideFX E2E Unrelated', scenario: 'Class Session side-effect privacy actor' },
+  },
   sidefx_enquiry: {
     learner: { email: 'e2e.sidefx.learner@dev.learning.myraahi.co.in', phone: '+919100000701', display_name: 'SideFX E2E Learner', scenario: 'Enquiry and Trial side-effect learner' },
     teacher: { email: 'e2e.sidefx.teacher@dev.learning.myraahi.co.in', phone: '+919100000702', display_name: 'SideFX E2E Teacher', scenario: 'Enquiry and Trial side-effect provider' },
@@ -330,6 +335,37 @@ Deno.serve(async (req: Request) => {
           action_type:row.action_type,
           target_type:row.target_type,
           target_id:row.target_id,
+          metadata:row.metadata,
+          created_at:row.created_at,
+        }))
+      });
+    }
+
+    if (action === 'inspect_class_session_audit') {
+      if (suite !== 'sidefx_class') throw new Error('CLASS_SESSION_AUDIT_SUITE_NOT_ALLOWED');
+      const sessionId = String(body?.session_id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(sessionId)) throw new Error('INVALID_CLASS_SESSION_ID');
+
+      const { data: audits, error: auditError } = await admin
+        .from('audit_log')
+        .select('id,actor_account_id,action_type,target_type,target_id,reason,metadata,created_at')
+        .eq('target_type','class_session')
+        .eq('target_id',sessionId)
+        .in('action_type',['class_session.schedule','class_session.cancel'])
+        .order('created_at',{ascending:true});
+      if (auditError) throw auditError;
+
+      return response(200,{
+        ok:true,
+        run_id:runId,
+        suite,
+        audit_rows:(audits || []).map((row:any)=>({
+          id:row.id,
+          actor_account_id:row.actor_account_id,
+          action_type:row.action_type,
+          target_type:row.target_type,
+          target_id:row.target_id,
+          reason:row.reason,
           metadata:row.metadata,
           created_at:row.created_at,
         }))
