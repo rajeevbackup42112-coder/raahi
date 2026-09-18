@@ -187,7 +187,7 @@ async function main(){
 
       await openNotification(signedIn.page,changedSignals[0].notification_id);
       await signedIn.page.waitForURL(url=>url.origin===DEV_ORIGIN&&url.hash==='#/org-home',{timeout:15000});
-      await signedIn.page.getByText(organizationName,{exact:true}).waitFor({timeout:15000});
+      await signedIn.page.getByRole('heading',{name:organizationName,exact:true}).waitFor({timeout:15000});
       await signedIn.page.waitForTimeout(1200);
       const liveCapabilityState=await signedIn.page.evaluate(({organizationId})=>({
         role:window.RaahiLearningCore?.state?.role,
