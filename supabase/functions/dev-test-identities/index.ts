@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_enquiry: {
+    learner: { email: 'e2e.sidefx.learner@dev.learning.myraahi.co.in', phone: '+919100000701', display_name: 'SideFX E2E Learner', scenario: 'Enquiry and Trial side-effect learner' },
+    teacher: { email: 'e2e.sidefx.teacher@dev.learning.myraahi.co.in', phone: '+919100000702', display_name: 'SideFX E2E Teacher', scenario: 'Enquiry and Trial side-effect provider' },
+    unrelated: { email: 'e2e.sidefx.unrelated@dev.learning.myraahi.co.in', phone: '+919100000703', display_name: 'SideFX E2E Unrelated', scenario: 'Enquiry and Trial side-effect privacy actor' },
+  },
   cohort: {
     adult_learner: { email: 'e2e.cohort.adult_learner@dev.learning.myraahi.co.in', phone: '+919100001001', display_name: 'Cohort Adult Learner', scenario: 'adult learner' },
     parent_single: { email: 'e2e.cohort.parent_single@dev.learning.myraahi.co.in', phone: '+919100001002', display_name: 'Cohort Parent Single', scenario: 'parent managing one learner' },
@@ -299,6 +304,36 @@ Deno.serve(async (req: Request) => {
         ref: claims.ref,
       });
       return response(200, { ok: true, run_id: runId, suite, admin: result });
+    }
+
+    if (action === 'inspect_enquiry_trial_audit') {
+      if (suite !== 'sidefx_enquiry') throw new Error('AUDIT_INSPECTION_SUITE_NOT_ALLOWED');
+      const trialEventId = String(body?.trial_event_id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(trialEventId)) throw new Error('INVALID_TRIAL_EVENT_ID');
+
+      const { data: audits, error: auditError } = await admin
+        .from('audit_log')
+        .select('id,actor_account_id,action_type,target_type,target_id,metadata,created_at')
+        .eq('target_type','enquiry_trial_event')
+        .eq('target_id',trialEventId)
+        .in('action_type',['trial.reschedule','trial.cancel'])
+        .order('created_at',{ascending:true});
+      if (auditError) throw auditError;
+
+      return response(200,{
+        ok:true,
+        run_id:runId,
+        suite,
+        audit_rows:(audits || []).map((row:any)=>({
+          id:row.id,
+          actor_account_id:row.actor_account_id,
+          action_type:row.action_type,
+          target_type:row.target_type,
+          target_id:row.target_id,
+          metadata:row.metadata,
+          created_at:row.created_at,
+        }))
+      });
     }
 
     return response(400, { ok: false, error: 'UNKNOWN_ACTION' });
