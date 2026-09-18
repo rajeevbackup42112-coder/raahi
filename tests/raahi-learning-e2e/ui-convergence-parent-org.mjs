@@ -245,6 +245,12 @@ async function main(){
       }
     }finally{await browser.close();}
 
+    const endMetaResponse=await fetch(DEV_ORIGIN+'/build-meta.json?ui-end='+Date.now(),{cache:'no-store'});
+    assert(endMetaResponse.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+endMetaResponse.status);
+    const endMeta=await endMetaResponse.json();
+    assert(endMeta.commit_sha===sha,'DEV_DEPLOYMENT_CHANGED_DURING_UI_PROOF expected='+sha+' actual='+endMeta.commit_sha);
+    report.end_deployment=endMeta;
+
     const issues=report.routes.flatMap(x=>x.issues.map(issue=>({viewport:x.viewport,route:x.route,issue})));
     report.issue_count=issues.length;report.issues=issues;
     assert(issues.length===0,'UI_CONVERGENCE_ISSUES '+JSON.stringify(issues));
