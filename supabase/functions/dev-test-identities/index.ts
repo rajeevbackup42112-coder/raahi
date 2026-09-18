@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_activity: {
+    learner: { email: 'e2e.sidefxactivity.learner@dev.learning.myraahi.co.in', phone: '+919100000741', display_name: 'Activity E2E Learner', scenario: 'Activity submission side-effect learner' },
+    teacher: { email: 'e2e.sidefxactivity.teacher@dev.learning.myraahi.co.in', phone: '+919100000742', display_name: 'Activity E2E Teacher', scenario: 'Activity submission side-effect provider' },
+    unrelated: { email: 'e2e.sidefxactivity.unrelated@dev.learning.myraahi.co.in', phone: '+919100000743', display_name: 'Activity E2E Unrelated', scenario: 'Activity submission side-effect privacy actor' },
+  },
   sidefx_lifecycle: {
     learner: { email: 'e2e.sidefxlife.learner@dev.learning.myraahi.co.in', phone: '+919100000731', display_name: 'Lifecycle E2E Learner', scenario: 'Class membership lifecycle learner' },
     teacher: { email: 'e2e.sidefxlife.teacher@dev.learning.myraahi.co.in', phone: '+919100000732', display_name: 'Lifecycle E2E Teacher', scenario: 'Class membership lifecycle provider' },
@@ -420,6 +425,28 @@ Deno.serve(async (req: Request) => {
           id:row.id,actor_account_id:row.actor_account_id,action_type:row.action_type,
           target_type:row.target_type,target_id:row.target_id,learner_id:row.learner_id || null,
           metadata:row.metadata,created_at:row.created_at,
+        }))
+      });
+    }
+
+    if (action === 'inspect_activity_revision_history') {
+      if (suite !== 'sidefx_activity') throw new Error('ACTIVITY_REVISION_INSPECTION_SUITE_NOT_ALLOWED');
+      const submissionId = String(body?.submission_id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(submissionId)) throw new Error('INVALID_SUBMISSION_ID');
+
+      const { data: revisions, error: revisionError } = await admin
+        .from('submission_revisions')
+        .select('id,submission_id,revision_number,performed_by_account_id,submitted_at,review_outcome,reviewed_by_account_id,reviewed_at')
+        .eq('submission_id',submissionId)
+        .order('revision_number',{ascending:true});
+      if (revisionError) throw revisionError;
+
+      return response(200,{
+        ok:true,run_id:runId,suite,
+        revisions:(revisions || []).map((row:any)=>({
+          revision_id:row.id,submission_id:row.submission_id,revision_number:row.revision_number,
+          performed_by_account_id:row.performed_by_account_id,submitted_at:row.submitted_at,
+          review_outcome:row.review_outcome,reviewed_by_account_id:row.reviewed_by_account_id,reviewed_at:row.reviewed_at
         }))
       });
     }
