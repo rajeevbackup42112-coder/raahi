@@ -108,9 +108,10 @@ async function main(){
 
     const oidc=await githubOidc();
     const passwords=Object.fromEntries(PERSONA_KEYS.map(k=>[k,randomPassword()]));
-    const ensured=await edgeCall(oidc,{action:'ensure_personas',run_id:rid,passwords});
+    const ensured=await edgeCall(oidc,{action:'ensure_personas',suite:'r4',run_id:rid,passwords});
+    report.persona_suite=ensured.suite;
     const specs=Object.fromEntries(ensured.personas.map(x=>[x.key,x]));
-    const names={learner:'E2E Learner Account',teacher:'E2E Teacher Account',unrelated:'E2E Unrelated Account',admin:'E2E Platform Admin'};
+    const names={learner:'R4 E2E Learner Account',teacher:'R4 E2E Teacher Account',unrelated:'R4 E2E Unrelated Account',admin:'R4 E2E Platform Admin'};
 
     for(const key of PERSONA_KEYS){
       const c=supa(),spec=specs[key];
@@ -149,7 +150,7 @@ async function main(){
     let self=learnerCtx.learners.find(x=>x.access_type==='self');
     if(!self){
       await rpc(learner.client,'create_learner',{
-        p_display_name:'E2E Learner Profile',p_access_type:'self',p_avatar_type:'none',p_avatar_ref:null,
+        p_display_name:'R4 E2E Learner Profile',p_access_type:'self',p_avatar_type:'none',p_avatar_ref:null,
         p_idempotency_key:idk(rid,'create-self')
       });
       learnerCtx=await context(learner.client);
