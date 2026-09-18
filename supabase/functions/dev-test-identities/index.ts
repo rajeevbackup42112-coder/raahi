@@ -54,6 +54,15 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     ads_operator: { email: 'e2e.ui3.ads@dev.learning.myraahi.co.in', phone: '+919100000503', display_name: 'UI3 E2E Ads Operator', scenario: 'Ads operator UI convergence' },
     safety: { email: 'e2e.ui3.safety@dev.learning.myraahi.co.in', phone: '+919100000504', display_name: 'UI3 E2E Safety Reviewer', scenario: 'Safety reviewer UI convergence' },
   },
+  ui4_ads: {
+    org_owner: { email: 'e2e.ui4ads.org_owner@dev.learning.myraahi.co.in', phone: '+919100000611', display_name: 'UI4 Ads E2E Owner', scenario: 'Raahi Ads organization owner convergence' },
+  },
+  ui4_staff: {
+    org_owner: { email: 'e2e.ui4staff.org_owner@dev.learning.myraahi.co.in', phone: '+919100000621', display_name: 'UI4 Staff E2E Owner', scenario: 'Organization staff capability owner' },
+    staff_profile: { email: 'e2e.ui4staff.profile@dev.learning.myraahi.co.in', phone: '+919100000622', display_name: 'UI4 Staff E2E Profile', scenario: 'Organization profile-limited staff convergence' },
+    staff_ads: { email: 'e2e.ui4staff.ads@dev.learning.myraahi.co.in', phone: '+919100000623', display_name: 'UI4 Staff E2E Ads', scenario: 'Organization ads-limited staff convergence' },
+    unrelated: { email: 'e2e.ui4staff.unrelated@dev.learning.myraahi.co.in', phone: '+919100000624', display_name: 'UI4 Staff E2E Unrelated', scenario: 'Organization staff privacy actor' },
+  },
   ui4: {
     org_owner: { email: 'e2e.ui4.org_owner@dev.learning.myraahi.co.in', phone: '+919100000601', display_name: 'UI4 E2E Advertiser Owner', scenario: 'Raahi Ads organization owner convergence' },
     staff_profile: { email: 'e2e.ui4.staff_profile@dev.learning.myraahi.co.in', phone: '+919100000602', display_name: 'UI4 E2E Profile Staff', scenario: 'Organization profile-limited staff convergence' },
