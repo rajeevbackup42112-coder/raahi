@@ -252,17 +252,24 @@
           el.style.maxWidth = '100%';
         });
       }
-      if (['manager-home','manager-people','manager-learning','platform-home','platform-safety','platform-audit'].includes(route)) {
-        document.querySelectorAll('.main .notice').forEach(el => {
+      if (['manager-home','manager-people','manager-learning','platform-home','platform-safety','platform-ads','platform-audit'].includes(route)) {
+        document.querySelectorAll('.main').forEach(el => {
+          el.style.minWidth = '0';
+          el.style.maxWidth = '100%';
+        });
+        document.querySelectorAll('.main .card, .main .notice').forEach(el => {
           el.style.maxWidth = '100%';
           el.style.minWidth = '0';
+          el.style.boxSizing = 'border-box';
           el.style.overflow = 'hidden';
         });
         document.querySelectorAll('.main .notice code').forEach(el => {
+          el.style.display = 'block';
+          el.style.width = '100%';
+          el.style.maxWidth = '100%';
           el.style.whiteSpace = 'pre-wrap';
           el.style.overflowWrap = 'anywhere';
           el.style.wordBreak = 'break-word';
-          el.style.maxWidth = '100%';
         });
       }
     };
