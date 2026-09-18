@@ -104,8 +104,11 @@ async function authBrowser(browser,email,secret){
   await page.waitForTimeout(900);
   return {context,page};
 }
-async function openNotification(page,notificationId){
-  await page.goto(DEV_ORIGIN+'/#/notifications',{waitUntil:'domcontentloaded'});
+async function openNotification(page,notificationId,{reloadSession=false}={}){
+  const destination=reloadSession
+    ? DEV_ORIGIN+'/?orgauthorityfx='+Date.now()+'#/notifications'
+    : DEV_ORIGIN+'/#/notifications';
+  await page.goto(destination,{waitUntil:'domcontentloaded'});
   const button=page.locator(`[data-live-fix-open-organization-authority-notification="${notificationId}"]`);
   await button.waitFor({state:'visible',timeout:30000});
   await button.click();
@@ -227,7 +230,7 @@ async function main(){
 
       // The browser session remains signed in and was showing this Organization before removal.
       // Its notification Open action must refresh current authority and fail safely.
-      await openNotification(signedIn.page,removedSignals[0].notification_id);
+      await openNotification(signedIn.page,removedSignals[0].notification_id,{reloadSession:true});
       await signedIn.page.waitForURL(url=>url.origin===DEV_ORIGIN&&url.hash==='#/home',{timeout:15000});
       await signedIn.page.getByText('Organization access is no longer available.',{exact:true}).waitFor({timeout:15000});
       await signedIn.page.waitForTimeout(1200);
