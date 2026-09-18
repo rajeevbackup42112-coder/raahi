@@ -186,11 +186,14 @@ async function main(){
       memberContext=await rpc(member.client,'get_my_account_context');
       memberOrg=memberContext.organizations?.find(item=>item.organization_id===organizationId);
       assert([...(memberOrg?.capabilities||[])].sort().join(',')==='manage_ads','CURRENT_CAPABILITY_PROJECTION_MISMATCH');
+      const authorizedWorkspace=await rpc(member.client,'get_organization_workspace',{p_organization_id:organizationId});
+      assert(authorizedWorkspace?.organization?.organization_id===organizationId,'RETAINED_CAPABILITY_WORKSPACE_RPC_MISMATCH');
       report.checks.push({check:'capability_change_notifies_once_generically_and_exact_retry_is_idempotent',pass:true});
 
       await openNotification(signedIn.page,changedSignals[0].notification_id);
       await signedIn.page.waitForURL(url=>url.origin===DEV_ORIGIN&&url.hash==='#/org-home',{timeout:15000});
       await signedIn.page.getByRole('heading',{name:organizationName,exact:true}).waitFor({timeout:15000});
+      await signedIn.page.getByRole('button',{name:'Open Ads',exact:true}).waitFor({timeout:15000});
       await signedIn.page.waitForTimeout(1200);
       const liveCapabilityState=await signedIn.page.evaluate(({organizationId})=>({
         role:window.RaahiLearningCore?.state?.role,
@@ -198,11 +201,11 @@ async function main(){
         capabilities:(window.RaahiLearningLive?.context?.organizations||[]).find(item=>item.organization_id===organizationId)?.capabilities||[],
         workspaceOrganizationId:window.RaahiLearningLive?.data?.orgWorkspace?.organization?.organization_id||null
       }),{organizationId});
+      report.browser_capability_state=liveCapabilityState;
       assert(liveCapabilityState.role==='institute','CAPABILITY_NOTIFICATION_ROLE_NOT_INSTITUTE');
-      assert(liveCapabilityState.selectedOrganizationId===organizationId&&liveCapabilityState.workspaceOrganizationId===organizationId,'CAPABILITY_NOTIFICATION_WRONG_WORKSPACE');
+      assert(liveCapabilityState.selectedOrganizationId===organizationId,'CAPABILITY_NOTIFICATION_WRONG_SELECTION');
       assert([...liveCapabilityState.capabilities].sort().join(',')==='manage_ads','CAPABILITY_NOTIFICATION_USED_STALE_CAPABILITIES');
       await signedIn.page.screenshot({path:path.join(ARTIFACT_DIR,'member-capability-change-open.png'),fullPage:true});
-      report.browser_capability_state=liveCapabilityState;
       report.checks.push({check:'capability_notification_open_rechecks_current_authority_and_loads_retained_workspace',pass:true});
 
       const removalKey=run+'-remove-member';
