@@ -118,6 +118,9 @@
       if (route === 'teacher-home') {
         return replaceFirstPageTitle(rendered, 'Teach locally, without chasing leads.');
       }
+      if (route === 'manager-home') {
+        return replaceFirstPageTitle(rendered, `${selectedLocationName()} Overview`);
+      }
       return rendered;
     };
 
@@ -246,6 +249,19 @@
         document.querySelectorAll('.main .card .row').forEach(el => {
           el.style.flexWrap = 'wrap';
           el.style.gap = '8px';
+          el.style.maxWidth = '100%';
+        });
+      }
+      if (['manager-home','manager-people','manager-learning','platform-home','platform-safety','platform-audit'].includes(route)) {
+        document.querySelectorAll('.main .notice').forEach(el => {
+          el.style.maxWidth = '100%';
+          el.style.minWidth = '0';
+          el.style.overflow = 'hidden';
+        });
+        document.querySelectorAll('.main .notice code').forEach(el => {
+          el.style.whiteSpace = 'pre-wrap';
+          el.style.overflowWrap = 'anywhere';
+          el.style.wordBreak = 'break-word';
           el.style.maxWidth = '100%';
         });
       }
