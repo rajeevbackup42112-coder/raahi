@@ -1,6 +1,6 @@
 # Raahi Learning V1.3 — AI Builder Cheat Code v2 Retrofit Gate
 
-Status: **INTERNAL RETROFIT CLOSED — HOSTED AUTH TECHNOLOGY PROOF IS THE ACTIVE GATE.**
+Status: **INTERNAL RETROFIT CLOSED — R4 WALKING SKELETON PROVEN; REPRESENTATIVE PERSONA / UI CONVERGENCE IS NEXT.**
 
 ## 1. Decision
 
@@ -54,7 +54,7 @@ Before any significant fix, classify it:
 
 ## 4. Gate R1 — Technology proof
 
-### Proven internally
+### Proven
 
 - canonical PostgreSQL RPC/state model;
 - RLS/privilege separation;
@@ -64,26 +64,17 @@ Before any significant fix, classify it:
 - notification derivation mechanics;
 - private bearer-token invitation pattern;
 - server-derived phone-trust projection from Supabase Auth data;
-- 90-day phone-trust command gating in DEV.
+- 90-day phone-trust command gating in DEV;
+- real hosted Google → Supabase Auth round trip;
+- one Auth user ↔ one Raahi Account continuity;
+- real hosted phone attachment while preserving the same Auth user / Account;
+- Class Invitation acceptance interruption on missing trust and successful resume after fresh phone proof.
 
-### Still requiring real external proof
+The periodic **same-phone refresh** ceremony remains a provider-specific pre-launch smoke case. It is intentionally separate from ordinary product regression and does not block the completed R4 walking skeleton.
 
-**Google OAuth**
-- Google provider enabled in hosted Supabase DEV;
-- real browser OAuth round trip succeeds;
-- `auth.users` identity resolves to exactly one Raahi Account;
-- logout/login resolves the same Account;
-- Google name/photo remain onboarding defaults only;
-- wrong-account/recovery behavior is tested.
+**R1 status: PASS FOR CURRENT PRODUCT / WALKING-SKELETON TECHNOLOGY ASSUMPTIONS.**
 
-**Phone verification / refresh**
-- hosted DEV SMS/test-OTP configuration exists outside Raahi code;
-- signed-in Google-primary Account can attach/reverify phone;
-- server-owned phone confirmation evidence changes as expected;
-- interrupted trust-sensitive command resumes only after proof and rechecks current state/authority;
-- no fake OTP bypass exists in Raahi.
-
-**R1 status: PENDING EXTERNAL HOSTED-AUTH PROOF.**
+See `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`.
 
 ## 5. Gate R2 — Screen ↔ Backend contracts + permission symmetry
 
@@ -125,33 +116,30 @@ Non-walking-skeleton side-effect implementation gaps remain deliberately queued 
 
 ## 7. Gate R4 — Mandatory real walking skeleton
 
-Before any more broad expansion, execute this real DEV journey with synthetic identities:
+The required cross-layer journey is now **PROVEN in Learning DEV**.
 
-**Learner/guardian side**
-1. Google sign in.
-2. `bootstrap_account` resolves/creates exactly one Raahi Account.
-3. First-use intent creates/selects Learner context.
-4. Authorized discovery projection loads.
-5. Send Enquiry through canonical RPC.
+Evidence covers:
 
-**Provider side**
-6. Distinct provider Auth identity signs in.
-7. Provider sees the Enquiry through authorized projection.
-8. Provider engages/responds.
-9. Provider sends Class Invitation.
+1. real hosted Auth / Account continuity;
+2. Learner authority setup and manager→self handoff;
+3. discovery/provider relationship and canonical Enquiry;
+4. provider engage/reply;
+5. Class creation/activation and pending Invitation capacity reservation;
+6. phone-trust interruption before acceptance;
+7. supported hosted phone proof on the same Auth user / Account;
+8. resumed acceptance with exactly one Membership;
+9. authorized Class projections;
+10. contextual Class message sent through the normal browser UI;
+11. receiver Notification shown in the normal Notifications UI;
+12. actual Notification **Open** button routing to the safe Class-thread deep link;
+13. server reauthorization on deep-link open;
+14. unrelated projection + RLS + browser denial with no private thread data leaked.
 
-**Learner side**
-10. Learner-side Account receives Notification/deep link.
-11. Missing/stale phone trust preserves the intended acceptance.
-12. Real phone verification completes.
-13. Acceptance resumes and rechecks current state/capacity/authority.
-14. Membership is created.
-15. Both sides open the Class through authorized projections.
-16. One contextual Class message is exchanged.
+The ordinary regression form of the final boundary uses genuine DEV test sessions and isolated cloud browsers, not fixture business results.
 
-Evidence must be actual browser + hosted Auth session + RPCs + PostgreSQL state + projections + notification/deep-link. Fixture-mode business results cannot substitute for a live layer.
+**R4 status: PASS.**
 
-**R4 status: BLOCKED ONLY BY R1 HOSTED-AUTH PROOF.**
+See `50-dev-test-identity-session-harness-v1.3.md` and `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`.
 
 ## 8. Gate R5 — Vertical slices only after R4
 
@@ -211,14 +199,16 @@ Security Advisor after migration 1021 currently reports **0 findings**.
 
 The sequence is now:
 
-1. real hosted DEV Google OAuth proof;
-2. real hosted DEV phone attach/reverify proof;
-3. mandatory walking skeleton;
-4. remaining vertical slices only;
-5. persona/adversarial E2E;
-6. reliability/security/load/launch gates.
+1. keep the proven DEV genuine-session harness as the regression foundation;
+2. expand to a bounded representative persona cohort;
+3. begin frozen-prototype UI / interaction convergence using autonomous browser evidence;
+4. close remaining work one vertical slice at a time;
+5. run adversarial/recovery/concurrency/persona regression;
+6. complete reliability/security/load/launch gates.
 
-No more broad backend/frontend work should occur before step 1–3 unless needed specifically to make the technology proof or walking skeleton executable.
+Do not return to repeated manual Google logins for ordinary regression. Google OAuth and SMS/OTP remain small provider-specific smoke suites.
+
+Current control document: `52-master-lifecycle-gates-traceability-v1.3.md`.
 
 ## 12. What this retrofit is not
 
