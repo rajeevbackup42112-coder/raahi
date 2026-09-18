@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and side-effect slices SE-01 through SE-06 are closed/proven in DEV. SE-07 released Test correction is IMPLEMENTED through migration 1030 plus UI/test-harness support, but its dedicated E2E proof has NOT yet been created/run. Resume exactly at SE-07 proof. After SE-07: SE-08 Organization authority-change notifications → combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and side-effect slices SE-01 through SE-07 are closed/proven in DEV. Resume at SE-08 Organization authority-change notifications, then combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,16 +20,17 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `65-current-execution-handover-se07-v1.3.md` — **exact resume point**
+1. `66-test-correction-side-effect-closure-v1.3.md` — **latest closed slice / exact SE-08 predecessor**
 2. `46-v1.3-side-effects-matrix-audit.md`
-3. `64-activity-submission-side-effect-closure-v1.3.md`
-4. `59-exact-build-combined-regression-anchor-v1.3.md`
-5. `52-master-lifecycle-gates-traceability-v1.3.md`
-6. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
-7. `50-dev-test-identity-session-harness-v1.3.md`
-8. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-9. `41-authentication-phone-trust-v1.3.md`
-10. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression only)
+3. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
+4. `64-activity-submission-side-effect-closure-v1.3.md`
+5. `59-exact-build-combined-regression-anchor-v1.3.md`
+6. `52-master-lifecycle-gates-traceability-v1.3.md`
+7. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+8. `50-dev-test-identity-session-harness-v1.3.md`
+9. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+10. `41-authentication-phone-trust-v1.3.md`
+11. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression only)
 
 ## Frozen product rules
 
@@ -163,7 +164,7 @@ ZIP SHA-256:
 
 ## Current execution gate
 
-**Resume at SE-07 proof. Do not redo SE-01 through SE-06.**
+**Resume at SE-08 Organization authority-change notifications. Do not redo SE-01 through SE-07.**
 
 Current exact state:
 
@@ -177,8 +178,10 @@ Current exact state:
 - `test_results_corrected` Notifications UI Open routing is implemented in `live-product-fix-v13.js`;
 - isolated `sidefx_test` DEV personas plus protected `inspect_test_correction_audit` exist in `dev-test-identities`;
 - Supabase Edge Function `dev-test-identities` version 15 is active and contains the SE-07 test support;
-- **SE-07 E2E runner/workflow/proof artifact/closure doc do not yet exist**;
-- doc 46 must continue to show SE-07 as GAP until that proof passes.
+- SE-07 dedicated runner/workflow passed on final hardened run `35348046502` at exact deployed commit `53d7a96f...`;
+- the final artifact digest is `sha256:b0646ae23a34a12c606dd98c6b52cc4abf6da6bfb0add7e624fad6f695b311ff`;
+- doc 66 records the closure and doc 46 marks SE-07 PASS;
+- the next vertical slices are SE-08A capability-change notification and SE-08B member-removal notification.
 
 Last product-affecting implementation commit at handover:
 
@@ -186,7 +189,7 @@ Last product-affecting implementation commit at handover:
 
 The DEV static artifact was verified serving that exact commit. Documentation-only handover commits after it may advance the Git branch without requiring a new Cloudflare product build; inspect the branch read-only before resuming.
 
-Exact next steps are specified in `65-current-execution-handover-se07-v1.3.md`.
+The latest closure evidence is in doc 66. Continue from the two remaining SE-08 rows in doc 46; doc 65 is historical SE-07 execution context only.
 
 ### Defect handling rule
 
@@ -198,4 +201,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/65-current-execution-handover-se07-v1.3.md`, then `99-handover.md`, `46-v1.3-side-effects-matrix-audit.md`, `64-activity-submission-side-effect-closure-v1.3.md`, migration `1030_v13_test_correction_side_effects.sql`, current `live-product-fix-v13.js`, and current `dev-test-identities/index.ts`. Do a read-only verification of branch head, DEV build-meta, migration 1030, Edge Function version/content, and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-06. SE-07 is implemented but NOT proven: create the dedicated Test-correction E2E runner/workflow, prove visible-results notification + hidden-results no-notification + idempotent retry + audit actor/history + browser Open authorization + unrelated denial, then document and mark SE-07 PASS. Only then continue to SE-08. No public deployment; no fake OTP; no browser injection.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `66-test-correction-side-effect-closure-v1.3.md`, and `46-v1.3-side-effects-matrix-audit.md`. Do a read-only verification of branch head, DEV build-meta, migration ceiling, Edge Function version/content and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-07. SE-07 is closed by hardened run `35348046502`. Continue at SE-08A Organization capability-change notification, then SE-08B member-removal notification. Prove generic recipient-safe notification, no unrelated signal, correct audit actor/history, idempotent retry, safe Open/deep-link authorization and immediate denial after removal. No public deployment; no fake OTP; no browser injection.
