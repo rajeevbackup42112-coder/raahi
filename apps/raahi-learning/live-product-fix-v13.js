@@ -202,7 +202,7 @@
     }
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -235,6 +235,23 @@
           if (!classId) throw new Error('Class post notification no longer has a valid Class destination.');
           live.selected.classId = classId;
           live.routeLoads.clear();
+          const providerRole = ['teacher','institute'].includes(api.state.role);
+          api.go(providerRole ? 'teacher-class' : 'class-detail');
+          return;
+        }
+        if (t.dataset.liveFixOpenClassLifecycleNotification) {
+          const n = arr(live.data.notifications).find(x => (x.notification_id || x.id) === t.dataset.liveFixOpenClassLifecycleNotification);
+          const type = n?.notification_type || '';
+          const p = n?.payload || {};
+          if (p.learner_id) live.selected.learnerId = p.learner_id;
+          live.routeLoads.clear();
+          if (type === 'class_membership_removed') {
+            api.go('classes');
+            return;
+          }
+          const classId = type === 'class_membership_transferred' ? p.destination_class_id : p.class_id;
+          if (!classId) throw new Error('Class lifecycle notification no longer has a valid Class destination.');
+          live.selected.classId = classId;
           const providerRole = ['teacher','institute'].includes(api.state.role);
           api.go(providerRole ? 'teacher-class' : 'class-detail');
           return;
@@ -286,7 +303,7 @@
           const type = n.notification_type || '';
           const card = cards[index];
           const row = card?.querySelector('.row');
-          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification]')) return;
+          if (!row || row.querySelector('[data-live-notification-open],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification]')) return;
           if (/^trial_(scheduled|rescheduled|cancelled)$/.test(type)) {
             const button = document.createElement('button');
             button.className = 'primary-btn small';
@@ -304,6 +321,12 @@
             button.className = 'primary-btn small';
             button.textContent = 'Open';
             button.dataset.liveFixOpenClassPostNotification = n.notification_id || n.id;
+            row.prepend(button);
+          } else if (/^(class_membership_left|class_membership_removed|class_membership_transferred|class_completed)$/.test(type)) {
+            const button = document.createElement('button');
+            button.className = 'primary-btn small';
+            button.textContent = 'Open';
+            button.dataset.liveFixOpenClassLifecycleNotification = n.notification_id || n.id;
             row.prepend(button);
           }
         });
