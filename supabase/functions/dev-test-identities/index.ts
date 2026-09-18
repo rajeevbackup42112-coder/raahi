@@ -69,6 +69,11 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     staff_ads: { email: 'e2e.ui4.staff_ads@dev.learning.myraahi.co.in', phone: '+919100000603', display_name: 'UI4 E2E Ads Staff', scenario: 'Organization ads-limited staff convergence' },
     unrelated: { email: 'e2e.ui4.unrelated@dev.learning.myraahi.co.in', phone: '+919100000604', display_name: 'UI4 E2E Unrelated', scenario: 'Organization staff privacy actor' },
   },
+  sidefx_posts: {
+    learner: { email: 'e2e.sidefxposts.learner@dev.learning.myraahi.co.in', phone: '+919100000721', display_name: 'Post SideFX E2E Learner', scenario: 'Class post side-effect learner' },
+    teacher: { email: 'e2e.sidefxposts.teacher@dev.learning.myraahi.co.in', phone: '+919100000722', display_name: 'Post SideFX E2E Teacher', scenario: 'Class post side-effect provider' },
+    unrelated: { email: 'e2e.sidefxposts.unrelated@dev.learning.myraahi.co.in', phone: '+919100000723', display_name: 'Post SideFX E2E Unrelated', scenario: 'Class post side-effect privacy actor' },
+  },
   sidefx_class: {
     learner: { email: 'e2e.sidefxclass.learner@dev.learning.myraahi.co.in', phone: '+919100000711', display_name: 'Class SideFX E2E Learner', scenario: 'Class Session side-effect learner' },
     teacher: { email: 'e2e.sidefxclass.teacher@dev.learning.myraahi.co.in', phone: '+919100000712', display_name: 'Class SideFX E2E Teacher', scenario: 'Class Session side-effect provider' },
