@@ -1,13 +1,6 @@
 name: Raahi Learning R4 Class Thread Proof
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'tests/raahi-learning-e2e/r4-class-thread-proof.mjs'
-      - '.github/workflows/raahi-learning-r4-class-thread.yml'
-      - 'apps/raahi-learning/live-thread-deeplink-v13.js'
   workflow_dispatch:
 
 permissions:
