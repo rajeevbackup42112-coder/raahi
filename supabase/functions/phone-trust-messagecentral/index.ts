@@ -68,8 +68,9 @@ function isFresh(confirmedAt: string | null | undefined) {
 
 async function providerAuthToken() {
   const customerId = requiredEnv('MESSAGECENTRAL_CUSTOMER_ID');
-  const key = requiredEnv('MESSAGECENTRAL_KEY_BASE64');
+  const password = requiredEnv('MESSAGECENTRAL_PASSWORD');
   const email = Deno.env.get('MESSAGECENTRAL_EMAIL')?.trim() || '';
+  const key = btoa(String.fromCharCode(...new TextEncoder().encode(password)));
 
   const params = new URLSearchParams({
     customerId,
