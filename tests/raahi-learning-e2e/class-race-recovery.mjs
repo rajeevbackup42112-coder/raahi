@@ -208,7 +208,7 @@ async function main(){
       await page.waitForURL(u=>u.hash==='#/welcome',{timeout:30000});
       assert(!(await page.locator('body').innerText()).includes(privateBody),'CROSS_TAB_SIGNOUT_LEAK');
       await login(second,loser);
-      await page.getByText(loser.context.account.display_name,{exact:true}).first().waitFor({timeout:30000});
+      await page.waitForFunction(accountId=>window.RaahiLearningLive?.context?.account?.account_id===accountId,loser.context.account.account_id,{timeout:30000});
       // Keep the first document alive: it must adopt the new account and reject its old link.
       await page.goto(deepLink,{waitUntil:'domcontentloaded'});
       await page.getByText('Class conversation unavailable',{exact:true}).waitFor({timeout:30000});

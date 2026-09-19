@@ -14,6 +14,18 @@
     const h = api.escapeHtml;
     const arr = v => Array.isArray(v) ? v : (v == null ? [] : [v]);
     let threadLoad = { key: null, status: 'idle', data: null, error: null };
+    let threadGeneration = 0;
+    const actorKey = () => `${live.session?.user?.id || ''}|${live.context?.account?.account_id || ''}`;
+    function invalidateThread() {
+      threadGeneration++;
+      threadLoad = { key: null, status: 'idle', data: null, error: null };
+      live.data.classThread = null;
+    }
+    // Never retain private conversation data across authentication events.
+    live.client.auth.onAuthStateChange(() => {
+      invalidateThread();
+      setTimeout(() => api.render(), 0);
+    });
 
     async function rpc(name, params={}) {
       const { data, error } = await live.client.rpc(name, params);
@@ -51,8 +63,9 @@
     }
 
     function ensureThreadLoad(classId, learnerId, coreApi) {
-      const key = `${classId}|${learnerId}`;
+      const key = `${actorKey()}|${classId}|${learnerId}`;
       if (threadLoad.key === key && ['loading','done','error'].includes(threadLoad.status)) return;
+      const generation = ++threadGeneration;
       threadLoad = { key, status: 'loading', data: null, error: null };
       setTimeout(async () => {
         try {
@@ -60,18 +73,21 @@
             p_class_id: classId,
             p_learner_id: learnerId
           });
+          if (generation !== threadGeneration || threadLoad.key !== key) return;
           threadLoad = { key, status: 'done', data, error: null };
           live.data.classThread = data;
         } catch (e) {
+          if (generation !== threadGeneration || threadLoad.key !== key) return;
           threadLoad = { key, status: 'error', data: null, error: errorText(e) };
           live.data.classThread = null;
         } finally {
-          coreApi.render();
+          if (generation === threadGeneration) coreApi.render();
         }
       }, 0);
     }
 
     live.renderRoute = function(route, coreApi) {
+      if ((route !== 'class-thread' || !live.session || !live.context) && threadLoad.key !== null) invalidateThread();
       if (route === 'class-thread' && live.session && live.context) {
         const ctx = hashContext();
         const classId = ctx.classId || live.selected.classId;
@@ -80,7 +96,7 @@
           live.selected.classId = classId;
           live.selected.learnerId = learnerId;
           ensureThreadLoad(classId, learnerId, coreApi);
-          const key = `${classId}|${learnerId}`;
+          const key = `${actorKey()}|${classId}|${learnerId}`;
           if (threadLoad.key !== key || threadLoad.status === 'loading') return loadingPage();
           if (threadLoad.status === 'error') return safeDeniedPage();
           if (threadLoad.status === 'done' && threadLoad.data) return renderThread(threadLoad.data);
@@ -103,7 +119,7 @@
       if (!e.target.closest?.('[data-live-send-class-message]')) return;
       const key = threadLoad.key;
       setTimeout(() => {
-        if (threadLoad.key === key) threadLoad = { key: null, status: 'idle', data: null, error: null };
+        if (threadLoad.key === key) invalidateThread();
         api.render();
       }, 900);
     }, true);

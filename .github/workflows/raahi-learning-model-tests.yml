@@ -7,6 +7,10 @@ on:
   pull_request:
     paths:
       - 'tests/model/**'
+      - 'tests/release-package.test.mjs'
+      - 'scripts/prepare-learning-release.mjs'
+      - 'tests/thread-cache.test.mjs'
+      - 'apps/raahi-learning/live-thread-deeplink-v13.js'
       - 'docs/raahi-learning/**'
 
 jobs:
@@ -23,3 +27,9 @@ jobs:
 
       - name: Run backend-free invariant suite
         run: python tests/model/pre_supabase_model_tests.py
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify production packaging guards
+        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs
