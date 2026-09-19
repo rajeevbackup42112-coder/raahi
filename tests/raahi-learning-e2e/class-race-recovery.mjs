@@ -183,9 +183,11 @@ async function main(){
     const message=await rpc(winner.client,'send_class_learner_message',{p_class_id:cls.class_id,p_learner_id:winner.learner_id,p_body:privateBody,p_idempotency_key:run+'-private-message'});
     report.ids.message_id=message.message_id;
     const browser=await chromium.launch({headless:true});
+    let sharedPage;
     try{
       const context=await browser.newContext();
       const page=await context.newPage();
+      sharedPage=page;
       async function login(tab,actor){
         await tab.goto(DEV_ORIGIN+'/dev-test-login-v13.html',{waitUntil:'domcontentloaded'});
         await tab.locator('#email').fill(actor.email);
@@ -206,12 +208,19 @@ async function main(){
       await page.waitForURL(u=>u.hash==='#/welcome',{timeout:30000});
       assert(!(await page.locator('body').innerText()).includes(privateBody),'CROSS_TAB_SIGNOUT_LEAK');
       await login(second,loser);
+      await page.getByText(loser.context.account.display_name,{exact:true}).first().waitFor({timeout:30000});
       // Keep the first document alive: it must adopt the new account and reject its old link.
       await page.goto(deepLink,{waitUntil:'domcontentloaded'});
       await page.getByText('Class conversation unavailable',{exact:true}).waitFor({timeout:30000});
       assert(!(await page.locator('body').innerText()).includes(privateBody),'SHARED_DEVICE_OLD_MESSAGE_LEAK');
       await page.screenshot({path:path.join(ARTIFACT_DIR,'shared-device-denial.png'),fullPage:true});
       report.checks.push('Shared browser cross-tab signout hides private content; second-account sign-in rejects the old private link');
+    }catch(error){
+      if(sharedPage){
+        report.shared_browser_diagnostic={url:sharedPage.url(),body:(await sharedPage.locator('body').innerText()).slice(0,6000)};
+        await sharedPage.screenshot({path:path.join(ARTIFACT_DIR,'shared-device-failure.png'),fullPage:true});
+      }
+      throw error;
     }finally{await browser.close();}
     await rpc(t,'remove_learner_from_class',{p_membership_id:accepted[0].membership_id,p_reason:'DEV stale-session proof',p_idempotency_key:run+'-remove'});
     const after=await winner.client.from('classes').select('id').eq('id',cls.class_id);
