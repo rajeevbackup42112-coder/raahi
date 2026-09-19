@@ -173,6 +173,37 @@ async function main() {
     }
     report.checks.push({ check: 'four_genuine_supabase_sessions', pass: true });
 
+    const stageLocations = await rpc(sessions.learner.client, 'list_public_locations');
+    const dhanbadLocation = stageLocations.find((x) => x.slug === 'dhanbad');
+    const gomohLocation = stageLocations.find((x) => x.slug === 'gomoh');
+    assert(dhanbadLocation?.state === 'live', 'DHANBAD_NOT_LIVE_IN_STAGE');
+    assert(gomohLocation?.state === 'preparing', 'GOMOH_NOT_PREPARING_IN_STAGE');
+
+    const liveLocations = await rpc(sessions.learner.client, 'list_live_locations');
+    assert(liveLocations.some((x) => x.slug === 'dhanbad' && x.state === 'live'), 'DHANBAD_MISSING_FROM_LIVE_LOCATIONS');
+    assert(!liveLocations.some((x) => x.slug === 'gomoh'), 'GOMOH_PREMATURELY_EXPOSED_AS_LIVE');
+
+    const gomohTeaching = await rpc(sessions.learner.client, 'discover_teaching_options', {
+      p_location_id: gomohLocation.location_id,
+      p_query: null,
+    });
+    const gomohRequests = await rpc(sessions.learner.client, 'discover_learning_requests', {
+      p_location_id: gomohLocation.location_id,
+      p_query: null,
+    });
+    const gomohCommunity = await rpc(sessions.learner.client, 'discover_community_posts', {
+      p_location_id: gomohLocation.location_id,
+      p_limit: 20,
+    });
+    assert(Array.isArray(gomohTeaching) && gomohTeaching.length === 0, 'GOMOH_PREPARING_TEACHING_DISCOVERY_NOT_EMPTY');
+    assert(Array.isArray(gomohRequests) && gomohRequests.length === 0, 'GOMOH_PREPARING_REQUEST_DISCOVERY_NOT_EMPTY');
+    assert(Array.isArray(gomohCommunity) && gomohCommunity.length === 0, 'GOMOH_PREPARING_COMMUNITY_DISCOVERY_NOT_EMPTY');
+    report.stage_locations = {
+      dhanbad: { location_id: dhanbadLocation.location_id, state: dhanbadLocation.state },
+      gomoh: { location_id: gomohLocation.location_id, state: gomohLocation.state },
+    };
+    report.checks.push({ check: 'stage_location_visibility_and_preparing_isolation', pass: true });
+
     const teacher = sessions.teacher;
     await rpc(teacher.client, 'enable_teaching', { p_idempotency_key: rid + '-teacher-enable' });
     teacher.context = await accountContext(teacher.client);
@@ -197,6 +228,24 @@ async function main() {
     assert(selfLearner?.learner_id, 'SELF_LEARNER_NOT_AVAILABLE');
     report.personas.learner.learner_id = selfLearner.learner_id;
     report.checks.push({ check: 'learner_canonical_self_profile', pass: true });
+
+    let gomohWriteDenied = false;
+    try {
+      await rpc(learner.client, 'post_learning_request', {
+        p_learner_id: selfLearner.learner_id,
+        p_location_id: report.stage_locations.gomoh.location_id,
+        p_need_text: 'Stage-only Gomoh write must be rejected',
+        p_category: 'stage-proof',
+        p_mode_preference: 'either',
+        p_details: null,
+        p_timing_preference: null,
+        p_idempotency_key: rid + '-gomoh-preparing-write-denial',
+      });
+    } catch (error) {
+      gomohWriteDenied = /LOCATION_NOT_LIVE/i.test(error?.message || '');
+    }
+    assert(gomohWriteDenied, 'GOMOH_PREPARING_LEARNING_REQUEST_WRITE_NOT_DENIED');
+    report.checks.push({ check: 'gomoh_preparing_write_rejected', pass: true });
 
     const adminSeed = await edgeCall(oidc, { action: 'ensure_admin_capability', run_id: rid });
     const admin = sessions.admin;
