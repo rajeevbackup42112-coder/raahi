@@ -28,6 +28,9 @@ jobs:
       - name: Checkout implementation branch
         uses: actions/checkout@v4
 
+      - name: Guard DEV synthetic writes
+        run: test -f .github/RAAHI_LEARNING_DEV_WRITES_ENABLED
+
       - name: Guard branch and target
         shell: bash
         run: |
