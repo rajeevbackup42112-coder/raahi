@@ -1,6 +1,10 @@
+# Stage Ready status
+
+Canonical closeout: `80-stage-ready-closeout-v1.3.md`
+
 # Raahi Learning V1.3 — Stage-ready progression on single Free project
 
-Status: **STAGE PREPARATION ACTIVE; SAME-PROJECT CONTROLLED PILOT STRATEGY ADOPTED**  
+Status: **STAGE READY**  
 Date: 2026-09-19
 
 This checkpoint supersedes the earlier assumption that a separate non-DEV Supabase target must be created before the first real-user release.
@@ -216,24 +220,13 @@ Do not remove young-system indexes merely because the advisor has not observed u
 
 ## 9. Stage Ready work still open
 
-Before declaring Stage Ready:
+Stage Ready is now closed. Final evidence is frozen in `80-stage-ready-closeout-v1.3.md`.
 
-1. **CLOSED / REHEARSED:** controlled-pilot public-domain cleanup is prepared and rollback-rehearsed; do not execute final cleanup yet;
-2. **CLOSED / PREPARED:** all 17 known synthetic writer workflows fail closed if `.github/RAAHI_LEARNING_DEV_WRITES_ENABLED` is removed;
-3. **CLOSED / PREPARED:** release packaging excludes DEV-only login/proof surfaces and explicitly selects MessageCentral for release phone trust;
-4. **CLOSED / PREPARED:** pre-pilot backup + recovery-inventory procedure exists;
-5. finish the final hosted UI/branding polish and convergence review, including Local Manager / Platform Admin presentation;
-6. keep security/regression suites green after migration 1036;
-7. **PROVIDER SELECTED / REAL CREDENTIAL PROOF OPEN:** MessageCentral VerifyNow; see doc 79;
-8. **DOMAIN SELECTED:** `https://learning.myraahi.co.in`; DNS/public deployment remains a cutover action;
-9. production Google OAuth project/client + real Google/provider smoke remain external cutover gates.
-
-Do not activate Gomoh yet.
-
-Do not delete synthetic data yet.
-
-Do not disable DEV automation yet.
-
+Open work is now external/provider and cutover-only:
+- MessageCentral account + real-phone proof;
+- production Google OAuth project/client + public-origin proof;
+- controlled-pilot cutover;
+- explicit go-live approval.
 ## 10. Pilot-cutover actions that remain intentionally blocked
 
 At the actual controlled-pilot cutover:
