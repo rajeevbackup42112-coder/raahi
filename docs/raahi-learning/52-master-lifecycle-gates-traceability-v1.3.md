@@ -69,7 +69,7 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 ## 5. Immediate sequence
 
 1. Preserve doc 68 as the post-SE-08 combined-regression anchor and docs 69–70 as the bounded recovery/shared-browser closure.
-2. Treat exact deployed browser commit `d0232c4fdb9410d4902063740974b7110da59473` as the current DEV application anchor unless later product code changes require a new build.
+2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product proof anchor. Current deployed DEV artifact is `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`; its only source diff from `d0232c4...` is migration 1032, and DEV E2E run 35441874762 passed exact-build verification.
 3. Continue with broader realistic load/soak/capacity testing plus monitoring, alerting and incident-response readiness.
 4. Define database and Storage-object recovery targets, backup/export procedures and a real restore rehearsal; separately rehearse migration rollback/forward-fix.
 5. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
