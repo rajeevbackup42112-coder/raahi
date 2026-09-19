@@ -68,14 +68,15 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. Preserve doc 68 as the post-SE-08 combined-regression anchor, docs 69–70 as bounded recovery/shared-browser closure, doc 71 as reliability/observability/recovery evidence, doc 72 as the prepared production-operations procedure, and doc 73 as the latest catalog-security hardening checkpoint.
+1. Preserve doc 68 as the post-SE-08 combined-regression anchor, docs 69–70 as bounded recovery/shared-browser closure, doc 71 as reliability/observability/recovery evidence, doc 72 as production-operations procedure, doc 73 as catalog-security hardening, doc 74 as production-like load/operator guard readiness, and doc 75 as the latest external-input boundary.
 2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product-code proof anchor. Do not pin a documentation/test-only `build-meta` SHA as the permanent deployed product state; read `build-meta.json` at execution time and verify `apps/raahi-learning/` source compatibility.
 3. Preserve the successful bounded release-reliability proof on `10111144a2d00fb28d02a4217c4225a5188673b6` / run `35442347699`: 20 personas, 800 authenticated reads, 20 cross-account denials and 20 browser sign-ins, no latency warnings.
-4. Continue with production-like load/soak/capacity testing once expected pilot traffic and production-like compute exist.
-5. Turn the doc-71 monitoring design into real alert delivery/escalation when the production environment/channel is selected.
-6. Define RPO/RTO, implement off-platform Storage-object backup and perform an isolated database+Storage restore rehearsal. No disposable Supabase branch currently exists.
-7. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
-8. Resolve or explicitly accept the leaked-password-protection warning before launch.
+4. Do not run production-like load until an isolated Learning target and pilot traffic expectation exist; guarded harness/workflow are already prepared in doc 74.
+5. Do not create a branch/project until explicit cost confirmation. Current connector quote: branch USD 0.01344/hour; new project USD 0/month.
+6. Turn the doc-71 monitoring design into real alert delivery/escalation when the production environment/channel is selected.
+7. Define RPO/RTO and execute the already-prepared DB+Storage backup/restore procedure against an isolated target; compare `scripts/raahi-learning-recovery-inventory.sql` before/after.
+8. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
+9. Resolve or explicitly accept the leaked-password-protection warning before launch.
 9. Guarded manual production-like load workflow and backup scripts are prepared with explicit project separation/target-binding tests; see doc 74.
 10. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
 
