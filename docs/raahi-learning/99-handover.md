@@ -212,7 +212,7 @@ Next autonomous gates:
 
 User-controlled gates remain:
 
-- explicit choice/approval of an isolated Learning Supabase branch/project (current quotes: branch USD 0.01344/hour; project USD 0/month);
+- explicit approval to create the recommended dedicated Learning Supabase project in `ap-south-1` (current connector quote: USD 0/month). A preview branch is not sufficient for the full remaining Auth/Storage/restore/provider gate set; branch quote is USD 0.01344/hour;
 - Supabase Dashboard re-authentication for Health Advisors, leaked-password protection, SSL/network/backups/rate-limit/CAPTCHA inspection;
 - RPO/RTO and backup/PITR choice;
 - pilot traffic expectation for meaningful load thresholds;
