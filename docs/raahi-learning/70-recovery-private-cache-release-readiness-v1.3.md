@@ -7,9 +7,15 @@ This document closes the post-SE-08 bounded recovery and shared-browser work tha
 
 ## 1. Exact application and workflow anchor
 
-Exact deployed DEV application commit:
+Bounded recovery/shared-browser product proof commit:
 
 `d0232c4fdb9410d4902063740974b7110da59473`
+
+Current deployed DEV artifact commit after migration 1032:
+
+`945bdf9f7fbcabbd4eb05c627800381b65c5f54b`
+
+The Git diff from `d0232c4...` to `945bdf9...` contains only `supabase/migrations/20260919120454_1032_v13_invitation_acceptance_fk_indexes.sql`; browser/product source is unchanged.
 
 DEV origin:
 
@@ -24,7 +30,7 @@ All four workflows triggered for that exact SHA completed successfully:
 | DEV E2E Harness | [35419424856](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35419424856) | PASS | artifact 10577096415; `sha256:97c1e315aaa030e5279cbba85b580e680b150ad80205e56bd17903cadd254d6a` |
 | UI Convergence Core | [35419424831](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35419424831) | PASS | artifact 10577610444; `sha256:5cee64865915ee745a58658a0e4ec897f6cb9e689e801ab264347511b97456b4` |
 
-The DEV harness independently read the deployed `build-meta` marker and reported the same commit, branch, project reference and DEV origin. No newer browser application build was required by the database-only performance migration described below.
+The `d0232c4...` DEV harness independently read the deployed `build-meta` marker for the bounded recovery proof. After migration 1032 was committed, DEV E2E Harness run [35441874762](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35441874762) rebuilt/deployed exact commit `945bdf9...` and passed with artifact `10583962946`, digest `sha256:9cb6105db7520b5f5c9574a745f5d12f7cc85eba211514f6931adbb604fa2be5`. Its proof reports `exact_dev_commit_deployed: true`, genuine sessions and intact RLS.
 
 ## 2. Recovery and race proof now closed for bounded DEV scenarios
 
@@ -134,7 +140,7 @@ No RLS relaxation or authorization bypass was introduced to close any test.
 - PostgreSQL: 17
 - migration ceiling: `1032_v13_invitation_acceptance_fk_indexes`
 - `dev-test-identities`: ACTIVE, version 16
-- deployed browser application: exact `d0232c4...`
+- deployed DEV artifact: exact `945bdf9...` (browser/product source unchanged from the `d0232c4...` recovery proof anchor)
 - no Learning production Supabase project selected
 - no public deployment authorized
 
