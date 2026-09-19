@@ -3,8 +3,13 @@ name: Raahi Learning Production Candidate Canary
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: "NON_DEV or CONTROLLED_PILOT"
+        required: true
+        default: "NON_DEV"
+        type: string
       confirmation:
-        description: "Type NON_DEV_LEARNING_TARGET"
+        description: "NON_DEV_LEARNING_TARGET or CONTROLLED_PILOT_SAME_PROJECT"
         required: true
         type: string
       expected_project_ref:
@@ -28,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      RAAHI_CANARY_MODE: ${{ inputs.mode }}
       RAAHI_CANARY_CONFIRM_TARGET: ${{ inputs.confirmation }}
       RAAHI_CANARY_EXPECTED_PROJECT_REF: ${{ inputs.expected_project_ref }}
       RAAHI_CANARY_ORIGIN: ${{ inputs.origin }}
@@ -39,19 +45,32 @@ jobs:
       RAAHI_CANARY_UNRELATED_PASSWORD: ${{ secrets.RAAHI_LEARNING_CANARY_UNRELATED_PASSWORD }}
 
     steps:
-      - name: Fail closed before checkout if target is not explicitly non-DEV Learning
+      - name: Fail closed before checkout if target is not explicitly allowed
         shell: bash
         run: |
           set -euo pipefail
-          test "$RAAHI_CANARY_CONFIRM_TARGET" = "NON_DEV_LEARNING_TARGET"
           test -n "$RAAHI_CANARY_EXPECTED_PROJECT_REF"
-          test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
           test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "hoshprxoyhjyyigxkang"
           test "$RAAHI_CANARY_ORIGIN" != "https://dev.learning.myraahi.co.in"
           case "$RAAHI_CANARY_ORIGIN" in
             https://*) ;;
             *) exit 1 ;;
           esac
+
+          case "$RAAHI_CANARY_MODE" in
+            NON_DEV)
+              test "$RAAHI_CANARY_CONFIRM_TARGET" = "NON_DEV_LEARNING_TARGET"
+              test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
+              ;;
+            CONTROLLED_PILOT)
+              test "$RAAHI_CANARY_CONFIRM_TARGET" = "CONTROLLED_PILOT_SAME_PROJECT"
+              test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" = "iiwwmqokaeflaenhlyip"
+              ;;
+            *)
+              exit 1
+              ;;
+          esac
+
           test -n "$RAAHI_CANARY_SUPABASE_URL"
           test -n "$RAAHI_CANARY_PUBLISHABLE_KEY"
           test -n "$RAAHI_CANARY_PRIMARY_EMAIL"
