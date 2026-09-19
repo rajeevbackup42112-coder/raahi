@@ -3,7 +3,6 @@
 
   // Presentation-only launch polish. No authority, routing, data or business-rule changes.
   const pilotGoogleOnly = window.RAAHI_RELEASE_CONFIG?.phoneTrustMode === 'controlled_pilot_google_only';
-  // Google-only controlled-pilot baseline revalidation marker.
   const replacements = new Map([
     ['taking_new_learners', 'Taking new learners'],
     ['not_taking_new_learners', 'Not taking new learners'],
