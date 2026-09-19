@@ -1,0 +1,90 @@
+name: Raahi Learning Production Candidate Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type NON_DEV_LEARNING_TARGET"
+        required: true
+        type: string
+      expected_project_ref:
+        description: "Exact non-DEV Learning Supabase project ref"
+        required: true
+        type: string
+      origin:
+        description: "Exact HTTPS non-DEV Learning origin"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raahi-learning-production-candidate-canary
+  cancel-in-progress: false
+
+jobs:
+  guarded-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAAHI_CANARY_CONFIRM_TARGET: ${{ inputs.confirmation }}
+      RAAHI_CANARY_EXPECTED_PROJECT_REF: ${{ inputs.expected_project_ref }}
+      RAAHI_CANARY_ORIGIN: ${{ inputs.origin }}
+      RAAHI_CANARY_SUPABASE_URL: ${{ secrets.RAAHI_LEARNING_CANARY_SUPABASE_URL }}
+      RAAHI_CANARY_PUBLISHABLE_KEY: ${{ secrets.RAAHI_LEARNING_CANARY_PUBLISHABLE_KEY }}
+      RAAHI_CANARY_PRIMARY_EMAIL: ${{ secrets.RAAHI_LEARNING_CANARY_PRIMARY_EMAIL }}
+      RAAHI_CANARY_PRIMARY_PASSWORD: ${{ secrets.RAAHI_LEARNING_CANARY_PRIMARY_PASSWORD }}
+      RAAHI_CANARY_UNRELATED_EMAIL: ${{ secrets.RAAHI_LEARNING_CANARY_UNRELATED_EMAIL }}
+      RAAHI_CANARY_UNRELATED_PASSWORD: ${{ secrets.RAAHI_LEARNING_CANARY_UNRELATED_PASSWORD }}
+
+    steps:
+      - name: Fail closed before checkout if target is not explicitly non-DEV Learning
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RAAHI_CANARY_CONFIRM_TARGET" = "NON_DEV_LEARNING_TARGET"
+          test -n "$RAAHI_CANARY_EXPECTED_PROJECT_REF"
+          test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
+          test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "hoshprxoyhjyyigxkang"
+          test "$RAAHI_CANARY_ORIGIN" != "https://dev.learning.myraahi.co.in"
+          case "$RAAHI_CANARY_ORIGIN" in
+            https://*) ;;
+            *) exit 1 ;;
+          esac
+          test -n "$RAAHI_CANARY_SUPABASE_URL"
+          test -n "$RAAHI_CANARY_PUBLISHABLE_KEY"
+          test -n "$RAAHI_CANARY_PRIMARY_EMAIL"
+          test -n "$RAAHI_CANARY_PRIMARY_PASSWORD"
+          test -n "$RAAHI_CANARY_UNRELATED_EMAIL"
+          test -n "$RAAHI_CANARY_UNRELATED_PASSWORD"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned canary dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Re-run production canary guard tests
+        run: node --test tests/production-canary.test.mjs
+
+      - name: Run read-only production candidate canary
+        working-directory: tests/raahi-learning-e2e
+        run: node production-canary.mjs
+
+      - name: Upload sanitized canary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-production-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-production-canary/
+          if-no-files-found: warn
+          retention-days: 30
