@@ -20,7 +20,8 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `79-messagecentral-phone-trust-provider-v1.3.md` — **selected MessageCentral VerifyNow phone-trust integration and real-provider proof gate**
+1. `80-stage-ready-closeout-v1.3.md` — **canonical Stage Ready closure and proof set**
+2. `79-messagecentral-phone-trust-provider-v1.3.md` — **selected MessageCentral VerifyNow phone-trust integration and real-provider proof gate**
 2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **exact same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, providers, Gomoh activation, canary**
 2. `77-stage-ready-single-project-progress-v1.3.md` — latest Stage progression: Gomoh preparing, same-project pilot canary, synthetic inventory, DEV-writer seal
 3. `76-single-project-stage-controlled-pilot-strategy-v1.3.md` — approved zero-cost Stage→Gomoh+Dhanbad controlled-pilot strategy
@@ -208,14 +209,14 @@ Current exact state:
 - no dedicated Learning production Supabase project has been selected;
 - no public deployment is authorized.
 
-Next autonomous gates:
+Current milestone: **STAGE READY**.
 
-- finish the final launch-polish/UI convergence review, especially replacing raw operational JSON on Local Manager / Platform Admin surfaces;
-- keep Model Tests, DEV E2E and UI convergence green after migration 1036 and MessageCentral wiring;
-- keep the controlled-pilot public cleanup in rehearsal-only state until cutover;
-- preserve Dhanbad=`live`, Gomoh=`preparing` until cutover;
-- keep `dev-test-identities` mutation-capable only during Stage and deploy the prepared sealed replacement at cutover;
-- do not execute public-domain cleanup, harness Auth deletion, writer seal, Gomoh activation or public deployment before the cutover gate.
+The product/engineering/branding Stage gate is closed.
+
+Next work:
+- MessageCentral VerifyNow account activation + secret configuration + real-phone proof;
+- production Google OAuth project/client + real public-origin sign-in proof;
+- controlled-pilot cutover only after both providers pass.
 
 User-controlled / external gates now:
 
