@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1036_v13_phone_trust_explicit_browser_deny`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1037_v13_controlled_pilot_google_only_trust`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,9 +20,10 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `80-stage-ready-closeout-v1.3.md` — **canonical Stage Ready closure and proof set**
-2. `79-messagecentral-phone-trust-provider-v1.3.md` — **selected MessageCentral VerifyNow phone-trust integration and real-provider proof gate**
-2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **exact same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, providers, Gomoh activation, canary**
+1. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
+2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **current same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, Google auth, Gomoh activation, canary**
+3. `80-stage-ready-closeout-v1.3.md` — **historical pre-1037 Stage Ready baseline; must be superseded by fresh post-change closure**
+4. `79-messagecentral-phone-trust-provider-v1.3.md` — **historical MessageCentral experiment; retired for pilot**
 2. `77-stage-ready-single-project-progress-v1.3.md` — latest Stage progression: Gomoh preparing, same-project pilot canary, synthetic inventory, DEV-writer seal
 3. `76-single-project-stage-controlled-pilot-strategy-v1.3.md` — approved zero-cost Stage→Gomoh+Dhanbad controlled-pilot strategy
 4. `75-production-canary-recovery-inventory-readiness-v1.3.md` — guarded canary + recovery-inventory baseline
@@ -68,48 +69,61 @@ Read next:
 - UI does not directly mutate operational tables; canonical RPCs own consequential transitions.
 - Realtime invalidates/refetches only.
 
-## V1.3 authentication + phone-trust direction
+## V1.3 authentication + trust direction
 
-Intended production flow:
+### Controlled pilot
 
-**Google sign-in → Raahi Account → editable Raahi name/photo → intent-based setup → phone verification when first required → ordinary Google/session returns thereafter.**
+Current approved pilot flow:
 
-Rules:
+**Google sign-in → Raahi Account → editable Raahi name/photo → intent-based setup → normal product use**
 
-- Google is primary authentication.
-- Google name/photo are onboarding defaults only, not authority/legal verification.
-- Phone is periodic trust/contact proof, not routine login.
-- 90-day phone freshness is the frozen V1.3 policy.
-- Stale phone trust does not block ordinary existing learning, Test-taking, existing Class access, existing contextual messaging or safety actions.
-- Fresh trust gates only selected creation/escalation actions.
-- Do not use paid Advanced Phone MFA merely to implement this rule.
-- Do not add an application fake-OTP bypass.
+Rules during the Gomoh + Dhanbad controlled pilot:
+
+- Google is the only required user authentication.
+- Do not ask users for phone or WhatsApp verification.
+- Phone trust is not marked fresh; its prerequisite is temporarily disabled by explicit server policy.
+- All existing role, ownership, RLS, state, capacity, audit and idempotency checks remain in force.
 - Anonymous marketplace browsing remains deferred.
+- No fake OTP bypass exists.
 
-### Backend implementation
+Server policy:
 
-Supabase Auth's server-owned phone confirmation state is the trust clock; no duplicate client-owned Raahi trust timestamp is used.
+`phone_trust_mode = controlled_pilot_google_only`
 
-Applied DEV migrations after V1.2:
+Migration:
 
-- `1015_v13_contextual_inbox_and_org_teacher_picker`
-- `1016_v13_learner_self_access_invitations`
-- `1017_v13_organization_member_invitations`
-- `1018_v13_notification_transition_wiring`
-- `1019_v13_notification_initial_enquiry_dedup`
-- `1020_v13_phone_trust_projection`
-- `1021_v13_phone_trust_command_guards`
+`1037_v13_controlled_pilot_google_only_trust`
 
-Runtime markers include:
+The mode is fail-closed: absent or unknown configuration restores phone-trust enforcement.
 
-- `V13_CONTEXTUAL_INBOX_ORG_PICKER_PASS`
-- `V13_LEARNER_SELF_ACCESS_INVITATION_PASS`
-- `V13_ORGANIZATION_MEMBER_INVITATION_PASS`
-- `V13_NOTIFICATION_TRANSITION_WIRING_PASS`
-- `V13_PHONE_TRUST_PROJECTION_PASS`
-- `V13_PHONE_TRUST_COMMAND_GUARDS_PASS`
+Public controlled-pilot artifact:
 
-Historical Security Advisor after 1021: **0 findings**. Current DEV Security Advisor on 2026-09-19 reports one Auth warning: leaked-password protection is disabled. It is not resolved; see doc 70.
+- `phoneTrustMode = controlled_pilot_google_only`
+- `phoneTrustProvider = disabled`
+
+### Post-pilot direction
+
+Google remains primary authentication.
+
+Once Raahi has traction and user trust, selected sensitive actions should require an additional OTP proof rather than adding OTP to every login.
+
+Current preferred future channel:
+
+**direct Meta WhatsApp Business Platform Cloud API**
+
+Intended future flow:
+
+**Google sign-in → normal use → selected sensitive action → WhatsApp OTP → 90-day phone trust → resume action**
+
+The 90-day phone freshness model remains the intended future design unless a later explicit product decision changes it.
+
+### MessageCentral
+
+MessageCentral is retired for the controlled pilot because its real account required a ₹4,999 minimum top-up.
+
+The deployed `phone-trust-messagecentral` function is sealed at version 6 and returns HTTP 410. It cannot send SMS or change trust.
+
+See docs 79 and 81.
 
 ## AI Builder v2 internal retrofit closure
 
@@ -193,7 +207,7 @@ Current exact state:
 - the shared-browser flow now proves persisted-session reload, cross-tab sign-out privacy, second-Account sign-in and rejection of the first Account's copied private Class-thread link;
 - private Class-thread cache is account/session isolated and guarded against late responses from a previous session;
 - release packaging has offline guard tests but is not a production qualification;
-- DEV migration ceiling is `1036_v13_phone_trust_explicit_browser_deny`;
+- DEV migration ceiling is `1037_v13_controlled_pilot_google_only_trust`;
 - migration 1033 removed the unusable anonymous EXECUTE grants from `list_public_locations()` and its private helper, consistent with deferred anonymous marketplace browsing;
 - DEV E2E run `35445058520` on exact commit `486bcb9...` proves `deferred_anonymous_location_rpc_denied`, genuine sessions, RLS allow/deny and browser sign-ins still pass;
 - catalog audit currently finds 0 public tables without RLS, 0 public views, 0 public SECURITY DEFINER RPCs, 0 PUBLIC/anon RPC execute grants, 0 private SECURITY DEFINER PUBLIC/anon execute grants, 0 direct authenticated operational-table DML grants and 0 `auth.role()`/user-metadata authorization patterns;
@@ -209,23 +223,29 @@ Current exact state:
 - no dedicated Learning production Supabase project has been selected;
 - no public deployment is authorized.
 
-Current milestone: **STAGE READY**.
+Current milestone: **STAGE REVALIDATION AFTER APPROVED GOOGLE-ONLY PILOT CHANGE**.
 
-The product/engineering/branding Stage gate is closed.
+The pre-change Stage Ready evidence remains historical in doc 80. Migration 1037 and the release/UI trust-mode change require a fresh focused regression before Stage Ready is re-frozen.
+
+Current approved behavior:
+- controlled pilot uses Google only;
+- no pilot phone/WhatsApp prompt;
+- MessageCentral is sealed/dormant;
+- future WhatsApp OTP is post-traction work.
 
 Next work:
-- MessageCentral VerifyNow account activation + secret configuration + real-phone proof;
-- production Google OAuth project/client + real public-origin sign-in proof;
-- controlled-pilot cutover only after both providers pass.
+- finish fresh Model + E2E + UI/side-effect regression on the 1037 baseline;
+- re-close Stage Ready on the new baseline;
+- configure production Google OAuth client/project + real public-origin sign-in;
+- execute the controlled-pilot cutover only after the new baseline is green.
 
-User-controlled / external gates now:
-
+User-controlled / external gates after Stage re-closes:
 - public pilot origin: **https://learning.myraahi.co.in**;
-- create/configure the production Google OAuth project/client and publish/verify branding for `myraahi.co.in`;
-- create/activate MessageCentral VerifyNow account and configure provider credentials directly as Supabase Edge Function secrets;
-- perform real-provider Google + MessageCentral same-phone smoke;
+- production Google OAuth project/client and domain/branding configuration;
 - ensure `support@myraahi.co.in` is active;
 - explicit Rajeev approval immediately before public Gomoh + Dhanbad launch.
+
+A dedicated WhatsApp business SIM, Meta production phone registration and OTP template approval are intentionally **not** pilot launch gates.
 
 Approved environment strategy:
 
