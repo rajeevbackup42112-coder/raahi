@@ -173,13 +173,11 @@ Behavior:
 - in Google-only pilot mode: return without phone enforcement;
 - otherwise: preserve the existing `has_fresh_phone_trust()` / `PHONE_TRUST_REQUIRED` behavior.
 
-Adds authenticated read-only projection:
+Migration 1038 removes the temporary public trust-policy projection so the established security invariant remains intact:
 
-`public.get_phone_trust_policy()`
+**zero public SECURITY DEFINER RPCs.**
 
-Current expected result:
-
-`{"mode":"controlled_pilot_google_only","phone_verification_required":false}`
+Operational verification reads the server-owned setting through trusted SQL/runbooks rather than exposing a browser-facing policy RPC.
 
 ## 6. Affected commands
 
