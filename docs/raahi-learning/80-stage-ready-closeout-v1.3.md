@@ -178,10 +178,10 @@ Create/activate MessageCentral VerifyNow and obtain the provider credentials.
 Secrets must be configured directly in Supabase Edge Function secrets:
 
 - `MESSAGECENTRAL_CUSTOMER_ID`
-- `MESSAGECENTRAL_KEY_BASE64`
+- `MESSAGECENTRAL_PASSWORD`
 - `MESSAGECENTRAL_EMAIL`
 
-Do not paste raw provider password/key into chat or source control.
+Do not paste raw provider password into chat or source control.
 
 Then execute the real-provider same-phone smoke defined in doc 79.
 
