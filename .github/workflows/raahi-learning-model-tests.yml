@@ -33,3 +33,11 @@ jobs:
           node-version: '22'
       - name: Verify production packaging guards
         run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs
+
+      - name: Install pinned E2E dependencies for load-guard tests
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Verify production-like load target guards
+        working-directory: tests/raahi-learning-e2e
+        run: node --test production-like-load.test.mjs
