@@ -13,6 +13,8 @@ test('MessageCentral bridge owns OTP challenge while Supabase remains phone-trus
   assert.match(edge,/TextEncoder/);
   assert.match(edge,/\/verification\/v3\/send/);
   assert.match(edge,/\/verification\/v3\/validateOtp/);
+  assert.match(edge,/flowType:\s*'SMS'/);
+  assert.match(edge,/method:\s*'POST'/);
   assert.match(edge,/VERIFICATION_COMPLETED/);
   assert.match(edge,/auth\.admin\.updateUserById/);
   assert.match(edge,/phone_confirm:\s*true/);
