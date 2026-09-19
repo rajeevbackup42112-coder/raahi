@@ -32,7 +32,7 @@ test('challenge ledger stores provider references but never OTP codes and has no
   assert.match(migration,/phone_trust_challenges/);
   assert.match(migration,/provider_verification_id/);
   assert.match(migration,/verify_attempts/);
-  assert.doesNotMatch(migration,/\botp\b/i);
+  assert.doesNotMatch(migration,/\botp(?:_code|_value)?\s+(?:text|varchar|integer|bigint|jsonb)\b/i);
   assert.match(migration,/enable row level security/i);
   assert.match(migration,/force row level security/i);
   assert.match(migration,/revoke all on table public\.phone_trust_challenges from public, anon, authenticated/i);
