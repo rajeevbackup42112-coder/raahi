@@ -50,7 +50,7 @@
     for (const node of [...document.body.childNodes]) {
       if (node.nodeType !== Node.TEXT_NODE) continue;
       const compact=String(node.nodeValue||'').replace(/\s/g,'');
-      if (compact && /^(?:\\\\n)+$/.test(compact)) node.remove();
+      if (compact && /^(?:\\n)+$/.test(compact)) node.remove();
     }
   }
 
