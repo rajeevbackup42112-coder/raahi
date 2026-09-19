@@ -1,6 +1,6 @@
 # Raahi Learning V1.3 — Documentation Index
 
-Status: **V1.2 BACKEND COMPLETE; V1.3 DELTA + AI BUILDER v2 INTERNAL RETROFIT CLOSED IN DEV. NEXT: REAL HOSTED GOOGLE/PHONE AUTH PROOF → WALKING SKELETON.**
+Status: **V1.3 CORE IMPLEMENTATION + HOSTED AUTH/WALKING SKELETON + SE-01…SE-08 + BOUNDED RECOVERY/RELIABILITY PROVEN IN DEV. NEXT: PRODUCTION READINESS GATES.**
 
 This folder is the canonical handover point for Raahi Learning.
 
@@ -14,19 +14,18 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 
 ## Read first now
 
-1. [`47-ai-builder-v2-internal-retrofit-closure-v1.3.md`](47-ai-builder-v2-internal-retrofit-closure-v1.3.md) — **current canonical execution checkpoint**.
-2. [`99-handover.md`](99-handover.md) — current handover summary and continuation prompt.
-3. [`44-ai-builder-v2-retrofit-gate-v1.3.md`](44-ai-builder-v2-retrofit-gate-v1.3.md) — strict retrofit method/gates.
-4. [`45-v1.3-screen-backend-contract-audit.md`](45-v1.3-screen-backend-contract-audit.md) — Screen↔Backend + permission-symmetry audit.
-5. [`46-v1.3-side-effects-matrix-audit.md`](46-v1.3-side-effects-matrix-audit.md) — side-effects decisions.
-6. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
-7. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions including V1.3 amendment.
-8. [`43-v1.3-implementation-checkpoint.md`](43-v1.3-implementation-checkpoint.md) — historical earlier V1.3 checkpoint; file 47 supersedes its current numbers/status.
+1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
+2. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — latest bounded reliability, database-health, rollback and recovery-boundary evidence.
+3. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
+4. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
+5. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
+6. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
+7. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
+8. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
 9. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
-10. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) — consolidated physical design.
-11. [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated baseline migration contract.
-12. [`23-final-acceptance-traceability-v1.2.md`](23-final-acceptance-traceability-v1.2.md) — baseline traceability.
-13. [`31-staging-load-security-chaos-plan-v1.2.md`](31-staging-load-security-chaos-plan-v1.2.md) — later real runtime/load/chaos plan.
+10. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
+
+The older index reference to `31-staging-load-security-chaos-plan-v1.2.md` is not a usable file on this implementation branch; do not treat that ghost reference as current evidence.
 
 ## Frozen + current V1.3 artifacts
 
@@ -73,6 +72,8 @@ V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV:
 - `1019_v13_notification_initial_enquiry_dedup`
 - `1020_v13_phone_trust_projection`
 - `1021_v13_phone_trust_command_guards`
+- `1022` through `1031` — closed V1.3 vertical-slice / side-effect migrations recorded in their owning closure documents
+- `1032_v13_invitation_acceptance_fk_indexes` — preventive covering indexes for invitation `accepted_by_account_id` foreign keys
 
 Current V1.3 markers include:
 
@@ -84,7 +85,7 @@ Current V1.3 markers include:
 - `V13_PHONE_TRUST_COMMAND_GATE_CORE_PASS`
 - `V13_PHONE_TRUST_COMMAND_GUARDS_PASS`
 
-Supabase Security Advisor after 1021: **0 findings**.
+Historical Security Advisor after 1021: **0 findings**. Current 2026-09-19 DEV Security Advisor reports one warning: leaked-password protection is disabled. The two former unindexed-foreign-key Performance Advisor findings are closed by migration 1032; remaining unused-index notices are informational for this young DEV workload.
 
 Phone trust is derived from Supabase Auth's server-owned `auth.users.phone_confirmed_at`; do not add a duplicate client-owned Raahi trust timestamp merely to represent freshness.
 
@@ -128,23 +129,35 @@ The side-effects matrix is complete. Remaining attention-signal gaps are intenti
 
 ## Current boundary
 
-The next unknown is external, not another product/schema brainstorming phase.
+The implementation is no longer waiting for the original hosted-Auth/walking-skeleton proof; that work is complete.
 
-The connected Supabase management capability does not expose hosted Auth provider/test-OTP configuration, and no authenticated remote browser was connected at the current checkpoint.
+Proven in DEV now includes:
 
-Next prove:
+- real hosted Google/phone continuity and the walking skeleton;
+- genuine-session/OIDC DEV identity harness;
+- 20-persona cohort;
+- SE-01 through SE-08;
+- exact post-SE-08 combined regression;
+- bounded Class race/recovery/shared-browser privacy;
+- account/session-isolated private-thread cache;
+- guarded offline release packaging;
+- migration 1032 FK-index closure;
+- bounded release reliability: 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings;
+- read-only DB health snapshot and repeatable `scripts/raahi-learning-release-health.sql`;
+- migration-1032 reverse/recreate transaction rehearsal.
 
-1. hosted DEV Google provider configuration;
-2. real browser Google → Supabase Auth session;
-3. `bootstrap_account` resolves/creates exactly one Raahi Account and same Google returns to the same Account/history;
-4. hosted DEV phone attach/reverify through supported SMS/test-OTP configuration;
-5. server-owned phone confirmation evidence updates and migration 1020 reports fresh state;
-6. interrupted trust-sensitive action resumes after verification.
+Remaining production-readiness gates are intentionally separate from product redesign:
 
-Then execute the mandatory real walking skeleton:
+1. production-like load/soak/capacity testing against expected pilot traffic and production-like compute;
+2. production monitoring, alert delivery and escalation ownership;
+3. database recovery targets/retention and isolated restore rehearsal;
+4. off-platform Storage-object backup plus object restore proof;
+5. leaked-password-protection resolution/acceptance and remaining production security configuration;
+6. periodic real-provider same-phone Google/SMS trust refresh;
+7. dedicated Learning production Supabase project and final domain;
+8. production OAuth/SMS/redirect/secrets configuration;
+9. production-candidate regression;
+10. controlled pilot/go-no-go criteria;
+11. explicit Rajeev approval before public launch.
 
-**Google sign-in → Account/bootstrap → Learner context → discovery → Enquiry → provider engage → Class Invitation → real phone interruption/resume → Membership → Class → contextual message.**
-
-Only after the walking skeleton passes continue by vertical slice, then persona/adversarial E2E, concurrency/load/security/chaos and explicit production go/no-go.
-
-Do not call the system production-ready and do not deploy implicitly.
+Do not use the separate Where Is My Raahi project as Learning production or restore infrastructure. Do not call the system production-ready and do not deploy publicly without explicit approval.
