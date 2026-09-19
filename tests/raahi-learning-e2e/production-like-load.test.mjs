@@ -38,12 +38,12 @@ test('binds the typed expected ref to the actual Supabase URL',()=>{
 });
 
 test('forbids Raahi Learning DEV project and DEV origin',()=>{
-  rejects({RAAHI_LOAD_SUPABASE_URL:'https://iiwwmqokaeflaenhlyip.supabase.co'},/FORBIDDEN_LOAD_PROJECT_iiwwmqokaeflaenhlyip/);
+  rejects({RAAHI_LOAD_SUPABASE_URL:'https://iiwwmqokaeflaenhlyip.supabase.co',RAAHI_LOAD_EXPECTED_PROJECT_REF:'iiwwmqokaeflaenhlyip'},/FORBIDDEN_LOAD_PROJECT_iiwwmqokaeflaenhlyip/);
   rejects({RAAHI_LOAD_ORIGIN:'https://dev.learning.myraahi.co.in'},/FORBIDDEN_LOAD_ORIGIN/);
 });
 
 test('forbids separate Where Is My Raahi project',()=>{
-  rejects({RAAHI_LOAD_SUPABASE_URL:'https://hoshprxoyhjyyigxkang.supabase.co'},/FORBIDDEN_LOAD_PROJECT_hoshprxoyhjyyigxkang/);
+  rejects({RAAHI_LOAD_SUPABASE_URL:'https://hoshprxoyhjyyigxkang.supabase.co',RAAHI_LOAD_EXPECTED_PROJECT_REF:'hoshprxoyhjyyigxkang'},/FORBIDDEN_LOAD_PROJECT_hoshprxoyhjyyigxkang/);
 });
 
 test('requires managed Supabase URL, HTTPS origin and publishable key',()=>{
