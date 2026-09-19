@@ -8,7 +8,9 @@ const FORBIDDEN_REFS=new Set([
   'hoshprxoyhjyyigxkang',
 ]);
 const FORBIDDEN_ORIGINS=new Set(['https://dev.learning.myraahi.co.in']);
-const CONFIRMATION='NON_DEV_LEARNING_TARGET';
+const NON_DEV_CONFIRMATION='NON_DEV_LEARNING_TARGET';
+const PILOT_CONFIRMATION='CONTROLLED_PILOT_SAME_PROJECT';
+const LEARNING_DEV_REF='iiwwmqokaeflaenhlyip';
 
 function required(env,key){
   const value=env[key]?.trim();
@@ -22,7 +24,8 @@ function refFromUrl(url){
   return match[1];
 }
 export function parseCanaryConfig(env=process.env){
-  if(required(env,'RAAHI_CANARY_CONFIRM_TARGET')!==CONFIRMATION)throw new Error('CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
+  const mode=(env.RAAHI_CANARY_MODE||'NON_DEV').trim();
+  const confirmation=required(env,'RAAHI_CANARY_CONFIRM_TARGET');
   const supabaseUrl=required(env,'RAAHI_CANARY_SUPABASE_URL');
   const projectRef=refFromUrl(supabaseUrl);
   const expectedProjectRef=required(env,'RAAHI_CANARY_EXPECTED_PROJECT_REF');
@@ -30,7 +33,16 @@ export function parseCanaryConfig(env=process.env){
   const origin=required(env,'RAAHI_CANARY_ORIGIN').replace(/\/$/,'');
   const publishableKey=required(env,'RAAHI_CANARY_PUBLISHABLE_KEY');
 
-  if(FORBIDDEN_REFS.has(projectRef))throw new Error('FORBIDDEN_CANARY_PROJECT_'+projectRef);
+  if(mode==='NON_DEV'){
+    if(confirmation!==NON_DEV_CONFIRMATION)throw new Error('CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
+    if(FORBIDDEN_REFS.has(projectRef))throw new Error('FORBIDDEN_CANARY_PROJECT_'+projectRef);
+  }else if(mode==='CONTROLLED_PILOT'){
+    if(confirmation!==PILOT_CONFIRMATION)throw new Error('PILOT_CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
+    if(projectRef!==LEARNING_DEV_REF)throw new Error('PILOT_CANARY_PROJECT_MUST_BE_LEARNING_DEV');
+  }else{
+    throw new Error('INVALID_RAAHI_CANARY_MODE');
+  }
+
   if(FORBIDDEN_ORIGINS.has(origin))throw new Error('FORBIDDEN_CANARY_ORIGIN');
   if(!origin.startsWith('https://'))throw new Error('CANARY_ORIGIN_MUST_BE_HTTPS');
   if(!publishableKey.startsWith('sb_publishable_'))throw new Error('CANARY_KEY_MUST_BE_PUBLISHABLE');
@@ -39,7 +51,7 @@ export function parseCanaryConfig(env=process.env){
   const unrelated={email:required(env,'RAAHI_CANARY_UNRELATED_EMAIL'),password:required(env,'RAAHI_CANARY_UNRELATED_PASSWORD')};
   if(primary.email.toLowerCase()===unrelated.email.toLowerCase())throw new Error('CANARY_IDENTITIES_MUST_DIFFER');
 
-  return {supabaseUrl,projectRef,expectedProjectRef,origin,publishableKey,primary,unrelated};
+  return {mode,supabaseUrl,projectRef,expectedProjectRef,origin,publishableKey,primary,unrelated};
 }
 
 function client(config){
