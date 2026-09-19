@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is `1033_v13_deferred_anonymous_location_rpc_acl`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1036_v13_phone_trust_explicit_browser_deny`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,7 +20,8 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `78-controlled-pilot-cutover-runbook-v1.3.md` — **exact same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, providers, Gomoh activation, canary**
+1. `79-messagecentral-phone-trust-provider-v1.3.md` — **selected MessageCentral VerifyNow phone-trust integration and real-provider proof gate**
+2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **exact same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, providers, Gomoh activation, canary**
 2. `77-stage-ready-single-project-progress-v1.3.md` — latest Stage progression: Gomoh preparing, same-project pilot canary, synthetic inventory, DEV-writer seal
 3. `76-single-project-stage-controlled-pilot-strategy-v1.3.md` — approved zero-cost Stage→Gomoh+Dhanbad controlled-pilot strategy
 4. `75-production-canary-recovery-inventory-readiness-v1.3.md` — guarded canary + recovery-inventory baseline
@@ -191,7 +192,7 @@ Current exact state:
 - the shared-browser flow now proves persisted-session reload, cross-tab sign-out privacy, second-Account sign-in and rejection of the first Account's copied private Class-thread link;
 - private Class-thread cache is account/session isolated and guarded against late responses from a previous session;
 - release packaging has offline guard tests but is not a production qualification;
-- DEV migration ceiling is `20260919131110 / 1033_v13_deferred_anonymous_location_rpc_acl`;
+- DEV migration ceiling is `1036_v13_phone_trust_explicit_browser_deny`;
 - migration 1033 removed the unusable anonymous EXECUTE grants from `list_public_locations()` and its private helper, consistent with deferred anonymous marketplace browsing;
 - DEV E2E run `35445058520` on exact commit `486bcb9...` proves `deferred_anonymous_location_rpc_denied`, genuine sessions, RLS allow/deny and browser sign-ins still pass;
 - catalog audit currently finds 0 public tables without RLS, 0 public views, 0 public SECURITY DEFINER RPCs, 0 PUBLIC/anon RPC execute grants, 0 private SECURITY DEFINER PUBLIC/anon execute grants, 0 direct authenticated operational-table DML grants and 0 `auth.role()`/user-metadata authorization patterns;
@@ -209,36 +210,24 @@ Current exact state:
 
 Next autonomous gates:
 
-- No further production-readiness claim can be honestly closed using only the current DEV project.
-- Keep CI/advisor/read-only evidence current while external inputs are arranged.
-- Do not create a branch/project or spend money without explicit cost confirmation.
-- Do not relabel DEV or the ride project as production-like infrastructure.
+- finish the final launch-polish/UI convergence review, especially replacing raw operational JSON on Local Manager / Platform Admin surfaces;
+- keep Model Tests, DEV E2E and UI convergence green after migration 1036 and MessageCentral wiring;
+- keep the controlled-pilot public cleanup in rehearsal-only state until cutover;
+- preserve Dhanbad=`live`, Gomoh=`preparing` until cutover;
+- keep `dev-test-identities` mutation-capable only during Stage and deploy the prepared sealed replacement at cutover;
+- do not execute public-domain cleanup, harness Auth deletion, writer seal, Gomoh activation or public deployment before the cutover gate.
 
-User-controlled gates remain:
+User-controlled / external gates now:
 
-- explicit approval to create the recommended dedicated Learning Supabase project in `ap-south-1` (current connector quote: USD 0/month). A preview branch is not sufficient for the full remaining Auth/Storage/restore/provider gate set; branch quote is USD 0.01344/hour;
-- Supabase Dashboard re-authentication for Health Advisors, leaked-password protection, SSL/network/backups/rate-limit/CAPTCHA inspection;
-- RPO/RTO and backup/PITR choice;
-- pilot traffic expectation for meaningful load thresholds;
-- alert/escalation destination;
-- periodic real-provider same-phone SMS trust refresh;
-- leaked-password setting if Dashboard/plan action is required;
-- Learning production Supabase project and any paid backup/security features;
-- final production domain;
-- production Google OAuth/SMS/redirect/secrets;
-- controlled pilot audience;
-- final public-launch approval.
+- public pilot origin: **https://learning.myraahi.co.in**;
+- create/configure the production Google OAuth project/client and publish/verify branding for `myraahi.co.in`;
+- create/activate MessageCentral VerifyNow account and configure provider credentials directly as Supabase Edge Function secrets;
+- perform real-provider Google + MessageCentral same-phone smoke;
+- ensure `support@myraahi.co.in` is active;
+- explicit Rajeev approval immediately before public Gomoh + Dhanbad launch.
 
-See docs 69–75 for the exact evidence, operational procedure, security catalog proof and remaining boundaries.
+Approved environment strategy:
 
-### Defect handling rule
+**Learning DEV → Stage Ready → same-project controlled pilot (Gomoh + Dhanbad) on Free Supabase → paid isolated production after traction.**
 
-Before changing product design, classify failures as Domain, Integration, Implementation, or Test/Harness. Only a genuine Domain defect triggers:
-
-`rules → entities → relationships → states → permissions → UI → tests → architecture/DB`.
-
-Do not modify frozen business rules merely to turn a failing test green.
-
-## Recommended continuation prompt
-
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `78-controlled-pilot-cutover-runbook-v1.3.md`, `77-stage-ready-single-project-progress-v1.3.md`, `76-single-project-stage-controlled-pilot-strategy-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Read-only verify branch head, live `build-meta.json`, migration ceiling, Edge Function version, latest CI and advisors. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression, bounded recovery/shared-browser proof, or the bounded 20-persona/800-read reliability smoke. Stable product-code recovery anchor is `d0232c4...`; do not pin a docs/test-only build-meta SHA as permanent current state. DEV migration ceiling is 1034. Do not redo autonomous preparation already closed in docs 71–75. The next meaningful actions require an explicitly approved isolated Learning target and/or Rajeev-held dashboard/provider authentication. Continue with restore/load/canary/security/provider gates only after those inputs exist. Keep real same-phone Google/SMS provider smoke separate for user-held authentication. No public deployment; no fake OTP; no weakening RLS.
+Do not create a paid Supabase branch/project merely to reach the first controlled pilot. Do not repurpose the Where Is My Raahi project.
