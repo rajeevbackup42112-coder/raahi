@@ -147,7 +147,9 @@ Proven in DEV now includes:
 - migration 1032 FK-index closure;
 - bounded release reliability: 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings;
 - read-only DB health snapshot and repeatable `scripts/raahi-learning-release-health.sql`;
-- migration-1032 reverse/recreate transaction rehearsal.
+- migration-1032 reverse/recreate transaction rehearsal;
+- guarded manual production-like load harness/workflow with explicit target binding and forbidden-project tests;
+- guarded logical DB and non-destructive Storage backup scripts with restore-not-proven markers.
 
 Remaining production-readiness gates are intentionally separate from product redesign:
 
