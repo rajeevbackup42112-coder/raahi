@@ -25,6 +25,8 @@ export function parseCanaryConfig(env=process.env){
   if(required(env,'RAAHI_CANARY_CONFIRM_TARGET')!==CONFIRMATION)throw new Error('CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
   const supabaseUrl=required(env,'RAAHI_CANARY_SUPABASE_URL');
   const projectRef=refFromUrl(supabaseUrl);
+  const expectedProjectRef=required(env,'RAAHI_CANARY_EXPECTED_PROJECT_REF');
+  if(expectedProjectRef!==projectRef)throw new Error('CANARY_PROJECT_REF_MISMATCH');
   const origin=required(env,'RAAHI_CANARY_ORIGIN').replace(/\/$/,'');
   const publishableKey=required(env,'RAAHI_CANARY_PUBLISHABLE_KEY');
 
@@ -37,7 +39,7 @@ export function parseCanaryConfig(env=process.env){
   const unrelated={email:required(env,'RAAHI_CANARY_UNRELATED_EMAIL'),password:required(env,'RAAHI_CANARY_UNRELATED_PASSWORD')};
   if(primary.email.toLowerCase()===unrelated.email.toLowerCase())throw new Error('CANARY_IDENTITIES_MUST_DIFFER');
 
-  return {supabaseUrl,projectRef,origin,publishableKey,primary,unrelated};
+  return {supabaseUrl,projectRef,expectedProjectRef,origin,publishableKey,primary,unrelated};
 }
 
 function client(config){
