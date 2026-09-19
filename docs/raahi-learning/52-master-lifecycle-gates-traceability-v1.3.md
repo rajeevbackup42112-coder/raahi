@@ -68,7 +68,7 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. Preserve doc 68 as the post-SE-08 combined-regression anchor, docs 69–70 as bounded recovery/shared-browser closure, and doc 71 as the latest reliability/observability/recovery checkpoint.
+1. Preserve doc 68 as the post-SE-08 combined-regression anchor, docs 69–70 as bounded recovery/shared-browser closure, doc 71 as the latest reliability/observability/recovery evidence, and doc 72 as the prepared production-operations procedure.
 2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product-code proof anchor. Do not pin a documentation/test-only `build-meta` SHA as the permanent deployed product state; read `build-meta.json` at execution time and verify `apps/raahi-learning/` source compatibility.
 3. Preserve the successful bounded release-reliability proof on `10111144a2d00fb28d02a4217c4225a5188673b6` / run `35442347699`: 20 personas, 800 authenticated reads, 20 cross-account denials and 20 browser sign-ins, no latency warnings.
 4. Continue with production-like load/soak/capacity testing once expected pilot traffic and production-like compute exist.
