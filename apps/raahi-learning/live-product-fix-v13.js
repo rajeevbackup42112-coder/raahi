@@ -33,6 +33,7 @@
       return data;
     }
 
+    const phoneTrustMode = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustMode || 'phone_trust_required');
     const phoneTrustProvider = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustProvider || 'supabase');
 
     async function messageCentralPhoneTrust(body) {
@@ -93,6 +94,9 @@
     }
 
     function pagePhoneCheck() {
+      if (phoneTrustMode() === 'controlled_pilot_google_only') {
+        return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Pilot access</div><h1>Google sign-in is enough for this pilot</h1><p class="muted">Phone verification is not required during the controlled Gomoh + Dhanbad pilot.</p><button class="primary-btn wide" data-live-fix-resume-action>Continue</button></div></div>`;
+      }
       const trust = live.__phoneTrustV13;
       if (!trust) return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Phone trust check</div><h1>Checking your phone trust…</h1><p class="muted">Raahi is reading the current server-verified trust state.</p></div></div>`;
       if (trust.state === 'fresh') return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Phone trust</div><h1>Phone confirmed</h1><p class="muted">Your current phone trust is fresh.</p><button class="primary-btn wide" data-live-fix-resume-action>Continue</button></div></div>`;
@@ -169,6 +173,7 @@
     }
 
     async function sendPhoneOtp() {
+      if (phoneTrustMode() === 'controlled_pilot_google_only') throw new Error('Phone verification is not required during this pilot.');
       const trust = live.__phoneTrustV13 || await rpc('get_my_phone_trust');
 
       if (phoneTrustProvider() === 'messagecentral') {
@@ -206,6 +211,7 @@
     }
 
     async function verifyPhoneOtp() {
+      if (phoneTrustMode() === 'controlled_pilot_google_only') throw new Error('Phone verification is not required during this pilot.');
       const token = document.querySelector('#live-fix-phone-otp')?.value?.trim();
       if (!token) throw new Error('Enter the verification code.');
       const flow = JSON.parse(sessionStorage.getItem(PHONE_FLOW_KEY) || 'null');
