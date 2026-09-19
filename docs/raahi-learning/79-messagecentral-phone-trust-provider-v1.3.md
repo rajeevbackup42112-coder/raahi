@@ -152,10 +152,10 @@ No MessageCentral customer ID, password/key, auth token or other secret is embed
 At provider cutover, configure these **only in the Supabase Edge Function secret environment**, never in GitHub/browser/public artifact:
 
 - `MESSAGECENTRAL_CUSTOMER_ID`
-- `MESSAGECENTRAL_KEY_BASE64`
+- `MESSAGECENTRAL_PASSWORD`
 - `MESSAGECENTRAL_EMAIL` (registered account email; optional at API level but retained for explicit configuration)
 
-MessageCentral's current API documentation describes the key used for token generation as the account password encoded in Base64 and its generated auth token as approximately 24-hour renewable credentials.
+MessageCentral's API expects the account password encoded in Base64 for token generation. Raahi stores the password only as a Supabase Edge secret and performs the Base64 encoding in memory inside the Edge Function; the user must not use an external Base64 website.
 
 Do not paste the raw MessageCentral password or key into source control, chat logs, browser JavaScript or CI artifacts.
 
@@ -167,7 +167,7 @@ Before real-provider proof:
 2. fund only enough free/paid credits for pilot verification;
 3. obtain the customer ID;
 4. configure the three secrets directly in the Supabase project;
-5. never share the raw password/key in chat.
+5. never share the raw password in chat.
 
 This is a user-held credential step.
 
