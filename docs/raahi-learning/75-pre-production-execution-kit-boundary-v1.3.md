@@ -169,9 +169,16 @@ Current connector cost quotes on 2026-09-19:
 
 These are current tool quotes, not permission to create either resource. Supabase requires explicit cost confirmation before branch/project creation.
 
-A branch is the cheaper temporary isolated schema target, but creating a branch by itself is **not** an end-to-end database-backup restore rehearsal: a real recovery proof still requires an actual backup/export and a restore/import path plus post-restore inventory comparison.
+A branch is the cheaper temporary isolated schema target, but current Supabase branching guidance makes it unsuitable as the only Raahi Learning production-like environment:
 
-A dedicated project may ultimately be preferable because production Auth, Storage, domains, provider settings, backup policy and release candidate behavior need their own environment. The zero-dollar quote does not by itself prove account/project quota availability until creation is explicitly confirmed and attempted.
+- preview branches are created from schema/migrations and do not copy production data;
+- branch workflows are intended for preview/staging migration validation;
+- normal GitHub deployment of branch changes does not deploy Auth configuration by default;
+- a branch therefore does not by itself prove the final Google/SMS/Auth, backup, Storage-object restore, domain, or production-candidate configuration.
+
+A branch remains useful later for migration experimentation, but the recommended next environment for Raahi Learning is a **dedicated Learning project** in `ap-south-1`, because the remaining gates require independent Auth, Storage, provider configuration, backups, domains and production-candidate behavior.
+
+The current connector quote for a new project is USD 0/month. This is still not permission to create it, and the organization currently already has two active projects. The zero-dollar quote does not prove project-quota availability until creation is explicitly cost-confirmed and attempted.
 
 ## 5. External inputs now genuinely required
 
@@ -224,7 +231,7 @@ Still user-controlled:
 
 ## 6. Safe next sequence once inputs are available
 
-1. create/select isolated Learning target;
+1. create/select a dedicated isolated Learning project (recommended over a preview branch for the full remaining gate set);
 2. apply/verify migrations through 1033;
 3. configure production-like Auth/Storage/environment without DEV-only fixture surfaces;
 4. capture source recovery inventory;
