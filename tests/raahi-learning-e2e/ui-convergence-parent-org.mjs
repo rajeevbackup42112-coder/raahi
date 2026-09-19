@@ -43,8 +43,7 @@ function errText(e){return e?.message||e?.details||e?.hint||String(e);}
 function staticCompatible(deployedSha,targetSha){
   if(deployedSha===targetSha)return {compatible:true,exact:true,changed:[],appChanges:[]};
   try{
-    execFileSync('git',['merge-base','--is-ancestor',deployedSha,targetSha],{stdio:'ignore'});
-    const changed=execFileSync('git',['diff','--name-only',deployedSha+'..'+targetSha],{encoding:'utf8'})
+    const changed=execFileSync('git',['diff','--name-only',deployedSha,targetSha],{encoding:'utf8'})
       .split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
     const appChanges=changed.filter(x=>x.startsWith('apps/raahi-learning/'));
     return {compatible:appChanges.length===0,exact:false,changed,appChanges};
