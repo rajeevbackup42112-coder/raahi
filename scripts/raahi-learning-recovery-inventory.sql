@@ -103,6 +103,13 @@ select jsonb_pretty(jsonb_build_object(
     'audit_log', (select count(*) from public.audit_log),
     'file_assets', (select count(*) from public.file_assets)
   ),
+  'trust_policy', jsonb_build_object(
+    'phone_trust_mode', coalesce(
+      (select setting_value from app_private.runtime_settings where setting_key='phone_trust_mode'),
+      '<missing>'
+    ),
+    'phone_trust_enforcement_enabled', app_private.phone_trust_enforcement_enabled()
+  ),
   'storage', (select value from bucket_inventory),
   'security', (select value from security_summary),
   'functions', (select value from function_summary)
