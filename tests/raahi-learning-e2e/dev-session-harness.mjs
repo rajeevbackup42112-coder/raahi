@@ -127,6 +127,11 @@ async function main() {
     report.deployment = await waitForDeployment(commit);
     report.checks.push({ check: 'exact_dev_commit_deployed', pass: true });
 
+    const anonymousClient = client();
+    const anonymousLocations = await anonymousClient.rpc('list_public_locations');
+    assert(anonymousLocations.error, 'ANON_PUBLIC_LOCATION_RPC_NOT_DENIED');
+    report.checks.push({ check: 'deferred_anonymous_location_rpc_denied', pass: true });
+
     const unauthenticated = await fetch(EDGE_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
