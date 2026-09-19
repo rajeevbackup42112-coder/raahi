@@ -11,11 +11,11 @@ Bounded recovery/shared-browser product proof commit:
 
 `d0232c4fdb9410d4902063740974b7110da59473`
 
-Current deployed DEV artifact commit after migration 1032:
+First exact-build DEV anchor after migration 1032:
 
 `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`
 
-The Git diff from `d0232c4...` to `945bdf9...` contains only `supabase/migrations/20260919120454_1032_v13_invitation_acceptance_fk_indexes.sql`; browser/product source is unchanged.
+The Git diff from `d0232c4...` to `945bdf9...` contains only `supabase/migrations/20260919120454_1032_v13_invitation_acceptance_fk_indexes.sql`; browser/product source is unchanged. Later documentation/test-only commits may advance `build-meta.json` without changing `apps/raahi-learning/`, so do not treat `945bdf9...` as a permanent current deployment SHA. Read `build-meta.json` at execution time and verify app-source compatibility. See doc 71.
 
 DEV origin:
 
@@ -140,7 +140,10 @@ No RLS relaxation or authorization bypass was introduced to close any test.
 - PostgreSQL: 17
 - migration ceiling: `1032_v13_invitation_acceptance_fk_indexes`
 - `dev-test-identities`: ACTIVE, version 16
-- deployed DEV artifact: exact `945bdf9...` (browser/product source unchanged from the `d0232c4...` recovery proof anchor)
+- bounded recovery/shared-browser product proof anchor: `d0232c4...`
+- first exact-build post-1032 DEV anchor: `945bdf9...`
+- current `build-meta.json` is intentionally treated as volatile across source-compatible documentation/test commits; verify it at execution time
+- bounded release reliability smoke: PASS; see doc 71
 - no Learning production Supabase project selected
 - no public deployment authorized
 
@@ -148,10 +151,10 @@ No RLS relaxation or authorization bypass was introduced to close any test.
 
 The next work is release/reliability work, not another product redesign pass:
 
-1. broader realistic load/soak/capacity testing beyond the bounded 40-request cached-retry burst;
-2. monitoring, alerting and incident-response definition/proof;
-3. database **and Storage-object** backup strategy, recovery targets and restore rehearsal;
-4. migration rollback/forward-fix rehearsal;
+1. production-scale/load/soak/capacity testing beyond the bounded 20-persona / 800-read DEV reliability smoke;
+2. production monitoring, alert delivery and escalation ownership; the read-only checks/runbook are designed in doc 71 but not operationally closed;
+3. database **and Storage-object** backup strategy, recovery targets and isolated restore rehearsal;
+4. production-like rollback/forward-fix exercise; migration 1032's reverse/recreate transaction rehearsal is already proven in DEV;
 5. leaked-password-protection resolution or explicit risk acceptance;
 6. periodic real-provider same-phone SMS trust refresh with user-held authentication;
 7. dedicated Learning production Supabase project selection/creation;
@@ -161,4 +164,4 @@ The next work is release/reliability work, not another product redesign pass:
 11. controlled pilot audience and go/no-go criteria;
 12. explicit Rajeev approval before public launch.
 
-Do not interpret this document as public-launch authorization.
+Doc 71 supersedes this file as the latest release/reliability checkpoint. Do not interpret this document as public-launch authorization.
