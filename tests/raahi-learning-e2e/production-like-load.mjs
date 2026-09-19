@@ -56,6 +56,8 @@ export function parseLoadConfig(env=process.env){
   const publishableKey=required(env,'RAAHI_LOAD_PUBLISHABLE_KEY');
   const origin=required(env,'RAAHI_LOAD_ORIGIN').replace(/\/$/,'');
   const ref=projectRef(supabaseUrl);
+  const expectedRef=required(env,'RAAHI_LOAD_EXPECTED_PROJECT_REF');
+  if(expectedRef!==ref)throw new Error('LOAD_PROJECT_REF_MISMATCH');
   if(FORBIDDEN_PROJECT_REFS.has(ref))throw new Error('FORBIDDEN_LOAD_PROJECT_'+ref);
   if(FORBIDDEN_ORIGINS.has(origin))throw new Error('FORBIDDEN_LOAD_ORIGIN');
   if(!origin.startsWith('https://'))throw new Error('LOAD_ORIGIN_MUST_BE_HTTPS');
@@ -67,7 +69,7 @@ export function parseLoadConfig(env=process.env){
   if(concurrency>identities.length)throw new Error('LOAD_CONCURRENCY_EXCEEDS_IDENTITIES');
 
   return {
-    supabaseUrl,publishableKey,origin,projectRef:ref,identities,concurrency,durationSeconds,
+    supabaseUrl,publishableKey,origin,projectRef:ref,expectedProjectRef:expectedRef,identities,concurrency,durationSeconds,
     maxErrorRate:optionalNumber(env,'RAAHI_LOAD_MAX_ERROR_RATE'),
     maxP95Ms:optionalNumber(env,'RAAHI_LOAD_MAX_P95_MS'),
   };
