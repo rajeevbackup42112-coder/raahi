@@ -129,6 +129,19 @@ async function providerSend(phone: string) {
   return { verificationId: String(verificationId), timeout };
 }
 
+async function providerProbe(req: Request, user: any) {
+  const origin = req.headers.get('origin') || '';
+  if (origin !== 'https://dev.learning.myraahi.co.in') throw new Error('PROBE_NOT_ALLOWED');
+  if (user?.user_metadata?.raahi_test_harness !== true) throw new Error('PROBE_NOT_ALLOWED');
+
+  await providerAuthToken();
+  return json(req, 200, {
+    ok: true,
+    provider: PROVIDER,
+    configured: true,
+  });
+}
+
 async function providerValidate(verificationId: string, code: string) {
   const { token } = await providerAuthToken();
   const params = new URLSearchParams({
@@ -172,6 +185,7 @@ function publicError(error: unknown) {
     INVALID_OTP: 400,
     PHONE_ALREADY_IN_USE: 409,
     PHONE_CONFIRM_FAILED: 502,
+    PROBE_NOT_ALLOWED: 403,
   };
   return { code, status: statusByCode[code] || 500 };
 }
@@ -426,6 +440,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}));
     const action = String(body?.action || '');
 
+    if (action === 'probe') return await providerProbe(req, user);
     if (action === 'send') return await sendChallenge(req, user, body);
     if (action === 'verify') return await verifyChallenge(req, user, body);
     return json(req, 400, { ok: false, error: 'ACTION_NOT_SUPPORTED' });
