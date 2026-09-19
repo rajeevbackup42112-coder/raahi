@@ -1,10 +1,12 @@
 # Stage Ready status
 
-Canonical closeout: `80-stage-ready-closeout-v1.3.md`
+Historical pre-change closeout: `80-stage-ready-closeout-v1.3.md`
+
+Current approved rule change: `81-controlled-pilot-google-only-trust-v1.3.md`
 
 # Raahi Learning V1.3 — Stage-ready progression on single Free project
 
-Status: **STAGE READY**  
+Status: **STAGE REVALIDATION — APPROVED GOOGLE-ONLY PILOT CHANGE**  
 Date: 2026-09-19
 
 This checkpoint supersedes the earlier assumption that a separate non-DEV Supabase target must be created before the first real-user release.
