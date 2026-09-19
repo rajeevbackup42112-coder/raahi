@@ -6,6 +6,7 @@ function base(){
   return {
     RAAHI_LOAD_CONFIRM_TARGET:'PRODUCTION_LIKE_ISOLATED',
     RAAHI_LOAD_SUPABASE_URL:'https://abcdefghijklmnopqrst.supabase.co',
+    RAAHI_LOAD_EXPECTED_PROJECT_REF:'abcdefghijklmnopqrst',
     RAAHI_LOAD_PUBLISHABLE_KEY:'sb_publishable_test_only_key',
     RAAHI_LOAD_ORIGIN:'https://learning.example.test',
     RAAHI_LOAD_IDENTITIES_JSON:JSON.stringify([
@@ -23,6 +24,12 @@ test('requires explicit isolated-target confirmation',()=>{
   assert.throws(()=>parseLoadConfig(env),/MISSING_RAAHI_LOAD_CONFIRM_TARGET/);
   env.RAAHI_LOAD_CONFIRM_TARGET='NO';
   assert.throws(()=>parseLoadConfig(env),/LOAD_TARGET_NOT_EXPLICITLY_CONFIRMED/);
+});
+
+test('binds expected project ref to actual Supabase URL',()=>{
+  const env=base();
+  env.RAAHI_LOAD_EXPECTED_PROJECT_REF='differentprojectref';
+  assert.throws(()=>parseLoadConfig(env),/LOAD_PROJECT_REF_MISMATCH/);
 });
 
 test('refuses the Raahi Learning DEV project',()=>{
