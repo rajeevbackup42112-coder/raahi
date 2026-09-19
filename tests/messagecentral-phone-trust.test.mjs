@@ -47,12 +47,14 @@ test('challenge ledger stores provider references but never OTP codes and has no
   assert.match(migration,/grant select, insert, update, delete on table public\.phone_trust_challenges to service_role/i);
 });
 
-test('DEV remains Supabase-compatible while release selects MessageCentral',()=>{
+test('MessageCentral bridge remains dormant and release does not select it during pilot',()=>{
   assert.match(live,/window\.RAAHI_RELEASE_CONFIG\?\.phoneTrustProvider \|\| 'supabase'/);
   assert.match(live,/messageCentralPhoneTrust/);
   assert.match(live,/provider:'messagecentral'/);
   assert.match(live,/signInWithOtp/);
   assert.match(live,/verifyOtp/);
-  assert.match(release,/phoneTrustProvider:'messagecentral'/);
+  assert.match(release,/phoneTrustMode:'controlled_pilot_google_only'/);
+  assert.match(release,/phoneTrustProvider:'disabled'/);
+  assert.doesNotMatch(release,/phoneTrustProvider:'messagecentral'/);
   assert.doesNotMatch(release,/MESSAGECENTRAL_(?:CUSTOMER_ID|PASSWORD|EMAIL)/);
 });
