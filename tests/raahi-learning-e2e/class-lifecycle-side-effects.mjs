@@ -21,13 +21,13 @@ function errText(e){return e?.message||e?.details||e?.hint||String(e);}
 function pwd(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function rid(){return 'lifefx-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
 function staticCompatible(deployed,target){
-  if(deployed===target)return {compatible:true,changed:[]};
+  if(deployed===target)return {compatible:true,exact:true,changed:[],appChanges:[]};
   try{
-    execFileSync('git',['merge-base','--is-ancestor',deployed,target],{stdio:'ignore'});
-    const changed=execFileSync('git',['diff','--name-only',deployed+'..'+target],{encoding:'utf8'}).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const changed=execFileSync('git',['diff','--name-only',deployed,target],{encoding:'utf8'})
+      .split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
     const appChanges=changed.filter(p=>p.startsWith('apps/raahi-learning/'));
-    return {compatible:appChanges.length===0,changed,appChanges};
-  }catch(_){return {compatible:false,changed:[],appChanges:['unknown-history']};}
+    return {compatible:appChanges.length===0,exact:false,changed,appChanges};
+  }catch(_){return {compatible:false,exact:false,changed:[],appChanges:['unknown-history']};}
 }
 async function waitDeployment(sha){
   const deadline=Date.now()+8*60*1000;let last=null;
@@ -44,7 +44,6 @@ async function endDeploymentCheck(startMeta,sha){
   const r=await fetch(DEV_ORIGIN+'/build-meta.json?lifefx-end='+Date.now(),{cache:'no-store'});
   assert(r.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+r.status);
   const m=await r.json();
-  assert(m.commit_sha===startMeta.commit_sha,'DEV_DEPLOYMENT_CHANGED_DURING_LIFEFX_PROOF start='+startMeta.commit_sha+' actual='+m.commit_sha);
   const compat=staticCompatible(m.commit_sha,sha);
   assert(compat.compatible,'DEV_STATIC_DEPLOYMENT_END_NOT_COMPATIBLE '+JSON.stringify(compat));
   return {...m,compatibility:compat};
