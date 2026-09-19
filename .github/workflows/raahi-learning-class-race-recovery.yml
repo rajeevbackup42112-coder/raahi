@@ -1,0 +1,41 @@
+name: Raahi Learning Class Race Recovery
+on:
+  push:
+    branches: [raahi-learning-implementation-v1]
+    paths:
+      - 'tests/raahi-learning-e2e/class-race-recovery.mjs'
+      - '.github/workflows/raahi-learning-class-race-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+# Shares sidefx_test identities with the Test correction proof.
+concurrency:
+  group: raahi-learning-test-correction-side-effects
+  cancel-in-progress: false
+jobs:
+  race-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+      - name: Audit dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+      - name: Run concurrent requests and recovery proof
+        working-directory: tests/raahi-learning-e2e
+        run: node class-race-recovery.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: raahi-learning-class-race-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-class-race-recovery/
+          retention-days: 30
