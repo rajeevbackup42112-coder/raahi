@@ -11,7 +11,7 @@ test('pilot public cleanup is fail-closed and preserves Location configuration',
   assert.match(sql,/table_name <> 'locations'/);
   assert.match(sql,/slug='dhanbad' and state='live'/);
   assert.match(sql,/slug='gomoh' and state='preparing'/);
-  assert.match(sql,/v_public_tables <> 69/);
+  assert.match(sql,/v_public_tables <> 70/);
   assert.match(sql,/v_non_harness <> 8/);
   assert.match(sql,/v_storage_objects <> 0/);
   assert.match(sql,/truncate table public\.access_restrictions/);
