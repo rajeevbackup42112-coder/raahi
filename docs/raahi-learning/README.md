@@ -15,20 +15,20 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 ## Read first now
 
 1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
-2. [`77-stage-ready-single-project-progress-v1.3.md`](77-stage-ready-single-project-progress-v1.3.md) — latest Stage-readiness checkpoint: Gomoh preparing, same-project pilot canary, synthetic inventory.
-3. [`76-single-project-stage-controlled-pilot-strategy-v1.3.md`](76-single-project-stage-controlled-pilot-strategy-v1.3.md) — approved DEV → Stage Ready → Gomoh+Dhanbad controlled-pilot → paid production strategy.
-4. [`75-production-canary-recovery-inventory-readiness-v1.3.md`](75-production-canary-recovery-inventory-readiness-v1.3.md) — guarded canary + recovery-inventory baseline.
-5. [`74-production-like-load-operator-guard-readiness-v1.3.md`](74-production-like-load-operator-guard-readiness-v1.3.md) — guarded load + backup/operator readiness.
-6. [`73-security-catalog-hardening-v1.3.md`](73-security-catalog-hardening-v1.3.md) — catalog-security hardening and runtime ACL proof.
-7. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — production operations, monitoring, backup and restore procedure.
-8. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — bounded reliability, database-health, rollback and recovery-boundary evidence.
-9. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
-10. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
-11. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
-12. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
-13. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
-14. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
-15. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
+2. [`78-controlled-pilot-cutover-runbook-v1.3.md`](78-controlled-pilot-cutover-runbook-v1.3.md) — exact same-project pilot cutover procedure.
+3. [`77-stage-ready-single-project-progress-v1.3.md`](77-stage-ready-single-project-progress-v1.3.md) — current Stage-readiness progression.
+4. [`76-single-project-stage-controlled-pilot-strategy-v1.3.md`](76-single-project-stage-controlled-pilot-strategy-v1.3.md) — approved zero-cost Stage→Gomoh+Dhanbad controlled-pilot strategy.
+5. [`75-production-canary-recovery-inventory-readiness-v1.3.md`](75-production-canary-recovery-inventory-readiness-v1.3.md) — guarded canary + recovery-inventory baseline.
+6. [`74-production-like-load-operator-guard-readiness-v1.3.md`](74-production-like-load-operator-guard-readiness-v1.3.md) — guarded load + backup/operator readiness.
+7. [`73-security-catalog-hardening-v1.3.md`](73-security-catalog-hardening-v1.3.md) — catalog-security hardening and runtime ACL proof.
+8. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — operations, monitoring, backup and restore procedure.
+9. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — bounded reliability, health, rollback and recovery-boundary evidence.
+10. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
+11. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
+12. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
+13. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
+14. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — Google-primary + periodic phone-trust policy.
+15. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
 
 The older index reference to `31-staging-load-security-chaos-plan-v1.2.md` is not a usable file on this implementation branch; do not treat that ghost reference as current evidence.
 
