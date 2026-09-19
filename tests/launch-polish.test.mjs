@@ -14,6 +14,11 @@ test('launch polish is presentation-only and removes internal-facing labels',()=
   assert.match(polish,/Your Classes and learning history stay private/);
   assert.match(polish,/privacy\.html/);
   assert.match(polish,/terms\.html/);
+  assert.match(polish,/polishOperationalSummaries/);
+  assert.match(polish,/Active Classes/);
+  assert.match(polish,/Open learning requests/);
+  assert.match(polish,/stripEscapedWhitespaceArtifacts/);
+  assert.match(polish,/replaceChildren\(grid\)/);
   assert.doesNotMatch(polish,/\.rpc\s*\(/);
   assert.doesNotMatch(polish,/supabase/i);
   assert.doesNotMatch(polish,/service_role|sb_secret_/i);
