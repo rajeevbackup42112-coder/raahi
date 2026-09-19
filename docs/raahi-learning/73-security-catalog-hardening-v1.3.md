@@ -74,6 +74,28 @@ Change:
 
 Authenticated RPC behavior remains unchanged and was verified after the migration.
 
+Runtime proof commit:
+
+`486bcb9a9f623358169e347a200d6a3954e8284f`
+
+DEV E2E Harness run:
+
+[35445058520](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35445058520)
+
+Artifact:
+
+- id: `10585212464`
+- digest: `sha256:01569e57692c22c143cb6f70b78bfa3198cb7849e33a508e1f7dd44b2aa00ed6`
+
+The artifact reports:
+
+- `exact_dev_commit_deployed = true`;
+- `deferred_anonymous_location_rpc_denied = true`;
+- unauthenticated identity-factory rejection still passes;
+- four genuine Supabase sessions still pass;
+- authorized learner read / unrelated RLS denial still passes;
+- four isolated browser sign-ins still pass.
+
 The existing `public.locations` reference table still has an anonymous SELECT policy for non-retired Location reference rows. That exposes only the bounded Location directory/reference data and does not enable anonymous marketplace discovery, Enquiry, Class, messaging or private data.
 
 ## 4. Runtime regression guard
@@ -121,7 +143,14 @@ That Auth setting remains unresolved.
 
 Performance Advisor continues to report only unused-index informational findings. The previous unindexed-foreign-key findings remain closed by migration 1032.
 
-## 8. Remaining security/production gates
+## 8. Current migration / advisor anchor
+
+- DEV migration ceiling: `20260919131110 / 1033_v13_deferred_anonymous_location_rpc_acl`.
+- Security Advisor: one warning, `auth_leaked_password_protection`.
+- Performance Advisor: unused-index informational findings only.
+- No public-launch authorization.
+
+## 9. Remaining security/production gates
 
 This catalog pass does not close:
 
