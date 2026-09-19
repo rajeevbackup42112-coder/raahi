@@ -1,0 +1,109 @@
+name: Raahi Learning Production-Like Load
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type PRODUCTION_LIKE_ISOLATED"
+        required: true
+        type: string
+      expected_project_ref:
+        description: "Exact isolated Learning Supabase project ref"
+        required: true
+        type: string
+      origin:
+        description: "Exact HTTPS production-like Learning origin"
+        required: true
+        type: string
+      concurrency:
+        description: "Concurrent workers"
+        required: true
+        default: "20"
+        type: string
+      duration_seconds:
+        description: "Load duration in seconds"
+        required: true
+        default: "300"
+        type: string
+      max_error_rate:
+        description: "Optional max error rate, e.g. 0.01"
+        required: false
+        default: ""
+        type: string
+      max_p95_ms:
+        description: "Optional max operation p95 in milliseconds"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raahi-learning-production-like-load
+  cancel-in-progress: false
+
+jobs:
+  guarded-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      RAAHI_LOAD_CONFIRM_TARGET: ${{ inputs.confirmation }}
+      RAAHI_LOAD_EXPECTED_PROJECT_REF: ${{ inputs.expected_project_ref }}
+      RAAHI_LOAD_ORIGIN: ${{ inputs.origin }}
+      RAAHI_LOAD_CONCURRENCY: ${{ inputs.concurrency }}
+      RAAHI_LOAD_DURATION_SECONDS: ${{ inputs.duration_seconds }}
+      RAAHI_LOAD_MAX_ERROR_RATE: ${{ inputs.max_error_rate }}
+      RAAHI_LOAD_MAX_P95_MS: ${{ inputs.max_p95_ms }}
+      RAAHI_LOAD_SUPABASE_URL: ${{ secrets.RAAHI_LEARNING_LOAD_SUPABASE_URL }}
+      RAAHI_LOAD_PUBLISHABLE_KEY: ${{ secrets.RAAHI_LEARNING_LOAD_PUBLISHABLE_KEY }}
+      RAAHI_LOAD_IDENTITIES_JSON: ${{ secrets.RAAHI_LEARNING_LOAD_IDENTITIES_JSON }}
+
+    steps:
+      - name: Fail closed before checkout if target confirmation is wrong
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RAAHI_LOAD_CONFIRM_TARGET" = "PRODUCTION_LIKE_ISOLATED"
+          test -n "$RAAHI_LOAD_EXPECTED_PROJECT_REF"
+          test "$RAAHI_LOAD_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
+          test "$RAAHI_LOAD_EXPECTED_PROJECT_REF" != "hoshprxoyhjyyigxkang"
+          test "$RAAHI_LOAD_ORIGIN" != "https://dev.learning.myraahi.co.in"
+          case "$RAAHI_LOAD_ORIGIN" in
+            https://*) ;;
+            *) exit 1 ;;
+          esac
+          test -n "$RAAHI_LOAD_SUPABASE_URL"
+          test -n "$RAAHI_LOAD_PUBLISHABLE_KEY"
+          test -n "$RAAHI_LOAD_IDENTITIES_JSON"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned load dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Re-run load target guard tests
+        working-directory: tests/raahi-learning-e2e
+        run: node --test production-like-load.test.mjs
+
+      - name: Run read-only production-like load
+        working-directory: tests/raahi-learning-e2e
+        run: node production-like-load.mjs
+
+      - name: Upload sanitized load evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-production-like-load-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-production-like-load/
+          if-no-files-found: warn
+          retention-days: 30
