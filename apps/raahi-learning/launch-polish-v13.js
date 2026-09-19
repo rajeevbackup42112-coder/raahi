@@ -17,6 +17,10 @@
      'Discover teachers and learning options near you. Your Classes and learning history stay private.'],
     ['Your teacher identity and teaching operations.',
      'Manage your teaching profile, opportunities and Classes.'],
+    ['Aggregate/location-scoped operational projection.',
+     'A quick view of learning activity in this Location.'],
+    ['Cross-Location operational summary.',
+     'A quick view of Raahi Learning across active Locations.'],
     ['No Sponsored card is eligible',
      'No sponsored learning opportunities right now'],
     ['Raahi has no eligible education-only Sponsored placement for this surface right now.',
@@ -38,6 +42,71 @@
         const trail=raw.match(/\s*$/)?.[0]||'';
         node.nodeValue=lead+replacements.get(trimmed)+trail;
       }
+    }
+  }
+
+  function stripEscapedWhitespaceArtifacts() {
+    if (!document.body) return;
+    for (const node of [...document.body.childNodes]) {
+      if (node.nodeType !== Node.TEXT_NODE) continue;
+      const compact=String(node.nodeValue||'').replace(/\s/g,'');
+      if (compact && /^(?:\\\\n)+$/.test(compact)) node.remove();
+    }
+  }
+
+  const metricLabels = {
+    accounts:'Accounts',
+    learners:'Learners',
+    locations:'Locations',
+    audit_events:'Audited actions',
+    open_reports:'Open reports',
+    active_classes:'Active Classes',
+    teaching_options:'Learning options',
+    live_ad_placements:'Live sponsored placements',
+    submitted_campaigns:'Submitted campaigns',
+    open_learning_requests:'Open learning requests',
+    published_community_posts:'Community posts',
+  };
+
+  function polishOperationalSummaries() {
+    const candidates=[...document.querySelectorAll('.main code, .main pre')];
+    for (const source of candidates) {
+      if (source.dataset.raahiSummaryPolished === 'true') continue;
+      const raw=(source.textContent||'').trim();
+      if (!raw.startsWith('{') || !raw.endsWith('}')) continue;
+      let data;
+      try { data=JSON.parse(raw); } catch (_) { continue; }
+      if (!data || Array.isArray(data) || typeof data !== 'object') continue;
+
+      const rows=Object.entries(data)
+        .filter(([key,value]) => key !== 'location_id' && metricLabels[key] && (typeof value === 'number' || typeof value === 'string'));
+
+      if (!rows.length) continue;
+
+      const grid=document.createElement('div');
+      grid.dataset.raahiSummaryPolished='true';
+      grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;width:100%;';
+
+      for (const [key,value] of rows) {
+        const metric=document.createElement('div');
+        metric.style.cssText='background:#fff;border:1px solid #e6e8f0;border-radius:14px;padding:14px 16px;min-width:0;';
+        const valueEl=document.createElement('div');
+        valueEl.style.cssText='font-size:26px;font-weight:800;line-height:1.15;color:#17213c;';
+        valueEl.textContent=String(value);
+        const label=document.createElement('div');
+        label.style.cssText='margin-top:5px;font-size:13px;line-height:1.35;color:#667085;';
+        label.textContent=metricLabels[key];
+        metric.append(valueEl,label);
+        grid.appendChild(metric);
+      }
+
+      const container=source.closest('.notice') || source.parentElement;
+      if (!container) continue;
+      container.dataset.raahiSummaryPolished='true';
+      container.style.background='transparent';
+      container.style.border='0';
+      container.style.padding='0';
+      container.replaceChildren(grid);
     }
   }
 
@@ -64,7 +133,9 @@
   let scheduled=false;
   function polish(){
     scheduled=false;
+    stripEscapedWhitespaceArtifacts();
     friendlyText();
+    polishOperationalSummaries();
     ensurePublicLinks();
   }
   function schedule(){
