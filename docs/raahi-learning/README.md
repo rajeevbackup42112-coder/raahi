@@ -152,7 +152,7 @@ Proven in DEV now includes:
 - guarded manual production-like load harness/workflow with explicit target binding and forbidden-project tests;
 - guarded logical DB and non-destructive Storage backup scripts with restore-not-proven markers.
 
-Remaining production-readiness gates are intentionally separate from product redesign:
+Autonomous non-destructive preparation is now complete through docs 74–75. Remaining production-readiness gates are intentionally separate from product redesign and require isolated infrastructure and/or user-held configuration:
 
 1. production-like load/soak/capacity testing against expected pilot traffic and production-like compute;
 2. production monitoring, alert delivery and escalation ownership;
