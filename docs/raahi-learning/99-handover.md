@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, SE-01 through SE-08, post-SE-08 combined regression, and the bounded Class race/recovery/shared-browser gate are proven in DEV. The current exact deployed browser anchor is `d0232c4fdb9410d4902063740974b7110da59473`; DEV migration ceiling is `1032_v13_invitation_acceptance_fk_indexes`. Broader realistic load/soak, monitoring/incident response, DB+Storage recovery, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–70.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, SE-01 through SE-08, post-SE-08 combined regression, and the bounded Class race/recovery/shared-browser gate are proven in DEV. The bounded recovery/shared-browser product proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. The current deployed DEV artifact is `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`; its only source diff from `d0232c4...` is migration 1032, and exact-build DEV E2E passed. DEV migration ceiling is `1032_v13_invitation_acceptance_fk_indexes`. Broader realistic load/soak, monitoring/incident response, DB+Storage recovery, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–70.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -174,8 +174,9 @@ Current exact state:
 - all side-effect gaps SE-01 through SE-08 are closed;
 - doc 68 remains the 15-suite post-SE-08 combined-regression anchor on `a9f7ae5...`;
 - stronger committed-response recovery and stale-session proof passed at `ccb1721...`;
-- exact deployed DEV browser commit is `d0232c4fdb9410d4902063740974b7110da59473`;
+- bounded recovery/shared-browser product proof commit is `d0232c4fdb9410d4902063740974b7110da59473`;
 - exact-SHA Model Tests, Class Race Recovery, DEV E2E Harness and UI Convergence Core all passed for `d0232c4...`;
+- current deployed DEV artifact is `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`; only migration 1032 differs from `d0232c4...`, and DEV E2E run `35441874762` passed exact-build verification;
 - the shared-browser flow now proves persisted-session reload, cross-tab sign-out privacy, second-Account sign-in and rejection of the first Account's copied private Class-thread link;
 - private Class-thread cache is account/session isolated and guarded against late responses from a previous session;
 - release packaging has offline guard tests but is not a production qualification;
@@ -216,4 +217,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `70-recovery-private-cache-release-readiness-v1.3.md`, `69-class-race-recovery-proof-v1.3.md`, `68-post-se08-combined-regression-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Do a read-only verification of branch head, deployed DEV build-meta, migration ceiling, Edge Function version and latest CI. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression or the bounded recovery/shared-browser proof. Current deployed browser anchor is `d0232c4...`; DEV migration ceiling is 1032. Continue at broader reliability/load, monitoring/incident response, backup/restore and rollback/forward-fix readiness. Keep periodic same-phone provider smoke separate for user-held Google/SMS authentication. No public deployment; no fake OTP; no weakening RLS.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `70-recovery-private-cache-release-readiness-v1.3.md`, `69-class-race-recovery-proof-v1.3.md`, `68-post-se08-combined-regression-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Do a read-only verification of branch head, deployed DEV build-meta, migration ceiling, Edge Function version and latest CI. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression or the bounded recovery/shared-browser proof. Bounded recovery/shared-browser product proof anchor is `d0232c4...`; current deployed DEV artifact is `945bdf9...` with only migration 1032 added, and DEV E2E passed exact-build verification. DEV migration ceiling is 1032. Continue at broader reliability/load, monitoring/incident response, backup/restore and rollback/forward-fix readiness. Keep periodic same-phone provider smoke separate for user-held Google/SMS authentication. No public deployment; no fake OTP; no weakening RLS.
