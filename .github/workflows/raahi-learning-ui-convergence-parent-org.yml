@@ -6,6 +6,7 @@ on:
       - raahi-learning-implementation-v1
     paths:
       - 'apps/raahi-learning/live-product-fix-v13.js'
+      - 'apps/raahi-learning/launch-polish-v13.js'
       - 'supabase/functions/dev-test-identities/**'
       - 'tests/raahi-learning-e2e/ui-convergence-parent-org.mjs'
       - '.github/workflows/raahi-learning-ui-convergence-parent-org.yml'
