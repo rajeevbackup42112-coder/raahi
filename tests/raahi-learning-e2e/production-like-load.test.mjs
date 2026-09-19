@@ -5,6 +5,7 @@ import {parseLoadConfig,summarizeSamples} from './production-like-load.mjs';
 const BASE={
   RAAHI_LOAD_CONFIRM_TARGET:'PRODUCTION_LIKE_ISOLATED',
   RAAHI_LOAD_SUPABASE_URL:'https://abcdefghijklmnopqrst.supabase.co',
+  RAAHI_LOAD_EXPECTED_PROJECT_REF:'abcdefghijklmnopqrst',
   RAAHI_LOAD_PUBLISHABLE_KEY:'sb_publishable_example',
   RAAHI_LOAD_ORIGIN:'https://learning.example.test',
   RAAHI_LOAD_IDENTITIES_JSON:JSON.stringify([
@@ -30,6 +31,10 @@ test('accepts an explicitly confirmed isolated managed target',()=>{
 test('requires exact destructive-load confirmation phrase',()=>{
   rejects({RAAHI_LOAD_CONFIRM_TARGET:''},/MISSING_RAAHI_LOAD_CONFIRM_TARGET/);
   rejects({RAAHI_LOAD_CONFIRM_TARGET:'yes'},/LOAD_TARGET_NOT_EXPLICITLY_CONFIRMED/);
+});
+
+test('binds the typed expected ref to the actual Supabase URL',()=>{
+  rejects({RAAHI_LOAD_EXPECTED_PROJECT_REF:'differentprojectref'},/LOAD_PROJECT_REF_MISMATCH/);
 });
 
 test('forbids Raahi Learning DEV project and DEV origin',()=>{
