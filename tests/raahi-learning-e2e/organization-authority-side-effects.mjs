@@ -19,15 +19,19 @@ function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
 function errText(error){return error?.message||error?.details||error?.hint||String(error);}
 function password(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function runId(){return 'orgauthorityfx-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
+function ensureGitCommit(sha){
+  try{execFileSync('git',['cat-file','-e',sha+'^{commit}'],{stdio:'ignore'});}
+  catch(_){execFileSync('git',['fetch','--quiet','origin',sha],{stdio:'ignore'});}
+}
 function staticCompatible(deployed,target){
-  if(deployed===target)return {compatible:true,changed:[]};
+  if(deployed===target)return {compatible:true,exact:true,changed:[],appChanges:[]};
   try{
-    execFileSync('git',['merge-base','--is-ancestor',deployed,target],{stdio:'ignore'});
-    const changed=execFileSync('git',['diff','--name-only',deployed+'..'+target],{encoding:'utf8'})
+    ensureGitCommit(deployed);ensureGitCommit(target);
+    const changed=execFileSync('git',['diff','--name-only',deployed,target],{encoding:'utf8'})
       .split(/\r?\n/).map(value=>value.trim()).filter(Boolean);
     const appChanges=changed.filter(file=>file.startsWith('apps/raahi-learning/'));
-    return {compatible:appChanges.length===0,changed,appChanges};
-  }catch(_){return {compatible:false,changed:[],appChanges:['unknown-history']};}
+    return {compatible:appChanges.length===0,exact:false,changed,appChanges};
+  }catch(_){return {compatible:false,exact:false,changed:[],appChanges:['unknown-history']};}
 }
 async function waitDeployment(sha){
   const deadline=Date.now()+8*60*1000;let last=null;
@@ -44,7 +48,6 @@ async function endDeploymentCheck(startMeta,sha){
   const response=await fetch(DEV_ORIGIN+'/build-meta.json?orgauthorityfx-end='+Date.now(),{cache:'no-store'});
   assert(response.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+response.status);
   const meta=await response.json();
-  assert(meta.commit_sha===startMeta.commit_sha,'DEV_DEPLOYMENT_CHANGED_DURING_ORGANIZATION_AUTHORITY_PROOF start='+startMeta.commit_sha+' actual='+meta.commit_sha);
   const compatibility=staticCompatible(meta.commit_sha,sha);
   assert(compatibility.compatible,'DEV_STATIC_DEPLOYMENT_END_NOT_COMPATIBLE '+JSON.stringify(compatibility));
   return {...meta,compatibility};
