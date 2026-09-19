@@ -194,21 +194,29 @@ Current exact state:
 - the two former unindexed-FK advisor findings are closed; unused-index informational notices remain and must not be treated as automatic removal instructions;
 - Supabase Security Advisor still reports `auth_leaked_password_protection` disabled;
 - `dev-test-identities` remains ACTIVE at version 16;
+- guarded production-like load harness + manual-only workflow are prepared and reject both existing Supabase projects;
+- guarded non-DEV production canary is prepared;
+- database and Storage backup scripts are prepared with secret-free manifests and restore_verified=false;
+- recovery inventory script executed successfully on DEV at migration 1033 and provides the source baseline for future restore comparison;
+- current Supabase cost quote: branch USD 0.01344/hour; new project USD 0/month; no resource has been created because explicit cost confirmation is required;
+- Supabase Dashboard read-only inspection is blocked by expired browser authentication/hCaptcha; no setting was changed;
 - no dedicated Learning production Supabase project has been selected;
 - no public deployment is authorized.
 
 Next autonomous gates:
 
-1. keep release/readiness evidence and health/advisor checks current;
-2. inspect any further security/configuration findings that can be resolved without weakening product rules;
-3. keep the manual load/backup/restore tooling and guard tests green.
-
-Production-like load and backup/restore tooling is now prepared and guarded in doc 74. Actual execution requires an isolated Learning target and real environment inputs.
-
-The remaining **real** load/soak/capacity test must use production-like compute and an expected pilot traffic model; the actual database+Storage restore rehearsal needs an isolated Supabase target. Those are no longer honest DEV-only claims.
+- No further production-readiness claim can be honestly closed using only the current DEV project.
+- Keep CI/advisor/read-only evidence current while external inputs are arranged.
+- Do not create a branch/project or spend money without explicit cost confirmation.
+- Do not relabel DEV or the ride project as production-like infrastructure.
 
 User-controlled gates remain:
 
+- explicit choice/approval of an isolated Learning Supabase branch/project (current quotes: branch USD 0.01344/hour; project USD 0/month);
+- Supabase Dashboard re-authentication for Health Advisors, leaked-password protection, SSL/network/backups/rate-limit/CAPTCHA inspection;
+- RPO/RTO and backup/PITR choice;
+- pilot traffic expectation for meaningful load thresholds;
+- alert/escalation destination;
 - periodic real-provider same-phone SMS trust refresh;
 - leaked-password setting if Dashboard/plan action is required;
 - Learning production Supabase project and any paid backup/security features;
@@ -229,4 +237,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `74-production-like-load-operator-guard-readiness-v1.3.md`, `73-security-catalog-hardening-v1.3.md`, `72-production-operations-monitoring-backup-restore-runbook-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Read-only verify branch head, live `build-meta.json`, migration ceiling, Edge Function version, latest CI and advisors. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression, bounded recovery/shared-browser proof, or the bounded 20-persona/800-read reliability smoke. Stable product-code recovery anchor is `d0232c4...`; do not pin a docs/test-only build-meta SHA as permanent current state. DEV migration ceiling is 1033. Continue only with remaining release-readiness work: operational monitoring/alert wiring, DB+Storage backup/restore preparation, production-like capacity testing when the target exists, security/provider configuration, and production-candidate gates. Keep real same-phone Google/SMS provider smoke separate for user-held authentication. No public deployment; no fake OTP; no weakening RLS.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `74-production-like-load-operator-guard-readiness-v1.3.md`, `73-security-catalog-hardening-v1.3.md`, `72-production-operations-monitoring-backup-restore-runbook-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Read-only verify branch head, live `build-meta.json`, migration ceiling, Edge Function version, latest CI and advisors. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression, bounded recovery/shared-browser proof, or the bounded 20-persona/800-read reliability smoke. Stable product-code recovery anchor is `d0232c4...`; do not pin a docs/test-only build-meta SHA as permanent current state. DEV migration ceiling is 1033. Do not redo autonomous preparation already closed in docs 71–75. The next meaningful actions require an explicitly approved isolated Learning target and/or Rajeev-held dashboard/provider authentication. Continue with restore/load/canary/security/provider gates only after those inputs exist. Keep real same-phone Google/SMS provider smoke separate for user-held authentication. No public deployment; no fake OTP; no weakening RLS.
