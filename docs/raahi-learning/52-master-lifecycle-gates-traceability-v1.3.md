@@ -26,7 +26,7 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | Remaining vertical slices | PROVEN IN DEV | SE-01 through SE-08 closed; see docs 60–67. |
 | Post-SE-08 combined regression | PROVEN IN DEV | All 15 suites passed exact commit a9f7ae5; deployed marker independently verified. See doc 68. |
 | Adversarial / recovery / race testing | PROVEN FOR BOUNDED DEV SCENARIOS | Last-seat race, real committed-response loss/recovery through a fresh client, concurrent same-key replay, stale-session denial, shared-browser account switching and private-cache isolation all pass. This is not production load certification. See docs 69–70. |
-| Reliability / load / security / launch | ACTIVE — BOUNDED DEV RELIABILITY + CATALOG SECURITY PASS | 20 genuine personas, 800 authenticated reads, cross-account denial and 20 browser sign-ins passed with no latency warnings. DB health and migration-1032 rollback/recreate rehearsal are proven. Migration 1033 removes deferred-anonymous RPC grants; catalog audit reports no missing public RLS, public views/SECURITY DEFINER RPCs, PUBLIC/anon RPC execute grants, direct authenticated operational DML, or unsafe auth metadata patterns. Production capacity/soak, operational alerting, DB+Storage restore, leaked-password setting, provider smoke and production infrastructure remain open. See docs 71–73. |
+| Reliability / load / security / launch | ACTIVE — BOUNDED DEV RELIABILITY + CATALOG SECURITY PASS | 20 genuine personas, 800 authenticated reads, cross-account denial and 20 browser sign-ins passed with no latency warnings. DB health and migration-1032 rollback/recreate rehearsal are proven. Migration 1033 removes deferred-anonymous RPC grants; catalog audit reports no missing public RLS, public views/SECURITY DEFINER RPCs, PUBLIC/anon RPC execute grants, direct authenticated operational DML, or unsafe auth metadata patterns. Stage progression now uses the existing Free Learning project through a Gomoh+Dhanbad controlled pilot. Paid production isolation/capacity/restore, operational alerting, leaked-password protection and broader rollout remain deferred until pilot traction. See docs 71–73. |
 
 ## 2. Defect rule
 
@@ -79,7 +79,9 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 9. Resolve or explicitly accept the leaked-password-protection warning before launch.
 9. Guarded manual production-like load workflow and backup scripts are prepared with explicit project separation/target-binding tests; see doc 74.
 10. Guarded production-candidate canary and recovery inventory are prepared; current DEV inventory baseline is captured in doc 75.
-11. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
+11. Approved strategy is now same-project Stage Ready → controlled Gomoh+Dhanbad pilot, with paid production only after traction; see docs 76–77.
+12. Current migration ceiling is `1034_v13_stage_gomoh_location`: Dhanbad `live`, Gomoh `preparing`.
+13. Pilot cutover still requires synthetic cleanup, DEV-writer shutdown, backup, real providers/public origin and explicit go-live approval.
 
 DEV migration ceiling is now `1033_v13_deferred_anonymous_location_rpc_acl`; migration 1032 remains the FK-index performance closure; the two former unindexed-FK advisor findings are closed. Do not remove young-system indexes merely because the DEV unused-index advisor has not observed traffic through them.
 
