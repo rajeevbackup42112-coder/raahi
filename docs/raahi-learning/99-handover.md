@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is `1033_v13_deferred_anonymous_location_rpc_acl`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–74.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is `1033_v13_deferred_anonymous_location_rpc_acl`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–75.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,24 +20,25 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `74-production-like-load-operator-guard-readiness-v1.3.md` — **latest release-readiness checkpoint: guarded manual load workflow + backup/operator guard proof**
-2. `73-security-catalog-hardening-v1.3.md` — security catalog audit, migration 1033 and exact runtime denial proof
-3. `72-production-operations-monitoring-backup-restore-runbook-v1.3.md` — prepared production operations / monitoring / backup / restore runbook; execution proof awaits production-like target
-4. `71-bounded-reliability-observability-recovery-v1.3.md` — bounded reliability, health, rollback rehearsal and recovery boundary
-5. `70-recovery-private-cache-release-readiness-v1.3.md` — bounded recovery/cache/release-packaging closure
-6. `69-class-race-recovery-proof-v1.3.md` — complete bounded race/recovery/shared-browser proof
-7. `68-post-se08-combined-regression-v1.3.md` — all 15 post-SE-08 suites green on a9f7ae5
-8. `67-organization-authority-side-effect-closure-v1.3.md` — latest closed side-effect slice
-9. `46-v1.3-side-effects-matrix-audit.md`
-10. `66-test-correction-side-effect-closure-v1.3.md`
-11. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
-12. `59-exact-build-combined-regression-anchor-v1.3.md` — historical anchor
-13. `52-master-lifecycle-gates-traceability-v1.3.md`
-14. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
-15. `50-dev-test-identity-session-harness-v1.3.md`
-16. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-17. `41-authentication-phone-trust-v1.3.md`
-18. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` — section 8 provider smoke remains open
+1. `75-production-canary-recovery-inventory-readiness-v1.3.md` — **latest release-readiness checkpoint: guarded non-DEV canary + live recovery-inventory baseline**
+2. `74-production-like-load-operator-guard-readiness-v1.3.md` — guarded manual load workflow + backup/operator guard proof
+3. `73-security-catalog-hardening-v1.3.md` — security catalog audit, migration 1033 and exact runtime denial proof
+4. `72-production-operations-monitoring-backup-restore-runbook-v1.3.md` — prepared production operations / monitoring / backup / restore runbook; execution proof awaits production-like target
+5. `71-bounded-reliability-observability-recovery-v1.3.md` — bounded reliability, health, rollback rehearsal and recovery boundary
+6. `70-recovery-private-cache-release-readiness-v1.3.md` — bounded recovery/cache/release-packaging closure
+7. `69-class-race-recovery-proof-v1.3.md` — complete bounded race/recovery/shared-browser proof
+8. `68-post-se08-combined-regression-v1.3.md` — all 15 post-SE-08 suites green on a9f7ae5
+9. `67-organization-authority-side-effect-closure-v1.3.md` — latest closed side-effect slice
+10. `46-v1.3-side-effects-matrix-audit.md`
+11. `66-test-correction-side-effect-closure-v1.3.md`
+12. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
+13. `59-exact-build-combined-regression-anchor-v1.3.md` — historical anchor
+14. `52-master-lifecycle-gates-traceability-v1.3.md`
+15. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+16. `50-dev-test-identity-session-harness-v1.3.md`
+17. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+18. `41-authentication-phone-trust-v1.3.md`
+19. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` — section 8 provider smoke remains open
 
 ## Frozen product rules
 
@@ -225,7 +226,7 @@ User-controlled gates remain:
 - controlled pilot audience;
 - final public-launch approval.
 
-See docs 69–74 for the exact evidence, operational procedure, security catalog proof and remaining boundaries.
+See docs 69–75 for the exact evidence, operational procedure, security catalog proof and remaining boundaries.
 
 ### Defect handling rule
 
@@ -237,4 +238,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `74-production-like-load-operator-guard-readiness-v1.3.md`, `73-security-catalog-hardening-v1.3.md`, `72-production-operations-monitoring-backup-restore-runbook-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Read-only verify branch head, live `build-meta.json`, migration ceiling, Edge Function version, latest CI and advisors. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression, bounded recovery/shared-browser proof, or the bounded 20-persona/800-read reliability smoke. Stable product-code recovery anchor is `d0232c4...`; do not pin a docs/test-only build-meta SHA as permanent current state. DEV migration ceiling is 1033. Do not redo autonomous preparation already closed in docs 71–75. The next meaningful actions require an explicitly approved isolated Learning target and/or Rajeev-held dashboard/provider authentication. Continue with restore/load/canary/security/provider gates only after those inputs exist. Keep real same-phone Google/SMS provider smoke separate for user-held authentication. No public deployment; no fake OTP; no weakening RLS.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `75-production-canary-recovery-inventory-readiness-v1.3.md`, `74-production-like-load-operator-guard-readiness-v1.3.md`, `73-security-catalog-hardening-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Read-only verify branch head, live `build-meta.json`, migration ceiling, Edge Function version, latest CI and advisors. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression, bounded recovery/shared-browser proof, or the bounded 20-persona/800-read reliability smoke. Stable product-code recovery anchor is `d0232c4...`; do not pin a docs/test-only build-meta SHA as permanent current state. DEV migration ceiling is 1033. Do not redo autonomous preparation already closed in docs 71–75. The next meaningful actions require an explicitly approved isolated Learning target and/or Rajeev-held dashboard/provider authentication. Continue with restore/load/canary/security/provider gates only after those inputs exist. Keep real same-phone Google/SMS provider smoke separate for user-held authentication. No public deployment; no fake OTP; no weakening RLS.
