@@ -37,7 +37,7 @@ Companion exact-SHA workflows were also green:
 - DEV E2E Harness [35419424856](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35419424856), artifact `10577096415`, digest `sha256:97c1e315aaa030e5279cbba85b580e680b150ad80205e56bd17903cadd254d6a`;
 - UI Convergence Core [35419424831](https://github.com/rajeevbackup42112-coder/raahi/actions/runs/35419424831), artifact `10577610444`, digest `sha256:5cee64865915ee745a58658a0e4ec897f6cb9e689e801ab264347511b97456b4`.
 
-The DEV harness independently confirmed that the deployed `build-meta` commit was the same exact `d0232c4...`.
+The DEV harness independently confirmed that the deployed `build-meta` commit was the same exact `d0232c4...` for this recovery proof. A later migration-only commit, `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`, subsequently became the current DEV artifact; its only diff from `d0232c4...` is migration 1032, and DEV E2E run `35441874762` passed exact-build verification.
 
 ## Proven behavior
 
