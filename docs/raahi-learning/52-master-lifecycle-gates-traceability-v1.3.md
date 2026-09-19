@@ -93,3 +93,31 @@ Do not restart product discovery or recreate already-proven architecture/databas
 **STAGE READY CLOSED.** Canonical evidence: `80-stage-ready-closeout-v1.3.md`.
 
 Remaining gates are external-provider proof and controlled-pilot cutover only. No Domain/business-rule reopening is implied.
+
+
+## Controlled pilot Google-only trust change — 2026-09-20
+
+Decision record: `81-controlled-pilot-google-only-trust-v1.3.md`.
+
+The first Gomoh + Dhanbad controlled pilot no longer requires phone proof.
+
+Current pilot invariant:
+
+**Authenticated Google identity is sufficient; phone verification must not be requested while `phone_trust_mode=controlled_pilot_google_only`.**
+
+Impact was traced through:
+
+rules → entities/relationships → states → permissions → UI → tests.
+
+No entity/relationship/authority/RLS model changed.
+
+Migration 1037 adds an explicit server-owned, fail-closed trust-mode setting. The existing central phone-trust guard remains in every owning command and resumes enforcement when the setting is returned to `phone_trust_required`.
+
+Release configuration must match server policy:
+
+- controlled pilot: `controlled_pilot_google_only` + provider `disabled`;
+- future dedicated production: `phone_trust_required` by default until a real provider is explicitly proven.
+
+MessageCentral is retired for the pilot and its deployed Edge Function is sealed at version 6.
+
+Fresh Stage regression is required before the post-change baseline can be re-frozen.
