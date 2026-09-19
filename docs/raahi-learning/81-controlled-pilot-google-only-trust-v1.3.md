@@ -259,6 +259,14 @@ Why:
 - current Meta India Authentication pricing observed during review was ₹0.1150 per delivered message at the base tier;
 - no pilot-scale minimum wallet commitment was shown.
 
+Meta test-environment proof already completed:
+
+- a My Raahi Meta developer app was created;
+- the WhatsApp use case was connected to the My Raahi business portfolio;
+- Meta's generated test business number successfully delivered a test WhatsApp message to the user's verified recipient number.
+
+Production setup is intentionally paused before adding a real business number.
+
 Future production setup will likely require:
 
 - dedicated My Raahi business phone number/SIM;
