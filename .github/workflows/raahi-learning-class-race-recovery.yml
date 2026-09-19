@@ -30,6 +30,9 @@ jobs:
       - name: Audit dependencies
         working-directory: tests/raahi-learning-e2e
         run: npm audit --audit-level=high
+      - name: Install Chromium for shared-device recovery
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
       - name: Run concurrent requests and recovery proof
         working-directory: tests/raahi-learning-e2e
         run: node class-race-recovery.mjs

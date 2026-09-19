@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { createClient } from '@supabase/supabase-js';
+import { chromium } from 'playwright';
 
 const DEV_ORIGIN='https://dev.learning.myraahi.co.in';
 const SUPABASE_URL='https://iiwwmqokaeflaenhlyip.supabase.co';
@@ -84,7 +85,7 @@ async function main(){
   assert(process.env.GITHUB_REF==='refs/heads/raahi-learning-implementation-v1','BRANCH_GUARD');
   fs.mkdirSync(ARTIFACT_DIR,{recursive:true});
   const run=runId(),sha=process.env.GITHUB_SHA;
-  const report={proof:'class-race-recovery-v2',run_id:run,commit_sha:sha,checks:[],ids:{},result:'running'};
+  const report={proof:'class-race-recovery-v3',run_id:run,commit_sha:sha,checks:[],ids:{},result:'running'};
   const sessions={};
   try{
     report.deployment=await waitDeployment(sha);
@@ -178,6 +179,40 @@ async function main(){
     const other=await loser.client.from('classes').select('id').eq('id',cls.class_id);
     if(other.error)throw other.error;
     assert(other.data.length===0,'OTHER_LEARNER_CLASS_LEAK');
+    const privateBody='Private shared-device recovery message '+run;
+    const message=await rpc(winner.client,'send_class_learner_message',{p_class_id:cls.class_id,p_learner_id:winner.learner_id,p_body:privateBody,p_idempotency_key:run+'-private-message'});
+    report.ids.message_id=message.message_id;
+    const browser=await chromium.launch({headless:true});
+    try{
+      const context=await browser.newContext();
+      const page=await context.newPage();
+      async function login(tab,actor){
+        await tab.goto(DEV_ORIGIN+'/dev-test-login-v13.html',{waitUntil:'domcontentloaded'});
+        await tab.locator('#email').fill(actor.email);
+        await tab.locator('#password').fill(actor.password);
+        await tab.locator('#signin').click();
+        await tab.waitForURL(u=>u.hash==='#/home',{timeout:30000});
+      }
+      await login(page,winner);
+      const deepLink=DEV_ORIGIN+'/#/class-thread?class_id='+cls.class_id+'&learner_id='+winner.learner_id;
+      await page.goto(deepLink,{waitUntil:'domcontentloaded'});
+      await page.getByText(privateBody,{exact:true}).waitFor({timeout:30000});
+      await page.reload({waitUntil:'domcontentloaded'});
+      await page.getByText(privateBody,{exact:true}).waitFor({timeout:30000});
+      report.checks.push('Private thread recovers after document reload with genuine persisted session');
+      const second=await context.newPage();
+      await second.goto(DEV_ORIGIN+'/#/settings',{waitUntil:'domcontentloaded'});
+      await second.locator('[data-live-signout]').click();
+      await page.waitForURL(u=>u.hash==='#/welcome',{timeout:30000});
+      assert(!(await page.locator('body').innerText()).includes(privateBody),'CROSS_TAB_SIGNOUT_LEAK');
+      await login(second,loser);
+      // Keep the first document alive: it must adopt the new account and reject its old link.
+      await page.goto(deepLink,{waitUntil:'domcontentloaded'});
+      await page.getByText('Class conversation unavailable',{exact:true}).waitFor({timeout:30000});
+      assert(!(await page.locator('body').innerText()).includes(privateBody),'SHARED_DEVICE_OLD_MESSAGE_LEAK');
+      await page.screenshot({path:path.join(ARTIFACT_DIR,'shared-device-denial.png'),fullPage:true});
+      report.checks.push('Shared browser cross-tab signout hides private content; second-account sign-in rejects the old private link');
+    }finally{await browser.close();}
     await rpc(t,'remove_learner_from_class',{p_membership_id:accepted[0].membership_id,p_reason:'DEV stale-session proof',p_idempotency_key:run+'-remove'});
     const after=await winner.client.from('classes').select('id').eq('id',cls.class_id);
     if(after.error)throw after.error;
