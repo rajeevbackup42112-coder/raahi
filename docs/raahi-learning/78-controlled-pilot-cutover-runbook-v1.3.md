@@ -259,7 +259,7 @@ Before public pilot:
 1. create/activate the MessageCentral account;
 2. configure Edge Function secrets directly in Supabase:
    - `MESSAGECENTRAL_CUSTOMER_ID`
-   - `MESSAGECENTRAL_KEY_BASE64`
+   - `MESSAGECENTRAL_PASSWORD`
    - `MESSAGECENTRAL_EMAIL`
 3. never place those values in GitHub/browser/release artifacts;
 4. real-test `phone-trust-messagecentral` with controlled Indian phones;
