@@ -1,7 +1,18 @@
 # Raahi Learning V1.3 — Stage Ready Closeout
 
-Status: **STAGE READY**  
+Status: **HISTORICAL STAGE READY BASELINE — SUPERSEDED BY APPROVED PILOT TRUST CHANGE**  
 Date: 2026-09-19
+
+## Supersession notice
+
+On 2026-09-20 the controlled-pilot trust rule was intentionally changed to **Google-only during the Gomoh + Dhanbad pilot**.
+
+Canonical change record:
+
+`81-controlled-pilot-google-only-trust-v1.3.md`
+
+Migration 1037 and related release/UI changes require a fresh regression closure before Stage Ready is re-frozen. The evidence below remains valid as the pre-change baseline but is not the final launch baseline.
+
 
 This document freezes the evidence boundary immediately before real-provider onboarding and controlled-pilot cutover.
 
