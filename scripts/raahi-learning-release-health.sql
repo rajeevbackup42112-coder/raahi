@@ -64,3 +64,12 @@ where schemaname = 'public'
     'organization_member_invite_accepted_by_idx'
   )
 order by indexname;
+
+
+select
+  'phone_trust_mode' as setting_key,
+  coalesce(
+    (select setting_value from app_private.runtime_settings where setting_key='phone_trust_mode'),
+    '<missing>'
+  ) as setting_value,
+  app_private.phone_trust_enforcement_enabled() as phone_trust_enforcement_enabled;
