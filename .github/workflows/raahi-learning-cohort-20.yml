@@ -27,6 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Guard DEV synthetic writes
+        run: test -f .github/RAAHI_LEARNING_DEV_WRITES_ENABLED
+
       - name: Guard implementation branch
         run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
 
