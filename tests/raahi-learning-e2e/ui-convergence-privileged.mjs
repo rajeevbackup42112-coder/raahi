@@ -164,6 +164,8 @@ async function liveMetrics(page,item){
       title:h1?.textContent?.trim()||'',
       overflow:document.documentElement.scrollWidth>window.innerWidth+1,
       denied:/Switch workspace|does not currently have access|unavailable|NOT_AUTHORIZED/i.test(body),
+      rawOperationalJson:[...document.querySelectorAll('.main code, .main pre')].some(el=>{const t=(el.textContent||'').trim();return t.startsWith('{')&&t.endsWith('}');}),
+      escapedWhitespaceArtifact:[...document.body.childNodes].some(node=>node.nodeType===Node.TEXT_NODE&&String(node.nodeValue||'').includes('\\n')),
       topbar:box('.topbar'),sidebar:box('.sidebar'),main:box('.main'),rightbar:box('.rightbar'),mobileNav:box('.mobile-nav'),
       h1Font:h1?getComputedStyle(h1).fontSize:null,
       bodyBg:getComputedStyle(document.body).backgroundColor
@@ -179,6 +181,8 @@ function compare(gold,live,item){
   if(expectedTitle!==live.title)issues.push('title expected='+JSON.stringify(expectedTitle)+' actual='+JSON.stringify(live.title));
   if(live.overflow)issues.push('horizontal overflow');
   if(live.denied)issues.push('unexpected access/guard page');
+  if(['manager-home','platform-home'].includes(item.route)&&live.rawOperationalJson)issues.push('raw operational JSON visible');
+  if(live.escapedWhitespaceArtifact)issues.push('escaped newline artifact visible');
   if(gold.h1Font!==live.h1Font)issues.push('h1 font '+gold.h1Font+' vs '+live.h1Font);
   if(gold.bodyBg!==live.bodyBg)issues.push('body background mismatch');
   for(const k of ['topbar','sidebar','rightbar','mobileNav'])if(visible(gold[k])!==visible(live[k]))issues.push(k+' visibility mismatch');
