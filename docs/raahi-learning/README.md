@@ -17,17 +17,17 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
 2. [`75-production-canary-recovery-inventory-readiness-v1.3.md`](75-production-canary-recovery-inventory-readiness-v1.3.md) — guarded non-DEV production-candidate canary + live recovery-inventory baseline.
 3. [`74-production-like-load-operator-guard-readiness-v1.3.md`](74-production-like-load-operator-guard-readiness-v1.3.md) — guarded manual production-like load + backup/operator readiness.
-4. [`73-security-catalog-hardening-v1.3.md`](73-security-catalog-hardening-v1.3.md) — catalog-security hardening and runtime ACL proof.
-5. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — production operations, monitoring, backup and restore procedure.
-6. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — bounded reliability, database-health, rollback and recovery-boundary evidence.
-7. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
-8. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
-9. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
-10. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
-11. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
-12. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
-13. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
-14. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
+5. [`73-security-catalog-hardening-v1.3.md`](73-security-catalog-hardening-v1.3.md) — catalog-security hardening and runtime ACL proof.
+6. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — production operations, monitoring, backup and restore procedure.
+7. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — bounded reliability, database-health, rollback and recovery-boundary evidence.
+8. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
+9. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
+10. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
+11. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
+12. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
+13. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
+14. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
+15. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
 
 The older index reference to `31-staging-load-security-chaos-plan-v1.2.md` is not a usable file on this implementation branch; do not treat that ghost reference as current evidence.
 
@@ -153,7 +153,7 @@ Proven in DEV now includes:
 - guarded manual production-like load harness/workflow with explicit target binding and forbidden-project tests;
 - guarded logical DB and non-destructive Storage backup scripts with restore-not-proven markers.
 
-Autonomous non-destructive preparation is now complete through docs 74–75. Remaining production-readiness gates are intentionally separate from product redesign and require isolated infrastructure and/or user-held configuration:
+Autonomous non-destructive preparation is now complete through docs 74–76. Remaining production-readiness gates are intentionally separate from product redesign and require isolated infrastructure and/or user-held configuration:
 
 1. production-like load/soak/capacity testing against expected pilot traffic and production-like compute;
 2. production monitoring, alert delivery and escalation ownership;
