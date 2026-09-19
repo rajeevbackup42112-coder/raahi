@@ -176,13 +176,15 @@ Synthetic-root counts at that snapshot:
 
 Important:
 
-Deleting Auth users alone is insufficient.
+Deleting Auth users alone is insufficient. The current cutover solution is now simpler and rehearsed:
 
-`accounts.auth_user_id` uses `ON DELETE SET NULL`, and many domain tables reference Accounts without cascading deletion. A pilot cleanup must therefore delete synthetic application-domain graph data in dependency order and then remove harness Auth users.
+- `scripts/raahi-learning-pilot-clean-public-domain.sql` resets every application table in `public` except `locations`;
+- the script is fail-closed on schema count, Storage count, reviewed non-harness Auth count and Dhanbad/Gomoh state;
+- the reset was rehearsed in a transaction and rolled back successfully;
+- afterward `tests/raahi-learning-e2e/pilot-delete-harness-auth.mjs` deletes only Auth users marked `raahi_test_harness=true`;
+- the 8 reviewed genuine/non-harness Auth identities are preserved, while their pre-pilot proof-domain rows are intentionally removed by the public reset.
 
-No cleanup has been executed.
-
-The 8 non-harness linked Accounts remain explicitly outside automatic cleanup until they are separately classified at pilot cutover.
+No final cleanup has been executed.
 
 ## 7. CI evidence after strategy/Gomoh changes
 
@@ -216,14 +218,15 @@ Do not remove young-system indexes merely because the advisor has not observed u
 
 Before declaring Stage Ready:
 
-1. complete/rehearse the synthetic-domain cleanup procedure without executing final cleanup;
-2. **CLOSED / PREPARED:** all 17 known synthetic writer workflows now fail closed if `.github/RAAHI_LEARNING_DEV_WRITES_ENABLED` is removed; pilot cutover procedure is doc 78;
-3. verify release packaging/public artifact excludes DEV-only login/proof surfaces;
-4. prepare exact pre-pilot backup + recovery-inventory checklist;
-5. finish the current genuine-session locality proof and verify Gomoh/Dhanbad UI/Location-state presentation;
-6. keep security/regression suites green;
-7. prepare real Google/SMS provider cutover steps;
-8. choose the public pilot origin/domain.
+1. **CLOSED / REHEARSED:** controlled-pilot public-domain cleanup is prepared and rollback-rehearsed; do not execute final cleanup yet;
+2. **CLOSED / PREPARED:** all 17 known synthetic writer workflows fail closed if `.github/RAAHI_LEARNING_DEV_WRITES_ENABLED` is removed;
+3. **CLOSED / PREPARED:** release packaging excludes DEV-only login/proof surfaces and explicitly selects MessageCentral for release phone trust;
+4. **CLOSED / PREPARED:** pre-pilot backup + recovery-inventory procedure exists;
+5. finish the final hosted UI/branding polish and convergence review, including Local Manager / Platform Admin presentation;
+6. keep security/regression suites green after migration 1036;
+7. **PROVIDER SELECTED / REAL CREDENTIAL PROOF OPEN:** MessageCentral VerifyNow; see doc 79;
+8. **DOMAIN SELECTED:** `https://learning.myraahi.co.in`; DNS/public deployment remains a cutover action;
+9. production Google OAuth project/client + real Google/provider smoke remain external cutover gates.
 
 Do not activate Gomoh yet.
 
@@ -237,8 +240,8 @@ At the actual controlled-pilot cutover:
 
 - freeze exact release commit;
 - take DB + Storage backup;
-- classify the 8 non-harness pre-pilot Accounts;
-- execute verified synthetic cleanup;
+- preserve the reviewed 8 genuine/non-harness Auth identities while resetting pre-pilot public-domain data;
+- execute the verified public-domain cleanup and harness Auth deletion;
 - seal DEV identity factory / write-test automation;
 - configure real public Auth/provider settings;
 - configure public origin;
