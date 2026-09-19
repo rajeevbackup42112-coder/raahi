@@ -4,6 +4,7 @@ import { parseCanaryConfig } from './raahi-learning-e2e/production-canary.mjs';
 
 function base(){
   return {
+    RAAHI_CANARY_MODE:'NON_DEV',
     RAAHI_CANARY_CONFIRM_TARGET:'NON_DEV_LEARNING_TARGET',
     RAAHI_CANARY_SUPABASE_URL:'https://abcdefghijklmnopqrst.supabase.co',
     RAAHI_CANARY_EXPECTED_PROJECT_REF:'abcdefghijklmnopqrst',
@@ -60,4 +61,32 @@ test('canary accepts an isolated non-DEV Learning target',()=>{
   const config=parseCanaryConfig(base());
   assert.equal(config.projectRef,'abcdefghijklmnopqrst');
   assert.equal(config.origin,'https://learning.example.test');
+});
+
+
+test('controlled pilot canary allows the existing Learning project only with explicit pilot confirmation and a non-DEV origin',()=>{
+  const env=base();
+  env.RAAHI_CANARY_MODE='CONTROLLED_PILOT';
+  env.RAAHI_CANARY_CONFIRM_TARGET='CONTROLLED_PILOT_SAME_PROJECT';
+  env.RAAHI_CANARY_SUPABASE_URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+  env.RAAHI_CANARY_EXPECTED_PROJECT_REF='iiwwmqokaeflaenhlyip';
+  env.RAAHI_CANARY_ORIGIN='https://learning.myraahi.co.in';
+  const config=parseCanaryConfig(env);
+  assert.equal(config.mode,'CONTROLLED_PILOT');
+  assert.equal(config.projectRef,'iiwwmqokaeflaenhlyip');
+});
+
+test('controlled pilot canary still refuses DEV origin and any other project',()=>{
+  const dev=base();
+  dev.RAAHI_CANARY_MODE='CONTROLLED_PILOT';
+  dev.RAAHI_CANARY_CONFIRM_TARGET='CONTROLLED_PILOT_SAME_PROJECT';
+  dev.RAAHI_CANARY_SUPABASE_URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+  dev.RAAHI_CANARY_EXPECTED_PROJECT_REF='iiwwmqokaeflaenhlyip';
+  dev.RAAHI_CANARY_ORIGIN='https://dev.learning.myraahi.co.in';
+  assert.throws(()=>parseCanaryConfig(dev),/FORBIDDEN_CANARY_ORIGIN/);
+
+  const wrong=base();
+  wrong.RAAHI_CANARY_MODE='CONTROLLED_PILOT';
+  wrong.RAAHI_CANARY_CONFIRM_TARGET='CONTROLLED_PILOT_SAME_PROJECT';
+  assert.throws(()=>parseCanaryConfig(wrong),/PILOT_CANARY_PROJECT_MUST_BE_LEARNING_DEV/);
 });
