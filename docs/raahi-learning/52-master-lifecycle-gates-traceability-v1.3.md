@@ -76,7 +76,8 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 6. Define RPO/RTO, implement off-platform Storage-object backup and perform an isolated database+Storage restore rehearsal. No disposable Supabase branch currently exists.
 7. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
 8. Resolve or explicitly accept the leaked-password-protection warning before launch.
-9. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
+9. Guarded manual production-like load workflow and backup scripts are prepared with explicit project separation/target-binding tests; see doc 74.
+10. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
 
 DEV migration ceiling is now `1033_v13_deferred_anonymous_location_rpc_acl`; migration 1032 remains the FK-index performance closure; the two former unindexed-FK advisor findings are closed. Do not remove young-system indexes merely because the DEV unused-index advisor has not observed traffic through them.
 
