@@ -131,10 +131,14 @@ async function providerSend(phone: string) {
 
 async function providerValidate(verificationId: string, code: string) {
   const { token } = await providerAuthToken();
-  const params = new URLSearchParams({ verificationId, code });
+  const params = new URLSearchParams({
+    verificationId,
+    code,
+    flowType: 'SMS',
+  });
 
   const response = await fetch(`${MC_BASE_URL}/verification/v3/validateOtp?${params.toString()}`, {
-    method: 'GET',
+    method: 'POST',
     headers: { authToken: token, accept: 'application/json' },
   });
   const body = await response.json().catch(() => ({}));
