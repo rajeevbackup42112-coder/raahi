@@ -1,0 +1,61 @@
+name: Raahi Learning Release Reliability Smoke
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'tests/raahi-learning-e2e/release-reliability-smoke.mjs'
+      - '.github/workflows/raahi-learning-release-reliability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: raahi-learning-release-reliability
+  cancel-in-progress: false
+
+jobs:
+  release-reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run bounded release reliability smoke
+        working-directory: tests/raahi-learning-e2e
+        run: node release-reliability-smoke.mjs
+
+      - name: Upload sanitized reliability evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-release-reliability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-release-reliability/
+          if-no-files-found: warn
+          retention-days: 30
