@@ -69,7 +69,7 @@ Integrity anchors:
 
 Supabase DEV: `iiwwmqokaeflaenhlyip`, `ap-south-1`.
 
-V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV (current ceiling `1036_v13_phone_trust_explicit_browser_deny`):
+V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV (current ceiling `1037_v13_controlled_pilot_google_only_trust`):
 
 - `1015_v13_contextual_inbox_and_org_teacher_picker`
 - `1016_v13_learner_self_access_invitations`
