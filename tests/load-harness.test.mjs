@@ -35,12 +35,14 @@ test('binds expected project ref to actual Supabase URL',()=>{
 test('refuses the Raahi Learning DEV project',()=>{
   const env=base();
   env.RAAHI_LOAD_SUPABASE_URL='https://iiwwmqokaeflaenhlyip.supabase.co';
+  env.RAAHI_LOAD_EXPECTED_PROJECT_REF='iiwwmqokaeflaenhlyip';
   assert.throws(()=>parseLoadConfig(env),/FORBIDDEN_LOAD_PROJECT_iiwwmqokaeflaenhlyip/);
 });
 
 test('refuses the separate Where Is My Raahi project',()=>{
   const env=base();
   env.RAAHI_LOAD_SUPABASE_URL='https://hoshprxoyhjyyigxkang.supabase.co';
+  env.RAAHI_LOAD_EXPECTED_PROJECT_REF='hoshprxoyhjyyigxkang';
   assert.throws(()=>parseLoadConfig(env),/FORBIDDEN_LOAD_PROJECT_hoshprxoyhjyyigxkang/);
 });
 
