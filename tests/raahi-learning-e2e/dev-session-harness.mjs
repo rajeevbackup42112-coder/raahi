@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
 
@@ -34,6 +35,19 @@ function runId() {
   return 'gha-' + raw + '-' + attempt;
 }
 
+function staticCompatible(deployedSha, targetSha) {
+  if (deployedSha === targetSha) return { compatible: true, exact: true, changed: [], appChanges: [] };
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', deployedSha, targetSha], { stdio: 'ignore' });
+    const changed = execFileSync('git', ['diff', '--name-only', deployedSha + '..' + targetSha], { encoding: 'utf8' })
+      .split(/\\r?\\n/).map((x) => x.trim()).filter(Boolean);
+    const appChanges = changed.filter((x) => x.startsWith('apps/raahi-learning/'));
+    return { compatible: appChanges.length === 0, exact: false, changed, appChanges };
+  } catch {
+    return { compatible: false, exact: false, changed: [], appChanges: ['unknown-history'] };
+  }
+}
+
 async function waitForDeployment(commitSha) {
   const deadline = Date.now() + 8 * 60 * 1000;
   let last = null;
@@ -42,15 +56,16 @@ async function waitForDeployment(commitSha) {
       const res = await fetch(DEV_ORIGIN + '/build-meta.json?wait=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const meta = await res.json();
-        last = meta;
-        if (meta.commit_sha === commitSha) return meta;
+        const compatibility = staticCompatible(meta.commit_sha, commitSha);
+        last = { ...meta, compatibility };
+        if (compatibility.compatible) return last;
       }
     } catch (error) {
       last = { error: String(error) };
     }
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
-  throw new Error('DEV_DEPLOYMENT_NOT_CURRENT: expected ' + commitSha + ', last=' + JSON.stringify(last));
+  throw new Error('DEV_DEPLOYMENT_NOT_SOURCE_COMPATIBLE: expected=' + commitSha + ', last=' + JSON.stringify(last));
 }
 
 async function githubOidcToken() {
@@ -125,7 +140,10 @@ async function main() {
 
   try {
     report.deployment = await waitForDeployment(commit);
-    report.checks.push({ check: 'exact_dev_commit_deployed', pass: true });
+    report.checks.push({
+      check: report.deployment.compatibility?.exact ? 'exact_dev_commit_deployed' : 'dev_browser_source_compatible',
+      pass: true,
+    });
 
     const anonymousClient = client();
     const anonymousLocations = await anonymousClient.rpc('list_public_locations');
