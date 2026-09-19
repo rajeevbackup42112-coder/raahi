@@ -72,7 +72,7 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product-code proof anchor. Do not pin a documentation/test-only `build-meta` SHA as the permanent deployed product state; read `build-meta.json` at execution time and verify `apps/raahi-learning/` source compatibility.
 3. Preserve the successful bounded release-reliability proof on `10111144a2d00fb28d02a4217c4225a5188673b6` / run `35442347699`: 20 personas, 800 authenticated reads, 20 cross-account denials and 20 browser sign-ins, no latency warnings.
 4. Do not run production-like load until an isolated Learning target and pilot traffic expectation exist; guarded harness/workflow are already prepared in doc 74.
-5. Do not create a branch/project until explicit cost confirmation. Current connector quote: branch USD 0.01344/hour; new project USD 0/month.
+5. Do not create infrastructure until explicit cost confirmation. Current connector quote: branch USD 0.01344/hour; new project USD 0/month. Current Supabase branching guidance makes a branch useful for migration preview but insufficient for the full Auth/Storage/restore/provider gate set, so a dedicated Learning project in `ap-south-1` is the recommended next target.
 6. Turn the doc-71 monitoring design into real alert delivery/escalation when the production environment/channel is selected.
 7. Define RPO/RTO and execute the already-prepared DB+Storage backup/restore procedure against an isolated target; compare `scripts/raahi-learning-recovery-inventory.sql` before/after.
 8. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
