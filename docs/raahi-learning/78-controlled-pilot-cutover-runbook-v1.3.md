@@ -261,7 +261,7 @@ Required public release state:
 
 Before public pilot verify:
 
-1. `public.get_phone_trust_policy()` reports `phone_verification_required=false`;
+1. trusted release-health SQL reports `phone_trust_mode=controlled_pilot_google_only` and `phone_trust_enforcement_enabled=false`;
 2. normal sensitive pilot actions do not route to a phone/OTP screen;
 3. a manually reached phone-check route does not offer OTP sending;
 4. MessageCentral remains sealed and cannot send SMS;
