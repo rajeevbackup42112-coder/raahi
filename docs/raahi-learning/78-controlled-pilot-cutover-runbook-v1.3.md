@@ -265,7 +265,8 @@ Before public pilot verify:
 2. normal sensitive pilot actions do not route to a phone/OTP screen;
 3. a manually reached phone-check route does not offer OTP sending;
 4. MessageCentral remains sealed and cannot send SMS;
-5. no other phone provider is enabled.
+5. no other phone provider is enabled;
+6. remove the retired MessageCentral secrets from Supabase before public cutover, because the sealed function no longer needs them.
 
 This does **not** mark phone trust fresh and does not change role/authority/RLS checks. It temporarily removes phone proof as a prerequisite during the explicit pilot mode.
 
