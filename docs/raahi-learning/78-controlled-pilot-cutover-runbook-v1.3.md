@@ -175,32 +175,40 @@ They may represent:
 
 This is a cutover decision point.
 
-## 7. Synthetic graph cleanup
+## 7. Synthetic public-domain cleanup
 
-Auth deletion alone is insufficient.
+The Stage dataset is synthetic and no real pilot user has entered yet.
 
-`accounts.auth_user_id` uses `ON DELETE SET NULL`.
+Rather than maintaining a fragile dependency-ordered delete graph, the controlled-pilot cutover uses the prepared fail-closed reset:
 
-Many domain tables reference Accounts without cascading delete.
+`scripts/raahi-learning-pilot-clean-public-domain.sql`
 
-Therefore cleanup must:
+The script:
 
-1. take the synthetic inventory;
-2. derive harness Account IDs from the Auth metadata marker;
-3. derive synthetic Learners, Organizations, Teaching Options, Classes and dependent objects from those Accounts;
-4. delete dependent domain rows in safe FK order;
-5. delete harness-root domain rows;
-6. delete harness Accounts;
-7. delete harness Auth users through the Supabase Auth Admin API;
-8. clear harness idempotency data/audit/notifications that are part of the deleted synthetic graph;
-9. verify no harness Auth marker remains;
-10. verify no Account points to a harness Auth user;
-11. verify no synthetic-root domain row remains;
-12. rerun recovery inventory and security catalog audit.
+- requires an exact transaction-local confirmation string;
+- refuses schema drift from the reviewed public-table count;
+- requires exactly the reviewed non-harness Auth-user count;
+- requires Storage object count = 0;
+- requires Dhanbad=`live`;
+- requires Gomoh=`preparing`;
+- truncates every current application table in `public` **except `public.locations`**;
+- includes `public.phone_trust_challenges`;
+- verifies all non-Location public application tables are empty before the operator commits.
 
-The final deletion SQL/API sequence must be dry-run/rehearsed before execution.
+The reset was rehearsed inside a transaction and rolled back successfully.
 
-Do not execute the cleanup during Stage.
+After the public-domain reset:
+
+1. preserve the reviewed genuine/non-harness Auth identities;
+2. delete only Auth users whose authoritative metadata has `raahi_test_harness = true` using:
+   `tests/raahi-learning-e2e/pilot-delete-harness-auth.mjs`;
+3. verify zero harness Auth users remain;
+4. verify the genuine Auth-user count did not change;
+5. rerun recovery inventory and Security Advisor.
+
+The preserved genuine Auth identities intentionally lose their pre-pilot proof-domain rows with the public reset. On a later genuine sign-in they can bootstrap fresh Raahi application state rather than carrying proof content into the pilot.
+
+Do not execute final cleanup during Stage.
 
 ## 8. Public artifact cutover
 
@@ -224,14 +232,45 @@ Pilot production direction remains:
 
 **Google sign-in → Raahi Account → periodic phone trust when required.**
 
+### Google
+
 Before public pilot:
 
-- configure the public Google OAuth redirect/origin;
+- create/configure the production Google OAuth client/project according to current Google production guidance;
+- use the final public Learning origin/redirect;
 - confirm real Google sign-in on the public origin;
-- configure real SMS provider / phone verification path;
-- confirm same-phone trust behavior;
 - ensure the public UI does not expose password-based DEV login;
 - review Supabase Auth signup/provider settings.
+
+### Phone trust — MessageCentral VerifyNow
+
+Selected pilot provider:
+
+**MessageCentral VerifyNow**
+
+Canonical integration detail:
+
+`docs/raahi-learning/79-messagecentral-phone-trust-provider-v1.3.md`
+
+The release artifact is already configured to use `phoneTrustProvider: 'messagecentral'`.
+
+Before public pilot:
+
+1. create/activate the MessageCentral account;
+2. configure Edge Function secrets directly in Supabase:
+   - `MESSAGECENTRAL_CUSTOMER_ID`
+   - `MESSAGECENTRAL_KEY_BASE64`
+   - `MESSAGECENTRAL_EMAIL`
+3. never place those values in GitHub/browser/release artifacts;
+4. real-test `phone-trust-messagecentral` with controlled Indian phones;
+5. confirm wrong-code rejection;
+6. confirm correct MessageCentral verification updates Supabase Auth phone + `phone_confirmed_at`;
+7. confirm `get_my_phone_trust().state='fresh'`;
+8. confirm the originally blocked sensitive action resumes;
+9. confirm send and verify rate limits;
+10. confirm ordinary Google/learning flows remain available if the SMS provider is unavailable.
+
+MessageCentral owns OTP generation/validation. Supabase Auth remains the source of truth for the confirmed phone and the frozen 90-day freshness rule.
 
 Leaked-password protection remains unavailable on Free and is an explicit pilot limitation.
 
