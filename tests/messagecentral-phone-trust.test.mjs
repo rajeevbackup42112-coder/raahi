@@ -23,6 +23,10 @@ test('MessageCentral bridge owns OTP challenge while Supabase remains phone-trus
 
 test('MessageCentral bridge is authenticated, origin-bounded and rate limited',()=>{
   assert.match(edge,/authorization/);
+  assert.match(edge,/providerProbe/);
+  assert.match(edge,/raahi_test_harness/);
+  assert.match(edge,/PROBE_NOT_ALLOWED/);
+  assert.match(edge,/configured:\s*true/);
   assert.match(edge,/admin\.auth\.getUser/);
   assert.match(edge,/https:\/\/dev\.learning\.myraahi\.co\.in/);
   assert.match(edge,/https:\/\/learning\.myraahi\.co\.in/);
