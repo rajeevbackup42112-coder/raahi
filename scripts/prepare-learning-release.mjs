@@ -42,7 +42,7 @@ files.set('index.html',`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Find local teachers, Classes and learning opportunities with Raahi Learning."><meta name="theme-color" content="#6c5ce7"><title>Raahi Learning</title><link rel="stylesheet" href="./styles.css"></head>
 <body><div id="app"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-<script>window.RAAHI_RELEASE_CONFIG=Object.freeze({phoneTrustProvider:'messagecentral'});</script>
+<script>window.RAAHI_RELEASE_CONFIG=Object.freeze({phoneTrustMode:'controlled_pilot_google_only',phoneTrustProvider:'disabled'});</script>
 <script src="./live.js"></script><script src="./app.live-core-v13.js"></script>
 <script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script>
 </body></html>\n`);
