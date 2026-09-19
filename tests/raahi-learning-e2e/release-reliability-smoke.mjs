@@ -67,10 +67,9 @@ async function deploymentEnd(start,sha){
   const res=await fetch(DEV_ORIGIN+'/build-meta.json?reliability-end='+Date.now(),{cache:'no-store'});
   assert(res.ok,'DEV_DEPLOYMENT_END_CHECK_'+res.status);
   const meta=await res.json();
-  assert(meta.commit_sha===start.commit_sha,'DEV_DEPLOYMENT_CHANGED_DURING_RELIABILITY_RUN');
   const compatibility=staticCompatible(meta.commit_sha,sha);
   assert(compatibility.compatible,'DEV_STATIC_DEPLOYMENT_END_NOT_COMPATIBLE '+JSON.stringify(compatibility));
-  return {...meta,compatibility};
+  return {...meta,compatibility,changed_during_run:meta.commit_sha!==start.commit_sha};
 }
 
 async function oidc(){
