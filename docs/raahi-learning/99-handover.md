@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1037_v13_controlled_pilot_google_only_trust`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1038_v13_remove_public_trust_policy_rpc`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -90,9 +90,7 @@ Server policy:
 
 `phone_trust_mode = controlled_pilot_google_only`
 
-Migration:
-
-`1037_v13_controlled_pilot_google_only_trust`
+Trust-mode migration: `1037_v13_controlled_pilot_google_only_trust`; current migration ceiling: `1038_v13_remove_public_trust_policy_rpc`
 
 The mode is fail-closed: absent or unknown configuration restores phone-trust enforcement.
 
@@ -207,7 +205,7 @@ Current exact state:
 - the shared-browser flow now proves persisted-session reload, cross-tab sign-out privacy, second-Account sign-in and rejection of the first Account's copied private Class-thread link;
 - private Class-thread cache is account/session isolated and guarded against late responses from a previous session;
 - release packaging has offline guard tests but is not a production qualification;
-- DEV migration ceiling is `1037_v13_controlled_pilot_google_only_trust`;
+- DEV migration ceiling is `1038_v13_remove_public_trust_policy_rpc`;
 - migration 1033 removed the unusable anonymous EXECUTE grants from `list_public_locations()` and its private helper, consistent with deferred anonymous marketplace browsing;
 - DEV E2E run `35445058520` on exact commit `486bcb9...` proves `deferred_anonymous_location_rpc_denied`, genuine sessions, RLS allow/deny and browser sign-ins still pass;
 - catalog audit currently finds 0 public tables without RLS, 0 public views, 0 public SECURITY DEFINER RPCs, 0 PUBLIC/anon RPC execute grants, 0 private SECURITY DEFINER PUBLIC/anon execute grants, 0 direct authenticated operational-table DML grants and 0 `auth.role()`/user-metadata authorization patterns;
