@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, SE-01 through SE-08, and post-SE-08 combined regression are proven in DEV. Initial Class race/retry scenarios also pass. Broader adversarial/recovery, reliability/security/load, real-provider smoke and launch gates remain open. See docs 68–69.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, SE-01 through SE-08, post-SE-08 combined regression, and the bounded Class race/recovery/shared-browser gate are proven in DEV. The current exact deployed browser anchor is `d0232c4fdb9410d4902063740974b7110da59473`; DEV migration ceiling is `1032_v13_invitation_acceptance_fk_indexes`. Broader realistic load/soak, monitoring/incident response, DB+Storage recovery, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–70.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,19 +20,20 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `69-class-race-recovery-proof-v1.3.md` — **latest bounded proof, open gates and provider/browser blocker**
-2. `68-post-se08-combined-regression-v1.3.md` — all 15 suites green on a9f7ae5
-3. `67-organization-authority-side-effect-closure-v1.3.md` — latest closed side-effect slice
-4. `46-v1.3-side-effects-matrix-audit.md`
-5. `66-test-correction-side-effect-closure-v1.3.md`
-6. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
-7. `59-exact-build-combined-regression-anchor-v1.3.md` — historical anchor
-8. `52-master-lifecycle-gates-traceability-v1.3.md`
-9. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
-10. `50-dev-test-identity-session-harness-v1.3.md`
-11. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-12. `41-authentication-phone-trust-v1.3.md`
-13. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` — section 8 provider smoke remains open
+1. `70-recovery-private-cache-release-readiness-v1.3.md` — **latest execution closure and release-readiness continuation**
+2. `69-class-race-recovery-proof-v1.3.md` — complete bounded race/recovery/shared-browser proof
+3. `68-post-se08-combined-regression-v1.3.md` — all 15 post-SE-08 suites green on a9f7ae5
+4. `67-organization-authority-side-effect-closure-v1.3.md` — latest closed side-effect slice
+5. `46-v1.3-side-effects-matrix-audit.md`
+6. `66-test-correction-side-effect-closure-v1.3.md`
+7. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
+8. `59-exact-build-combined-regression-anchor-v1.3.md` — historical anchor
+9. `52-master-lifecycle-gates-traceability-v1.3.md`
+10. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+11. `50-dev-test-identity-session-harness-v1.3.md`
+12. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+13. `41-authentication-phone-trust-v1.3.md`
+14. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` — section 8 provider smoke remains open
 
 ## Frozen product rules
 
@@ -98,7 +99,7 @@ Runtime markers include:
 - `V13_PHONE_TRUST_PROJECTION_PASS`
 - `V13_PHONE_TRUST_COMMAND_GUARDS_PASS`
 
-Security Advisor after 1021: **0 findings**.
+Historical Security Advisor after 1021: **0 findings**. Current DEV Security Advisor on 2026-09-19 reports one Auth warning: leaked-password protection is disabled. It is not resolved; see doc 70.
 
 ## AI Builder v2 internal retrofit closure
 
@@ -166,35 +167,44 @@ ZIP SHA-256:
 
 ## Current execution gate
 
-**Resume at combined regression. Do not redo SE-01 through SE-08.**
+**Resume at release/reliability readiness. Do not redo SE-01 through SE-08, combined regression, or the bounded Class race/recovery/shared-browser proof.**
 
 Current exact state:
 
-- migrations applied through `1031_v13_organization_authority_side_effects`;
-- SE-01/02 closed in doc 60;
-- SE-03 closed in doc 61;
-- SE-04 closed in doc 62;
-- SE-05 closed in doc 63;
-- SE-06 closed in doc 64;
-- SE-07 is closed by migration 1030 and doc 66;
-- SE-08A capability change and SE-08B member removal are closed by migration 1031 and doc 67;
-- Organization notifications are generic and carry only `organization_id` plus `organization_member_id`;
-- notification Open refreshes current Account context and re-enters the ordinary authorized Organization workspace RPC;
-- a removed member is immediately denied the former workspace and the stale signed-in browser fails safely;
-- isolated `sidefx_org` personas plus protected `inspect_organization_authority_audit` exist in `dev-test-identities`;
-- Supabase Edge Function `dev-test-identities` version 16 is active;
-- final SE-08 run `35350835314` passed at exact deployed commit `92608284f...`;
-- final artifact digest: `sha256:571620b89ad467da0ffa8d5c0b26ae88d51913837833412f1fecd41562c1dc94`;
-- doc 46 now marks every side-effect gap SE-01 through SE-08 PASS;
-- the next execution gate is combined regression, followed by adversarial/recovery/race testing.
+- all side-effect gaps SE-01 through SE-08 are closed;
+- doc 68 remains the 15-suite post-SE-08 combined-regression anchor on `a9f7ae5...`;
+- stronger committed-response recovery and stale-session proof passed at `ccb1721...`;
+- exact deployed DEV browser commit is `d0232c4fdb9410d4902063740974b7110da59473`;
+- exact-SHA Model Tests, Class Race Recovery, DEV E2E Harness and UI Convergence Core all passed for `d0232c4...`;
+- the shared-browser flow now proves persisted-session reload, cross-tab sign-out privacy, second-Account sign-in and rejection of the first Account's copied private Class-thread link;
+- private Class-thread cache is account/session isolated and guarded against late responses from a previous session;
+- release packaging has offline guard tests but is not a production qualification;
+- DEV migration ceiling is `20260919120454 / 1032_v13_invitation_acceptance_fk_indexes`;
+- the two former unindexed-FK advisor findings are closed; unused-index informational notices remain and must not be treated as automatic removal instructions;
+- Supabase Security Advisor still reports `auth_leaked_password_protection` disabled;
+- `dev-test-identities` remains ACTIVE at version 16;
+- no dedicated Learning production Supabase project has been selected;
+- no public deployment is authorized.
 
-Last product-affecting implementation commit at handover:
+Next autonomous gates:
 
-`1dc6134b28dee570dfde24461132edcdf86858c3`
+1. broader realistic load/soak/capacity testing beyond the bounded 40-request cached-retry burst;
+2. monitoring, alerting and incident-response readiness;
+3. database plus Storage-object backup/recovery targets and restore rehearsal;
+4. migration rollback/forward-fix rehearsal;
+5. any further security findings that can be resolved without weakening product rules.
 
-The authoritative final run verified the DEV static artifact serving exact commit `92608284f22c68d68b69b6dc7a28d077e08818ed`; commits after `1dc6134...` through that SHA hardened only the proof runner. Documentation-only handover commits may advance the Git branch without requiring a new Cloudflare product build; inspect the branch read-only before resuming.
+User-controlled gates remain:
 
-The latest closure evidence is in doc 67. Continue from the combined-regression gate; docs 65 and 66 are historical predecessor context.
+- periodic real-provider same-phone SMS trust refresh;
+- leaked-password setting if Dashboard/plan action is required;
+- Learning production Supabase project and any paid backup/security features;
+- final production domain;
+- production Google OAuth/SMS/redirect/secrets;
+- controlled pilot audience;
+- final public-launch approval.
+
+See docs 69–70 for the exact evidence and remaining boundaries.
 
 ### Defect handling rule
 
@@ -206,4 +216,4 @@ Do not modify frozen business rules merely to turn a failing test green.
 
 ## Recommended continuation prompt
 
-> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `67-organization-authority-side-effect-closure-v1.3.md`, `59-exact-build-combined-regression-anchor-v1.3.md`, and `46-v1.3-side-effects-matrix-audit.md`. Do a read-only verification of branch head, DEV build-meta, migration ceiling, Edge Function version/content and latest CI. Do NOT restart planning, Auth, R4, UI convergence, or SE-01 through SE-08. SE-08 is closed by run `35350835314` at exact deployed commit `92608284f...`. Continue at combined regression, then adversarial/recovery/race testing. No public deployment; no fake OTP; no browser injection.
+> Continue Raahi Learning V1.3 from the exact handover state. Repo: `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase DEV `iiwwmqokaeflaenhlyip`. First read `docs/raahi-learning/99-handover.md`, `70-recovery-private-cache-release-readiness-v1.3.md`, `69-class-race-recovery-proof-v1.3.md`, `68-post-se08-combined-regression-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`. Do a read-only verification of branch head, deployed DEV build-meta, migration ceiling, Edge Function version and latest CI. Do NOT restart planning, Auth, R4, UI convergence, SE-01 through SE-08, combined regression or the bounded recovery/shared-browser proof. Current deployed browser anchor is `d0232c4...`; DEV migration ceiling is 1032. Continue at broader reliability/load, monitoring/incident response, backup/restore and rollback/forward-fix readiness. Keep periodic same-phone provider smoke separate for user-held Google/SMS authentication. No public deployment; no fake OTP; no weakening RLS.
