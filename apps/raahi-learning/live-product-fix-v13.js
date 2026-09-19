@@ -33,6 +33,15 @@
       return data;
     }
 
+    const phoneTrustProvider = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustProvider || 'supabase');
+
+    async function messageCentralPhoneTrust(body) {
+      const { data, error } = await live.client.functions.invoke('phone-trust-messagecentral', { body });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || 'Phone verification failed.');
+      return data;
+    }
+
     function savePendingAction(action) {
       sessionStorage.setItem(PENDING_ACTION_KEY, JSON.stringify(action));
     }
@@ -161,6 +170,22 @@
 
     async function sendPhoneOtp() {
       const trust = live.__phoneTrustV13 || await rpc('get_my_phone_trust');
+
+      if (phoneTrustProvider() === 'messagecentral') {
+        let phone = null;
+        if (!trust.has_phone) {
+          phone = document.querySelector('#live-fix-phone')?.value?.trim();
+          if (!/^\+91[6-9]\d{9}$/.test(phone || '')) throw new Error('Enter a valid Indian mobile number in +91 format.');
+        }
+        const sent = await messageCentralPhoneTrust({ action:'send', ...(phone ? { phone } : {}) });
+        sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({
+          provider:'messagecentral',
+          challenge_id:sent.challenge_id,
+        }));
+        api.toast('Verification code sent','success');
+        return;
+      }
+
       if (trust.has_phone) {
         const { data: userData, error: userError } = await live.client.auth.getUser();
         if (userError) throw userError;
@@ -169,13 +194,13 @@
         const e164 = phone.startsWith('+') ? phone : `+${phone}`;
         const { error } = await live.client.auth.signInWithOtp({ phone: e164, options: { shouldCreateUser: false } });
         if (error) throw error;
-        sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ phone:e164, type:'sms' }));
+        sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ provider:'supabase', phone:e164, type:'sms' }));
       } else {
         const phone = document.querySelector('#live-fix-phone')?.value?.trim();
         if (!/^\+[1-9]\d{7,14}$/.test(phone || '')) throw new Error('Enter a valid E.164 phone number including + and country code.');
         const { error } = await live.client.auth.updateUser({ phone });
         if (error) throw error;
-        sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ phone, type:'phone_change' }));
+        sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ provider:'supabase', phone, type:'phone_change' }));
       }
       api.toast('Verification code sent','success');
     }
@@ -184,9 +209,18 @@
       const token = document.querySelector('#live-fix-phone-otp')?.value?.trim();
       if (!token) throw new Error('Enter the verification code.');
       const flow = JSON.parse(sessionStorage.getItem(PHONE_FLOW_KEY) || 'null');
-      if (!flow?.phone || !flow?.type) throw new Error('Send a verification code first.');
-      const { error } = await live.client.auth.verifyOtp({ phone: flow.phone, token, type: flow.type });
-      if (error) throw error;
+      if (!flow) throw new Error('Send a verification code first.');
+
+      if (flow.provider === 'messagecentral') {
+        if (!flow.challenge_id) throw new Error('Send a verification code first.');
+        await messageCentralPhoneTrust({ action:'verify', challenge_id:flow.challenge_id, code:token });
+        await live.client.auth.refreshSession().catch(() => {});
+      } else {
+        if (!flow.phone || !flow.type) throw new Error('Send a verification code first.');
+        const { error } = await live.client.auth.verifyOtp({ phone: flow.phone, token, type: flow.type });
+        if (error) throw error;
+      }
+
       sessionStorage.removeItem(PHONE_FLOW_KEY);
       live.__phoneTrustV13 = await rpc('get_my_phone_trust');
       if (live.__phoneTrustV13?.state !== 'fresh') throw new Error('Phone proof completed but trust is not fresh.');
