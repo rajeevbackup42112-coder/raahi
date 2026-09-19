@@ -25,8 +25,8 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | UI / interaction convergence | PROVEN FOR V1.3 WORKSPACE SURFACES | Core learner/teacher, managed-parent/Organization, Local Manager/Platform Admin, Raahi Ads, and bounded Organization staff capability surfaces are proven. See docs 54–58. |
 | Remaining vertical slices | PROVEN IN DEV | SE-01 through SE-08 closed; see docs 60–67. |
 | Post-SE-08 combined regression | PROVEN IN DEV | All 15 suites passed exact commit a9f7ae5; deployed marker independently verified. See doc 68. |
-| Adversarial / recovery / race testing | ACTIVE / PARTIAL | Last-seat invitation competition, duplicate acceptance and cached-response retry passed with independent audit/notification counts. See doc 69. Broader stale-trust, shared-device and recovery coverage remains open. |
-| Reliability / load / security / launch | QUEUED | No public launch claim until these gates pass. |
+| Adversarial / recovery / race testing | PROVEN FOR BOUNDED DEV SCENARIOS | Last-seat race, real committed-response loss/recovery through a fresh client, concurrent same-key replay, stale-session denial, shared-browser account switching and private-cache isolation all pass. This is not production load certification. See docs 69–70. |
+| Reliability / load / security / launch | ACTIVE | Broader realistic load/soak, monitoring/incident response, DB+Storage recovery, leaked-password setting, provider smoke and production infrastructure remain open. See doc 70. |
 
 ## 2. Defect rule
 
@@ -68,9 +68,14 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. Preserve doc 68 as the post-SE-08 combined regression anchor.
-2. Continue adversarial/recovery coverage from doc 69; do not label one race scenario a completed reliability/load gate.
-3. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
-4. Resolve security findings and complete reliability/load/launch gates before any public launch claim.
+1. Preserve doc 68 as the post-SE-08 combined-regression anchor and docs 69–70 as the bounded recovery/shared-browser closure.
+2. Treat exact deployed browser commit `d0232c4fdb9410d4902063740974b7110da59473` as the current DEV application anchor unless later product code changes require a new build.
+3. Continue with broader realistic load/soak/capacity testing plus monitoring, alerting and incident-response readiness.
+4. Define database and Storage-object recovery targets, backup/export procedures and a real restore rehearsal; separately rehearse migration rollback/forward-fix.
+5. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
+6. Resolve or explicitly accept the leaked-password-protection warning before launch.
+7. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
+
+DEV migration ceiling is now `1032_v13_invitation_acceptance_fk_indexes`; the two former unindexed-FK advisor findings are closed. Do not remove young-system indexes merely because the DEV unused-index advisor has not observed traffic through them.
 
 Do not restart product discovery or recreate already-proven architecture/database work.
