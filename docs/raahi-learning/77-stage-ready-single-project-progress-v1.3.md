@@ -217,10 +217,10 @@ Do not remove young-system indexes merely because the advisor has not observed u
 Before declaring Stage Ready:
 
 1. complete/rehearse the synthetic-domain cleanup procedure without executing final cleanup;
-2. add a deliberate DEV-writer shutdown/seal mechanism for pilot cutover;
+2. **CLOSED / PREPARED:** all 17 known synthetic writer workflows now fail closed if `.github/RAAHI_LEARNING_DEV_WRITES_ENABLED` is removed; pilot cutover procedure is doc 78;
 3. verify release packaging/public artifact excludes DEV-only login/proof surfaces;
 4. prepare exact pre-pilot backup + recovery-inventory checklist;
-5. verify Gomoh/Dhanbad UI and Location-state presentation;
+5. finish the current genuine-session locality proof and verify Gomoh/Dhanbad UI/Location-state presentation;
 6. keep security/regression suites green;
 7. prepare real Google/SMS provider cutover steps;
 8. choose the public pilot origin/domain.
@@ -247,3 +247,18 @@ At the actual controlled-pilot cutover:
 - obtain explicit Rajeev go-live approval.
 
 Only after those steps should real Gomoh/Dhanbad users be admitted.
+
+
+## 11. DEV writer seal preparation
+
+Prepared marker:
+
+`.github/RAAHI_LEARNING_DEV_WRITES_ENABLED`
+
+All 17 known synthetic-mutating DEV workflows now check this marker immediately after checkout.
+
+During Stage the marker remains present.
+
+At Controlled Pilot cutover the marker will be removed and automatic writer triggers sealed in the same reviewed commit. This prevents an accidental old CI workflow from mutating real pilot data.
+
+Exact cutover procedure: doc 78.
