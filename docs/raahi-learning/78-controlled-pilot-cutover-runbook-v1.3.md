@@ -226,11 +226,17 @@ The release artifact must carry exact build metadata and file hashes.
 
 The DEV origin may remain available for historical/engineering evidence, but the controlled-pilot canary must use the separate public pilot origin and refuse `dev.learning.myraahi.co.in`.
 
-## 9. Authentication/provider cutover
+## 9. Authentication cutover
 
-Pilot production direction remains:
+Controlled-pilot authentication direction:
 
-**Google sign-in → Raahi Account → periodic phone trust when required.**
+**Google sign-in → Raahi Account → normal pilot use**
+
+Phone/WhatsApp verification is intentionally deferred for the first controlled Gomoh + Dhanbad pilot.
+
+Canonical decision:
+
+`docs/raahi-learning/81-controlled-pilot-google-only-trust-v1.3.md`
 
 ### Google
 
@@ -242,35 +248,32 @@ Before public pilot:
 - ensure the public UI does not expose password-based DEV login;
 - review Supabase Auth signup/provider settings.
 
-### Phone trust — MessageCentral VerifyNow
+### Pilot trust mode
 
-Selected pilot provider:
+Required server state:
 
-**MessageCentral VerifyNow**
+`phone_trust_mode = controlled_pilot_google_only`
 
-Canonical integration detail:
+Required public release state:
 
-`docs/raahi-learning/79-messagecentral-phone-trust-provider-v1.3.md`
+- `phoneTrustMode = controlled_pilot_google_only`
+- `phoneTrustProvider = disabled`
 
-The release artifact is already configured to use `phoneTrustProvider: 'messagecentral'`.
+Before public pilot verify:
 
-Before public pilot:
+1. `public.get_phone_trust_policy()` reports `phone_verification_required=false`;
+2. normal sensitive pilot actions do not route to a phone/OTP screen;
+3. a manually reached phone-check route does not offer OTP sending;
+4. MessageCentral remains sealed and cannot send SMS;
+5. no other phone provider is enabled.
 
-1. create/activate the MessageCentral account;
-2. configure Edge Function secrets directly in Supabase:
-   - `MESSAGECENTRAL_CUSTOMER_ID`
-   - `MESSAGECENTRAL_PASSWORD`
-   - `MESSAGECENTRAL_EMAIL`
-3. never place those values in GitHub/browser/release artifacts;
-4. real-test `phone-trust-messagecentral` with controlled Indian phones;
-5. confirm wrong-code rejection;
-6. confirm correct MessageCentral verification updates Supabase Auth phone + `phone_confirmed_at`;
-7. confirm `get_my_phone_trust().state='fresh'`;
-8. confirm the originally blocked sensitive action resumes;
-9. confirm send and verify rate limits;
-10. confirm ordinary Google/learning flows remain available if the SMS provider is unavailable.
+This does **not** mark phone trust fresh and does not change role/authority/RLS checks. It temporarily removes phone proof as a prerequisite during the explicit pilot mode.
 
-MessageCentral owns OTP generation/validation. Supabase Auth remains the source of truth for the confirmed phone and the frozen 90-day freshness rule.
+### Post-pilot direction
+
+After traction, preferred additional trust direction is direct Meta WhatsApp Cloud API using Authentication templates.
+
+Re-enabling phone trust is a future reviewed change and is not part of this pilot cutover.
 
 Leaked-password protection remains unavailable on Free and is an explicit pilot limitation.
 
@@ -332,7 +335,7 @@ Only after all sections above pass:
 2. confirm backup completed;
 3. confirm synthetic cleanup completed;
 4. confirm DEV writers + identity factory sealed;
-5. confirm public Google/SMS;
+5. confirm public Google and confirm controlled-pilot Google-only trust policy;
 6. confirm Dhanbad + Gomoh only;
 7. confirm canary green;
 8. explicit Rajeev go-live approval.
