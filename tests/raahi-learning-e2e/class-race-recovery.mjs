@@ -19,7 +19,6 @@ function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
 function errText(error){return error?.message||error?.details||error?.hint||String(error);}
 function password(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function runId(){return 'classrace-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
-function future(hours){return new Date(Date.now()+hours*3600000).toISOString();}
 function staticCompatible(deployed,target){
   if(deployed===target)return {compatible:true,changed:[]};
   try{
@@ -81,10 +80,11 @@ async function bootstrap(supabase,name){
 }
 
 async function main(){
+  assert(new URL(SUPABASE_URL).hostname===PROJECT_REF+'.supabase.co','PROJECT_GUARD');
   assert(process.env.GITHUB_REF==='refs/heads/raahi-learning-implementation-v1','BRANCH_GUARD');
   fs.mkdirSync(ARTIFACT_DIR,{recursive:true});
   const run=runId(),sha=process.env.GITHUB_SHA;
-  const report={proof:'class-race-recovery-v1',run_id:run,commit_sha:sha,checks:[],ids:{},result:'running'};
+  const report={proof:'class-race-recovery-v2',run_id:run,commit_sha:sha,checks:[],ids:{},result:'running'};
   const sessions={};
   try{
     report.deployment=await waitDeployment(sha);
@@ -93,7 +93,7 @@ async function main(){
     for(const spec of ensured.personas){
       const c=client();const {error}=await c.auth.signInWithPassword({email:spec.email,password:passwords[spec.key]});
       if(error)throw error;
-      sessions[spec.key]={client:c,context:await bootstrap(c,'DEV race '+spec.key)};
+      sessions[spec.key]={client:c,email:spec.email,password:passwords[spec.key],context:await bootstrap(c,'DEV race '+spec.key)};
     }
     const t=sessions.teacher.client;
     await rpc(t,'enable_teaching',{p_idempotency_key:run+'-enable'});
@@ -126,20 +126,26 @@ async function main(){
     assert(denied.error&&/NOT_AUTHORIZED/.test(errText(denied.error)),'UNAUTHORIZED_ACCEPTANCE_NOT_DENIED '+errText(denied.error));
     report.checks.push('Other learner cannot accept the winning invitation');
     const acceptArgs={p_invitation_id:inv.invitation_id,p_idempotency_key:run+'-accept'};
-    const accepted=await Promise.all([rpc(winner.client,'accept_class_invitation',acceptArgs),rpc(winner.client,'accept_class_invitation',acceptArgs)]);
+    // Commit the first acceptance, but discard its real response at the client boundary.
+    // No result or session is fabricated; only the response delivery failure is simulated.
+    let responseLost=false;
+    try{await rpc(winner.client,'accept_class_invitation',acceptArgs);throw new Error('SIMULATED_POST_COMMIT_RESPONSE_LOSS');}
+    catch(error){if(error.message!=='SIMULATED_POST_COMMIT_RESPONSE_LOSS')throw error;responseLost=true;}
+    assert(responseLost,'FIRST_ACCEPT_RESPONSE_NOT_LOST');
+    const recoveredClient=client();
+    const recoveredLogin=await recoveredClient.auth.signInWithPassword({email:winner.email,password:winner.password});
+    if(recoveredLogin.error)throw recoveredLogin.error;
+    sessions.recovered={client:recoveredClient};
+    const recoveredContext=await rpc(recoveredClient,'get_my_account_context');
+    assert(recoveredContext.account.account_id===winner.context.account.account_id,'RECOVERY_CHANGED_ACCOUNT');
+    const accepted=await Promise.all([rpc(winner.client,'accept_class_invitation',acceptArgs),rpc(recoveredClient,'accept_class_invitation',acceptArgs)]);
     assert(accepted[0].membership_id&&accepted[0].membership_id===accepted[1].membership_id,'DUPLICATE_ACCEPTANCE_MEMBERSHIP_MISMATCH');
     report.ids.membership_id=accepted[0].membership_id;
-    report.checks.push('Concurrent same-key acceptance returns one membership');
-    // Real server response is received and discarded before the caller sees it.
-    // This models a post-commit response loss, not an actual provider outage.
+    report.checks.push('First acceptance response discarded after commit; fresh-client login and concurrent retries recover one membership');
     const lossArgs={...inviteArgs(contenders[winnerIndex])};
-    let responseLost=false;
-    try{await rpc(t,'send_class_invitation',lossArgs);throw new Error('SIMULATED_POST_COMMIT_RESPONSE_LOSS');}
-    catch(error){if(error.message!=='SIMULATED_POST_COMMIT_RESPONSE_LOSS')throw error;responseLost=true;}
-    assert(responseLost,'LOSS_NOT_SIMULATED');
     const recovered=await rpc(t,'send_class_invitation',lossArgs);
     assert(recovered.invitation_id===inv.invitation_id,'LOST_RESPONSE_RETRY_CHANGED_INVITATION');
-    report.checks.push('Discarded real committed response: same-key retry returns original invitation');
+    report.checks.push('Same-key invitation retry returns original invitation');
     const fresh=await rpc(winner.client,'accept_class_invitation',{...acceptArgs,p_idempotency_key:run+'-accept-new-key'});
     assert(fresh.membership_id===accepted[0].membership_id&&fresh.already_accepted===true,'NEW_KEY_ACCEPTANCE_NOT_STABLE');
     const mismatch=await t.rpc('send_class_invitation',{...lossArgs,p_fee_display_text:'Changed request'});
@@ -154,6 +160,38 @@ async function main(){
     const signals=await rpc(t,'get_my_notifications',{p_limit:200});
     assert(signals.filter(x=>x.notification_type==='class_invitation_accepted'&&x.source_id===inv.invitation_id).length===1,'ACCEPTED_NOTIFICATION_COUNT');
     report.checks.push('RLS reads show one invitation, one membership, one acceptance notification');
+    const sample=[];
+    for(let batch=0;batch<5;batch++){
+      await Promise.all(Array.from({length:8},async()=>{
+        const start=performance.now();
+        const value=await rpc(recoveredClient,'accept_class_invitation',acceptArgs);
+        assert(value.membership_id===accepted[0].membership_id,'BURST_DUPLICATE_MEMBERSHIP');
+        sample.push(Math.round(performance.now()-start));
+      }));
+    }
+    sample.sort((a,b)=>a-b);
+    report.bounded_burst={requests:sample.length,concurrency:8,p50_ms:sample[Math.ceil(sample.length*.5)-1],p95_ms:sample[Math.ceil(sample.length*.95)-1],max_ms:sample.at(-1),scope:'same-account cached acceptance RPC; not production load certification'};
+    report.checks.push('Forty cached acceptance retries at concurrency eight preserve the membership');
+    const before=await winner.client.from('classes').select('id').eq('id',cls.class_id);
+    if(before.error)throw before.error;
+    assert(before.data.length===1,'WINNER_CLASS_NOT_VISIBLE_BEFORE_REMOVAL');
+    const other=await loser.client.from('classes').select('id').eq('id',cls.class_id);
+    if(other.error)throw other.error;
+    assert(other.data.length===0,'OTHER_LEARNER_CLASS_LEAK');
+    await rpc(t,'remove_learner_from_class',{p_membership_id:accepted[0].membership_id,p_reason:'DEV stale-session proof',p_idempotency_key:run+'-remove'});
+    const after=await winner.client.from('classes').select('id').eq('id',cls.class_id);
+    if(after.error)throw after.error;
+    assert(after.data.length===0,'OLD_SESSION_RETAINS_REMOVED_CLASS_ACCESS');
+    const deniedWrite=await winner.client.rpc('send_class_learner_message',{p_class_id:cls.class_id,p_learner_id:winner.learner_id,p_body:'Must not be stored after removal',p_idempotency_key:run+'-denied-message'});
+    assert(deniedWrite.error&&/ACTIVE_MEMBERSHIP_REQUIRED/.test(errText(deniedWrite.error)),'REMOVED_MESSAGE_DENIAL_WRONG '+errText(deniedWrite.error));
+    report.removed_write_error=errText(deniedWrite.error);
+    const replay=await rpc(winner.client,'accept_class_invitation',acceptArgs);
+    assert(replay.membership_id===accepted[0].membership_id,'POST_REMOVAL_REPLAY_CHANGED_MEMBERSHIP');
+    const finalRows=await t.from('class_memberships').select('id,state').eq('class_id',cls.class_id);
+    if(finalRows.error)throw finalRows.error;
+    assert(finalRows.data.length===1&&finalRows.data[0].state==='removed','REPLAY_REACTIVATED_MEMBERSHIP');
+    report.final_memberships=finalRows.data;
+    report.checks.push('Removal immediately denies shared Class read and message write to the old session; cached acceptance cannot reactivate membership');
     report.deployment_end=await endDeploymentCheck(report.deployment,sha);
     report.result='passed';
   }catch(error){report.result='failed';report.error=errText(error);process.exitCode=1;}
@@ -164,4 +202,3 @@ async function main(){
   }
 }
 await main();
-
