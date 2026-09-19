@@ -2,6 +2,7 @@
   'use strict';
 
   // Presentation-only launch polish. No authority, routing, data or business-rule changes.
+  const pilotGoogleOnly = window.RAAHI_RELEASE_CONFIG?.phoneTrustMode === 'controlled_pilot_google_only';
   const replacements = new Map([
     ['taking_new_learners', 'Taking new learners'],
     ['not_taking_new_learners', 'Not taking new learners'],
@@ -12,7 +13,9 @@
     ['Google is the primary Raahi sign-in. Your learning roles and permissions still come from Raahi\'s server-authorized relationships—not from Google profile data.',
      'Sign in securely with Google. Your Raahi learning profile and access stay separate from your Google profile.'],
     ['Phone is not a primary login in V1.3. Raahi asks for a phone trust check only for selected sensitive actions.',
-     'For some sensitive actions, Raahi may ask you to confirm your phone number.'],
+     pilotGoogleOnly
+       ? 'During this controlled pilot, Google sign-in is all you need. Phone verification is not required.'
+       : 'For some sensitive actions, Raahi may ask you to confirm your phone number.'],
     ['Discover public learning options in the selected Location while Classes and history remain relationship-scoped.',
      'Discover teachers and learning options near you. Your Classes and learning history stay private.'],
     ['Your teacher identity and teaching operations.',
