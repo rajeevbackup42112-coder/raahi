@@ -22,9 +22,14 @@ function pwd(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function rid(){return 'classfx-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
 function isoFuture(hours){return new Date(Date.now()+hours*60*60*1000).toISOString();}
 
+function ensureGitCommit(sha){
+  try{execFileSync('git',['cat-file','-e',sha+'^{commit}'],{stdio:'ignore'});}
+  catch(_){execFileSync('git',['fetch','--quiet','origin',sha],{stdio:'ignore'});}
+}
 function staticDeploymentCompatible(deployedSha,targetSha){
   if(deployedSha===targetSha)return {compatible:true,exact:true,changed:[],appChanges:[]};
   try{
+    ensureGitCommit(deployedSha);ensureGitCommit(targetSha);
     const changed=execFileSync('git',['diff','--name-only',deployedSha,targetSha],{encoding:'utf8'})
       .split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
     const appChanges=changed.filter(p=>p.startsWith('apps/raahi-learning/'));
