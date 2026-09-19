@@ -15,15 +15,16 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 ## Read first now
 
 1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
-2. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — latest bounded reliability, database-health, rollback and recovery-boundary evidence.
-3. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
-4. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
-5. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
-6. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
-7. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
-8. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
-9. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
-10. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
+2. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — prepared production operations, monitoring, backup and restore procedure.
+3. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — latest bounded reliability, database-health, rollback and recovery-boundary evidence.
+4. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
+5. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
+6. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
+7. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
+8. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
+9. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
+10. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
+11. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
 
 The older index reference to `31-staging-load-security-chaos-plan-v1.2.md` is not a usable file on this implementation branch; do not treat that ghost reference as current evidence.
 
