@@ -15,7 +15,8 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 ## Read first now
 
 1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
-2. [`78-controlled-pilot-cutover-runbook-v1.3.md`](78-controlled-pilot-cutover-runbook-v1.3.md) — exact same-project pilot cutover procedure.
+2. [`79-messagecentral-phone-trust-provider-v1.3.md`](79-messagecentral-phone-trust-provider-v1.3.md) — selected MessageCentral VerifyNow phone-trust integration.
+3. [`78-controlled-pilot-cutover-runbook-v1.3.md`](78-controlled-pilot-cutover-runbook-v1.3.md) — exact same-project pilot cutover procedure.
 3. [`77-stage-ready-single-project-progress-v1.3.md`](77-stage-ready-single-project-progress-v1.3.md) — current Stage-readiness progression.
 4. [`76-single-project-stage-controlled-pilot-strategy-v1.3.md`](76-single-project-stage-controlled-pilot-strategy-v1.3.md) — approved zero-cost Stage→Gomoh+Dhanbad controlled-pilot strategy.
 5. [`75-production-canary-recovery-inventory-readiness-v1.3.md`](75-production-canary-recovery-inventory-readiness-v1.3.md) — guarded canary + recovery-inventory baseline.
@@ -68,7 +69,7 @@ Integrity anchors:
 
 Supabase DEV: `iiwwmqokaeflaenhlyip`, `ap-south-1`.
 
-V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV (current ceiling `1034_v13_stage_gomoh_location`):
+V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV (current ceiling `1036_v13_phone_trust_explicit_browser_deny`):
 
 - `1015_v13_contextual_inbox_and_org_teacher_picker`
 - `1016_v13_learner_self_access_invitations`
@@ -80,6 +81,9 @@ V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV (curre
 - `1022` through `1031` — closed V1.3 vertical-slice / side-effect migrations recorded in their owning closure documents
 - `1032_v13_invitation_acceptance_fk_indexes` — preventive covering indexes for invitation `accepted_by_account_id` foreign keys
 - `1033_v13_deferred_anonymous_location_rpc_acl` — removes unusable anonymous location RPC/helper EXECUTE grants while anonymous marketplace browsing remains deferred
+- `1034_v13_stage_gomoh_location` — adds Gomoh in `preparing` state
+- `1035_v13_messagecentral_phone_trust_challenges` — server-only VerifyNow challenge ledger
+- `1036_v13_phone_trust_explicit_browser_deny` — explicit deny-by-default browser RLS policy
 
 Current V1.3 markers include:
 
@@ -161,9 +165,9 @@ Autonomous non-destructive preparation is now complete through docs 74–76. Rem
 3. database recovery targets/retention and isolated restore rehearsal;
 4. off-platform Storage-object backup plus object restore proof;
 5. leaked-password-protection resolution/acceptance and remaining production security configuration;
-6. periodic real-provider same-phone Google/SMS trust refresh;
-7. dedicated Learning production Supabase project and final domain;
-8. production OAuth/SMS/redirect/secrets configuration;
+6. real-provider MessageCentral same-phone trust proof;
+7. production Google OAuth project/client and final public origin `learning.myraahi.co.in`;
+8. MessageCentral/Google redirect/secrets configuration;
 9. production-candidate regression;
 10. controlled pilot/go-no-go criteria;
 11. explicit Rajeev approval before public launch.
