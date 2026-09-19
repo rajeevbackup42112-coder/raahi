@@ -15,16 +15,17 @@ Core journey: **Find → Enquire → optional Trial → Class Invitation → Joi
 ## Read first now
 
 1. [`99-handover.md`](99-handover.md) — **current resume point and continuation prompt**.
-2. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — prepared production operations, monitoring, backup and restore procedure.
-3. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — latest bounded reliability, database-health, rollback and recovery-boundary evidence.
-4. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
-5. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
-6. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
-7. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
-8. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
-9. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
-10. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
-11. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
+2. [`73-security-catalog-hardening-v1.3.md`](73-security-catalog-hardening-v1.3.md) — latest catalog-security hardening and runtime ACL proof.
+3. [`72-production-operations-monitoring-backup-restore-runbook-v1.3.md`](72-production-operations-monitoring-backup-restore-runbook-v1.3.md) — prepared production operations, monitoring, backup and restore procedure.
+4. [`71-bounded-reliability-observability-recovery-v1.3.md`](71-bounded-reliability-observability-recovery-v1.3.md) — latest bounded reliability, database-health, rollback and recovery-boundary evidence.
+5. [`70-recovery-private-cache-release-readiness-v1.3.md`](70-recovery-private-cache-release-readiness-v1.3.md) — recovery/cache/release-packaging closure.
+6. [`69-class-race-recovery-proof-v1.3.md`](69-class-race-recovery-proof-v1.3.md) — race, idempotency, stale-session and shared-browser proof.
+7. [`68-post-se08-combined-regression-v1.3.md`](68-post-se08-combined-regression-v1.3.md) — exact post-SE-08 combined-regression anchor.
+8. [`52-master-lifecycle-gates-traceability-v1.3.md`](52-master-lifecycle-gates-traceability-v1.3.md) — active lifecycle gate/control document.
+9. [`41-authentication-phone-trust-v1.3.md`](41-authentication-phone-trust-v1.3.md) — frozen Google-primary + periodic phone-trust policy.
+10. [`07-decision-log-v1.md`](07-decision-log-v1.md) — canonical product decisions.
+11. [`38-backend-implementation-complete-v1.2.md`](38-backend-implementation-complete-v1.2.md) — completed V1.2 backend baseline.
+12. [`19-consolidated-database-blueprint-v1.2.md`](19-consolidated-database-blueprint-v1.2.md) and [`20-consolidated-sql-migration-plan-v1.2.md`](20-consolidated-sql-migration-plan-v1.2.md) — consolidated physical/schema baseline.
 
 The older index reference to `31-staging-load-security-chaos-plan-v1.2.md` is not a usable file on this implementation branch; do not treat that ghost reference as current evidence.
 
@@ -75,6 +76,7 @@ V1.2 backend baseline is complete. V1.3 forward migrations applied in DEV:
 - `1021_v13_phone_trust_command_guards`
 - `1022` through `1031` — closed V1.3 vertical-slice / side-effect migrations recorded in their owning closure documents
 - `1032_v13_invitation_acceptance_fk_indexes` — preventive covering indexes for invitation `accepted_by_account_id` foreign keys
+- `1033_v13_deferred_anonymous_location_rpc_acl` — removes unusable anonymous location RPC/helper EXECUTE grants while anonymous marketplace browsing remains deferred
 
 Current V1.3 markers include:
 
@@ -86,7 +88,7 @@ Current V1.3 markers include:
 - `V13_PHONE_TRUST_COMMAND_GATE_CORE_PASS`
 - `V13_PHONE_TRUST_COMMAND_GUARDS_PASS`
 
-Historical Security Advisor after 1021: **0 findings**. Current 2026-09-19 DEV Security Advisor reports one warning: leaked-password protection is disabled. The two former unindexed-foreign-key Performance Advisor findings are closed by migration 1032; remaining unused-index notices are informational for this young DEV workload.
+Historical Security Advisor after 1021: **0 findings**. Current 2026-09-19 DEV Security Advisor reports one warning: leaked-password protection is disabled. The two former unindexed-foreign-key Performance Advisor findings are closed by migration 1032; migration 1033 closes the anonymous-location RPC ACL inconsistency. Remaining unused-index notices are informational for this young DEV workload.
 
 Phone trust is derived from Supabase Auth's server-owned `auth.users.phone_confirmed_at`; do not add a duplicate client-owned Raahi trust timestamp merely to represent freshness.
 
