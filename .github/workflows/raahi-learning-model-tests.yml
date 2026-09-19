@@ -36,7 +36,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Verify production packaging and operational guards
-        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs
+        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs
 
       - name: Verify operations script syntax
         run: bash -n scripts/raahi-learning-backup-database.sh scripts/raahi-learning-backup-storage.sh
