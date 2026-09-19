@@ -43,7 +43,17 @@
 
   function ensurePublicLinks() {
     const card=[...document.querySelectorAll('.auth-card')].find(el=>/Continue with Google/i.test(el.textContent||''));
-    if(!card || card.querySelector('[data-raahi-launch-links]')) return;
+    if(!card) return;
+    if(!card.querySelector('[data-raahi-public-intro]')){
+      const intro=document.createElement('p');
+      intro.dataset.raahiPublicIntro='true';
+      intro.className='muted';
+      intro.style.cssText='margin:14px 0 0;line-height:1.55;';
+      intro.textContent='Find local teachers, Classes and learning opportunities in your area.';
+      const button=[...card.querySelectorAll('button')].find(el=>/Continue with Google/i.test(el.textContent||''));
+      if(button) button.insertAdjacentElement('beforebegin',intro); else card.appendChild(intro);
+    }
+    if(card.querySelector('[data-raahi-launch-links]')) return;
     const wrap=document.createElement('div');
     wrap.dataset.raahiLaunchLinks='true';
     wrap.style.cssText='margin-top:18px;padding-top:14px;border-top:1px solid #e6e8f0;text-align:center;font-size:13px;color:#667085;';
