@@ -26,7 +26,7 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | Remaining vertical slices | PROVEN IN DEV | SE-01 through SE-08 closed; see docs 60–67. |
 | Post-SE-08 combined regression | PROVEN IN DEV | All 15 suites passed exact commit a9f7ae5; deployed marker independently verified. See doc 68. |
 | Adversarial / recovery / race testing | PROVEN FOR BOUNDED DEV SCENARIOS | Last-seat race, real committed-response loss/recovery through a fresh client, concurrent same-key replay, stale-session denial, shared-browser account switching and private-cache isolation all pass. This is not production load certification. See docs 69–70. |
-| Reliability / load / security / launch | ACTIVE | Broader realistic load/soak, monitoring/incident response, DB+Storage recovery, leaked-password setting, provider smoke and production infrastructure remain open. See doc 70. |
+| Reliability / load / security / launch | ACTIVE — BOUNDED DEV RELIABILITY PASS | 20 genuine personas, 800 authenticated reads, cross-account denial and 20 browser sign-ins passed with no latency warnings. DB health and migration-1032 rollback/recreate rehearsal are proven in DEV. Production capacity/soak, operational alerting, DB+Storage restore, leaked-password setting, provider smoke and production infrastructure remain open. See doc 71. |
 
 ## 2. Defect rule
 
@@ -68,13 +68,15 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. Preserve doc 68 as the post-SE-08 combined-regression anchor and docs 69–70 as the bounded recovery/shared-browser closure.
-2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product proof anchor. Current deployed DEV artifact is `945bdf9f7fbcabbd4eb05c627800381b65c5f54b`; its only source diff from `d0232c4...` is migration 1032, and DEV E2E run 35441874762 passed exact-build verification.
-3. Continue with broader realistic load/soak/capacity testing plus monitoring, alerting and incident-response readiness.
-4. Define database and Storage-object recovery targets, backup/export procedures and a real restore rehearsal; separately rehearse migration rollback/forward-fix.
-5. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
-6. Resolve or explicitly accept the leaked-password-protection warning before launch.
-7. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
+1. Preserve doc 68 as the post-SE-08 combined-regression anchor, docs 69–70 as bounded recovery/shared-browser closure, and doc 71 as the latest reliability/observability/recovery checkpoint.
+2. Treat `d0232c4fdb9410d4902063740974b7110da59473` as the bounded recovery/shared-browser product-code proof anchor. Do not pin a documentation/test-only `build-meta` SHA as the permanent deployed product state; read `build-meta.json` at execution time and verify `apps/raahi-learning/` source compatibility.
+3. Preserve the successful bounded release-reliability proof on `10111144a2d00fb28d02a4217c4225a5188673b6` / run `35442347699`: 20 personas, 800 authenticated reads, 20 cross-account denials and 20 browser sign-ins, no latency warnings.
+4. Continue with production-like load/soak/capacity testing once expected pilot traffic and production-like compute exist.
+5. Turn the doc-71 monitoring design into real alert delivery/escalation when the production environment/channel is selected.
+6. Define RPO/RTO, implement off-platform Storage-object backup and perform an isolated database+Storage restore rehearsal. No disposable Supabase branch currently exists.
+7. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
+8. Resolve or explicitly accept the leaked-password-protection warning before launch.
+9. Production Supabase project, final domain, production provider secrets/configuration, controlled pilot and public-launch approval remain user-controlled gates.
 
 DEV migration ceiling is now `1032_v13_invitation_acceptance_fk_indexes`; the two former unindexed-FK advisor findings are closed. Do not remove young-system indexes merely because the DEV unused-index advisor has not observed traffic through them.
 
