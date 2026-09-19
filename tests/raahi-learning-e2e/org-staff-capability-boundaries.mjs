@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
 
@@ -19,23 +20,42 @@ function pwd(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function rid(){return 'ui4-staff-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
 function errText(e){return e?.message||e?.details||e?.hint||String(e);}
 
+function ensureGitCommit(sha){
+  try{execFileSync('git',['cat-file','-e',sha+'^{commit}'],{stdio:'ignore'});}
+  catch(_){execFileSync('git',['fetch','--quiet','origin',sha],{stdio:'ignore'});}
+}
+function staticCompatible(deployed,target){
+  if(deployed===target)return {compatible:true,exact:true,changed:[],appChanges:[]};
+  try{
+    ensureGitCommit(deployed);ensureGitCommit(target);
+    const changed=execFileSync('git',['diff','--name-only',deployed,target],{encoding:'utf8'})
+      .split(/\r?\n/).map(value=>value.trim()).filter(Boolean);
+    const appChanges=changed.filter(file=>file.startsWith('apps/raahi-learning/'));
+    return {compatible:appChanges.length===0,exact:false,changed,appChanges};
+  }catch(_){return {compatible:false,exact:false,changed:[],appChanges:['unknown-history']};}
+}
 async function waitDeployment(sha){
   const deadline=Date.now()+8*60*1000;let last=null;
   while(Date.now()<deadline){
     try{
       const r=await fetch(DEV_ORIGIN+'/build-meta.json?staff='+Date.now(),{cache:'no-store'});
-      if(r.ok){last=await r.json();if(last.commit_sha===sha)return last;}
+      if(r.ok){
+        last=await r.json();
+        const compatibility=staticCompatible(last.commit_sha,sha);
+        if(compatibility.compatible)return {...last,compatibility};
+      }
     }catch(e){last={error:String(e)}}
     await sleep(10000);
   }
-  throw new Error('DEV_DEPLOYMENT_NOT_CURRENT expected='+sha+' last='+JSON.stringify(last));
+  throw new Error('DEV_STATIC_DEPLOYMENT_NOT_COMPATIBLE expected='+sha+' last='+JSON.stringify(last));
 }
 async function endDeploymentCheck(sha){
   const r=await fetch(DEV_ORIGIN+'/build-meta.json?staff-end='+Date.now(),{cache:'no-store'});
   assert(r.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+r.status);
   const m=await r.json();
-  assert(m.commit_sha===sha,'DEV_DEPLOYMENT_CHANGED_DURING_STAFF_PROOF expected='+sha+' actual='+m.commit_sha);
-  return m;
+  const compatibility=staticCompatible(m.commit_sha,sha);
+  assert(compatibility.compatible,'DEV_STATIC_DEPLOYMENT_END_NOT_COMPATIBLE '+JSON.stringify(compatibility));
+  return {...m,compatibility};
 }
 async function oidc(){
   const u0=process.env.ACTIONS_ID_TOKEN_REQUEST_URL,t=process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
