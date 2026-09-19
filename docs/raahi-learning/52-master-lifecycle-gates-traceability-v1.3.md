@@ -1,7 +1,7 @@
 # Raahi Learning V1.3 — Master Lifecycle Gate Status + Traceability Spine
 
 Status: **ACTIVE CONTROL DOCUMENT**  
-Date: 2026-09-18
+Date: 2026-09-19
 
 Purpose: provide one compact resume point for the AI Product Lifecycle Master Cheat Code v2.0 without duplicating the canonical product/domain documents.
 
@@ -23,8 +23,9 @@ Purpose: provide one compact resume point for the AI Product Lifecycle Master Ch
 | Mandatory walking skeleton | PROVEN | Doc 51; includes Class message, notification Open deep link and unrelated denial. |
 | Representative persona expansion | PROVEN | 20 genuine DEV identities/sessions, unique Accounts, own-row RLS allow/cross-row deny, 20 isolated Chromium sign-ins. See doc 53. |
 | UI / interaction convergence | PROVEN FOR V1.3 WORKSPACE SURFACES | Core learner/teacher, managed-parent/Organization, Local Manager/Platform Admin, Raahi Ads, and bounded Organization staff capability surfaces are proven. See docs 54–58. |
-| Remaining vertical slices | ACTIVE | Side-effect gaps from doc 46 are the current execution queue. Close one owning-domain slice at a time with command/projection/permission/notification/audit/UI/runtime evidence. |
-| Adversarial / recovery / race testing | QUEUED | Includes revoked authority, copied links, retries, last-seat races, stale trust, shared-device context. |
+| Remaining vertical slices | PROVEN IN DEV | SE-01 through SE-08 closed; see docs 60–67. |
+| Post-SE-08 combined regression | PROVEN IN DEV | All 15 suites passed exact commit a9f7ae5; deployed marker independently verified. See doc 68. |
+| Adversarial / recovery / race testing | ACTIVE / PARTIAL | Last-seat invitation competition, duplicate acceptance and cached-response retry passed with independent audit/notification counts. See doc 69. Broader stale-trust, shared-device and recovery coverage remains open. |
 | Reliability / load / security / launch | QUEUED | No public launch claim until these gates pass. |
 
 ## 2. Defect rule
@@ -67,9 +68,9 @@ Do not return to repeated manual Google login as the ordinary regression mechani
 
 ## 5. Immediate sequence
 
-1. establish one exact-build combined regression anchor across model, genuine-session, cohort, UI and capability suites;
-2. implement side-effect gaps by owning vertical slice: Enquiry/Trial → Class/Session/Membership/posts → Activity → Test correction → Organization authority changes;
-3. for each slice prove notification count/dedup, destination authorization, audit/history where required and failure isolation;
-4. then expand to adversarial/recovery/race/load/security gates.
+1. Preserve doc 68 as the post-SE-08 combined regression anchor.
+2. Continue adversarial/recovery coverage from doc 69; do not label one race scenario a completed reliability/load gate.
+3. Complete periodic real-provider same-phone refresh with user-held Google/SMS authentication, separately from the automated harness.
+4. Resolve security findings and complete reliability/load/launch gates before any public launch claim.
 
 Do not restart product discovery or recreate already-proven architecture/database work.

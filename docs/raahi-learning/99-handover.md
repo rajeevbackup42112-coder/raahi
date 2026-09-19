@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, and every side-effect slice SE-01 through SE-08 are closed/proven in DEV. Resume at combined regression → adversarial/recovery/race → reliability/security/load/provider-smoke/launch.**
+**Foundation, R4, the genuine-session harness, the 20-persona cohort, workspace UI/capability convergence, SE-01 through SE-08, and post-SE-08 combined regression are proven in DEV. Initial Class race/retry scenarios also pass. Broader adversarial/recovery, reliability/security/load, real-provider smoke and launch gates remain open. See docs 68–69.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -20,17 +20,19 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `67-organization-authority-side-effect-closure-v1.3.md` — **latest closed slice / exact continuation point**
-2. `46-v1.3-side-effects-matrix-audit.md`
-3. `66-test-correction-side-effect-closure-v1.3.md`
-4. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
-5. `59-exact-build-combined-regression-anchor-v1.3.md`
-6. `52-master-lifecycle-gates-traceability-v1.3.md`
-7. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
-8. `50-dev-test-identity-session-harness-v1.3.md`
-9. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
-10. `41-authentication-phone-trust-v1.3.md`
-11. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` (historical/regression only)
+1. `69-class-race-recovery-proof-v1.3.md` — **latest bounded proof, open gates and provider/browser blocker**
+2. `68-post-se08-combined-regression-v1.3.md` — all 15 suites green on a9f7ae5
+3. `67-organization-authority-side-effect-closure-v1.3.md` — latest closed side-effect slice
+4. `46-v1.3-side-effects-matrix-audit.md`
+5. `66-test-correction-side-effect-closure-v1.3.md`
+6. `65-current-execution-handover-se07-v1.3.md` — historical SE-07 execution handover
+7. `59-exact-build-combined-regression-anchor-v1.3.md` — historical anchor
+8. `52-master-lifecycle-gates-traceability-v1.3.md`
+9. `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`
+10. `50-dev-test-identity-session-harness-v1.3.md`
+11. `47-ai-builder-v2-internal-retrofit-closure-v1.3.md`
+12. `41-authentication-phone-trust-v1.3.md`
+13. `48-hosted-auth-and-walking-skeleton-runbook-v1.3.md` — section 8 provider smoke remains open
 
 ## Frozen product rules
 
