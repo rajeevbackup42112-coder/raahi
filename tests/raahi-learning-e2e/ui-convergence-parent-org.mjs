@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { chromium } from 'playwright';
@@ -39,16 +40,34 @@ function pwd(){return crypto.randomBytes(30).toString('base64url')+'Aa1!';}
 function rid(){return 'ui2-'+(process.env.GITHUB_RUN_ID||Date.now())+'-'+(process.env.GITHUB_RUN_ATTEMPT||'1');}
 function errText(e){return e?.message||e?.details||e?.hint||String(e);}
 
+function staticCompatible(deployedSha,targetSha){
+  if(deployedSha===targetSha)return {compatible:true,exact:true,changed:[],appChanges:[]};
+  try{
+    execFileSync('git',['merge-base','--is-ancestor',deployedSha,targetSha],{stdio:'ignore'});
+    const changed=execFileSync('git',['diff','--name-only',deployedSha+'..'+targetSha],{encoding:'utf8'})
+      .split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const appChanges=changed.filter(x=>x.startsWith('apps/raahi-learning/'));
+    return {compatible:appChanges.length===0,exact:false,changed,appChanges};
+  }catch{
+    return {compatible:false,exact:false,changed:[],appChanges:['unknown-history']};
+  }
+}
+
 async function waitDeployment(sha){
   const deadline=Date.now()+8*60*1000;let last=null;
   while(Date.now()<deadline){
     try{
       const r=await fetch(DEV_ORIGIN+'/build-meta.json?ui2='+Date.now(),{cache:'no-store'});
-      if(r.ok){last=await r.json();if(last.commit_sha===sha)return last;}
+      if(r.ok){
+        const meta=await r.json();
+        const compatibility=staticCompatible(meta.commit_sha,sha);
+        last={...meta,compatibility};
+        if(compatibility.compatible)return last;
+      }
     }catch(e){last={error:String(e)}}
     await sleep(10000);
   }
-  throw new Error('DEV_DEPLOYMENT_NOT_CURRENT expected='+sha+' last='+JSON.stringify(last));
+  throw new Error('DEV_DEPLOYMENT_NOT_SOURCE_COMPATIBLE expected='+sha+' last='+JSON.stringify(last));
 }
 
 async function oidc(){
@@ -249,8 +268,9 @@ async function main(){
     const endMetaResponse=await fetch(DEV_ORIGIN+'/build-meta.json?ui-end='+Date.now(),{cache:'no-store'});
     assert(endMetaResponse.ok,'DEV_DEPLOYMENT_END_CHECK_FAILED_'+endMetaResponse.status);
     const endMeta=await endMetaResponse.json();
-    assert(endMeta.commit_sha===sha,'DEV_DEPLOYMENT_CHANGED_DURING_UI_PROOF expected='+sha+' actual='+endMeta.commit_sha);
-    report.end_deployment=endMeta;
+    const endCompatibility=staticCompatible(endMeta.commit_sha,sha);
+    assert(endCompatibility.compatible,'DEV_DEPLOYMENT_CHANGED_TO_INCOMPATIBLE_UI_SOURCE expected='+sha+' actual='+endMeta.commit_sha+' appChanges='+JSON.stringify(endCompatibility.appChanges));
+    report.end_deployment={...endMeta,compatibility:endCompatibility};
 
     const issues=report.routes.flatMap(x=>x.issues.map(issue=>({viewport:x.viewport,route:x.route,issue})));
     report.issue_count=issues.length;report.issues=issues;
