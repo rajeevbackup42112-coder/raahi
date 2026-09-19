@@ -9,12 +9,14 @@ const release=fs.readFileSync('scripts/prepare-learning-release.mjs','utf8');
 
 test('MessageCentral bridge owns OTP challenge while Supabase remains phone-trust source of truth',()=>{
   assert.match(edge,/cpaas\.messagecentral\.com/);
+  assert.match(edge,/MESSAGECENTRAL_PASSWORD/);
+  assert.match(edge,/TextEncoder/);
   assert.match(edge,/\/verification\/v3\/send/);
   assert.match(edge,/\/verification\/v3\/validateOtp/);
   assert.match(edge,/VERIFICATION_COMPLETED/);
   assert.match(edge,/auth\.admin\.updateUserById/);
   assert.match(edge,/phone_confirm:\s*true/);
-  assert.doesNotMatch(edge,/console\.(?:log|error)\([^\n]*(?:MESSAGECENTRAL_KEY_BASE64|authToken|token\s*:)/i);
+  assert.doesNotMatch(edge,/console\.(?:log|error)\([^\n]*(?:MESSAGECENTRAL_PASSWORD|authToken|token\s*:)/i);
 });
 
 test('MessageCentral bridge is authenticated, origin-bounded and rate limited',()=>{
@@ -46,5 +48,5 @@ test('DEV remains Supabase-compatible while release selects MessageCentral',()=>
   assert.match(live,/signInWithOtp/);
   assert.match(live,/verifyOtp/);
   assert.match(release,/phoneTrustProvider:'messagecentral'/);
-  assert.doesNotMatch(release,/MESSAGECENTRAL_(?:CUSTOMER_ID|KEY_BASE64|EMAIL)/);
+  assert.doesNotMatch(release,/MESSAGECENTRAL_(?:CUSTOMER_ID|PASSWORD|EMAIL)/);
 });
