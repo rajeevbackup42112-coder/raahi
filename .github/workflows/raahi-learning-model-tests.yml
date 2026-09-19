@@ -32,7 +32,10 @@ jobs:
         with:
           node-version: '22'
       - name: Verify production packaging guards
-        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs
+        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs
+
+      - name: Verify operations script syntax
+        run: bash -n scripts/raahi-learning-backup-database.sh scripts/raahi-learning-backup-storage.sh
 
       - name: Install pinned E2E dependencies for load-guard tests
         working-directory: tests/raahi-learning-e2e
