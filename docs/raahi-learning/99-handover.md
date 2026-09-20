@@ -20,7 +20,8 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
+1. `82-stage-ready-google-only-pilot-closeout-v1.3.md` — **current Stage Ready closure and exact post-change proof set**
+2. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
 2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **current same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, Google auth, Gomoh activation, canary**
 3. `80-stage-ready-closeout-v1.3.md` — **historical pre-1037 Stage Ready baseline; must be superseded by fresh post-change closure**
 4. `79-messagecentral-phone-trust-provider-v1.3.md` — **historical MessageCentral experiment; retired for pilot**
@@ -221,9 +222,9 @@ Current exact state:
 - no dedicated Learning production Supabase project has been selected;
 - no public deployment is authorized.
 
-Current milestone: **STAGE REVALIDATION AFTER APPROVED GOOGLE-ONLY PILOT CHANGE**.
+Current milestone: **STAGE READY — GOOGLE-ONLY CONTROLLED PILOT BASELINE**.
 
-The pre-change Stage Ready evidence remains historical in doc 80. Migration 1037 and the release/UI trust-mode change require a fresh focused regression before Stage Ready is re-frozen.
+The pre-change Stage Ready evidence remains historical in doc 80. Fresh post-change closure is doc 82 and is now the canonical launch baseline.
 
 Current approved behavior:
 - controlled pilot uses Google only;
@@ -232,12 +233,11 @@ Current approved behavior:
 - future WhatsApp OTP is post-traction work.
 
 Next work:
-- finish fresh Model + E2E + UI/side-effect regression on the 1037 baseline;
-- re-close Stage Ready on the new baseline;
-- configure production Google OAuth client/project + real public-origin sign-in;
-- execute the controlled-pilot cutover only after the new baseline is green.
+- production Google OAuth project/client + real public-origin sign-in proof;
+- prepare public pilot origin `https://learning.myraahi.co.in`;
+- then execute controlled-pilot cutover.
 
-User-controlled / external gates after Stage re-closes:
+User-controlled / external gates:
 - public pilot origin: **https://learning.myraahi.co.in**;
 - production Google OAuth project/client and domain/branding configuration;
 - ensure `support@myraahi.co.in` is active;
