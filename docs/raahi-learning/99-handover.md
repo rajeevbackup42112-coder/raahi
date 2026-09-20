@@ -20,7 +20,8 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `83-production-google-oauth-preparation-v1.3.md` — **exact next external gate: production Google OAuth project/client and values**
+1. `84-current-execution-handover-2026-09-20.md` — **exact current continuation state; read this first in a new chat**
+2. `83-production-google-oauth-preparation-v1.3.md` — **exact next external gate: production Google OAuth project/client and values**
 2. `82-stage-ready-google-only-pilot-closeout-v1.3.md` — **current Stage Ready closure and exact post-change proof set**
 2. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
 2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **current same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, Google auth, Gomoh activation, canary**
@@ -224,6 +225,8 @@ Current exact state:
 - no public deployment is authorized.
 
 Current milestone: **STAGE READY — GOOGLE-ONLY CONTROLLED PILOT BASELINE**.
+
+Canonical new-chat handover: `84-current-execution-handover-2026-09-20.md`.
 
 The pre-change Stage Ready evidence remains historical in doc 80. Fresh post-change closure is doc 82 and is now the canonical launch baseline.
 
