@@ -1,15 +1,6 @@
 name: Raahi Learning Class Post Side Effects
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'supabase/migrations/1025_v13_class_post_side_effects.sql'
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/class-post-side-effects.mjs'
-      - '.github/workflows/raahi-learning-class-post-side-effects.yml'
   workflow_dispatch:
 
 permissions:
