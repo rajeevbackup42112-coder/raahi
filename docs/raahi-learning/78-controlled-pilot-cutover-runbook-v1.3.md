@@ -240,6 +240,10 @@ Canonical decision:
 
 ### Google
 
+Canonical preparation:
+
+`docs/raahi-learning/83-production-google-oauth-preparation-v1.3.md`
+
 Before public pilot:
 
 - create/configure the production Google OAuth client/project according to current Google production guidance;
