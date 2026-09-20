@@ -1,4 +1,4 @@
-# Raahi Learning V1.3 — Handover / Current State
+# Raahi Learning - Handover / Current State
 
 **Read this file first in a new conversation.**
 
@@ -10,9 +10,11 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
+**2026-09-20 V1.4A Investor + Delight candidate:** the presentation-only visual/communication pass is locally qualified but **not yet deployed**. Home is now intentionally simplified around Location -> `Find. Learn. Grow.` -> `Find a teacher` / `I need tuition` -> useful current learning -> two local discovery cards. V1.4A adds the warmer RAAHI brand system, improved Welcome/Explore/Community/Messages/Location presentation, truthful avatar fallbacks and packaging/CI guards without changing backend authority or operational state logic. Local qualification: **48/48 production guards** and **5,349,572 model cases with 0 failures**. Read `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` first for the candidate. Production remains on the previously qualified public artifact until exact-commit CI/package/deploy completes.
+
 **2026-09-20 PUBLIC GO-LIVE:** Google Auth Platform is now **In production** and External. A Google identity outside the former two-user OAuth test list completed consent on the public origin, landed on Home, and bootstrapped a fresh active Raahi Account. Dhanbad + Gomoh are live/selectable; promotion is Gomoh-first, not Gomoh-restricted. Production data must now be treated as real user data. Read `89-public-go-live-evidence-2026-09-20.md` first.
 
-**2026-09-20 controlled-pilot cutover update:** the hash-verified release candidate is publicly reachable at `https://learning.myraahi.co.in`, production Google OAuth works, the pre-cleanup logical backup is checksum-verified, synthetic public data and harness Auth users are removed, synthetic writers and `dev-test-identities` are sealed, retired MessageCentral secrets are removed, Dhanbad + Gomoh are the only live Locations, and the genuine two-user Google/RLS canary is green. Google OAuth remains in Testing with only two canary users. **Real pilot users have not been admitted.** Read `87-controlled-pilot-cutover-evidence-2026-09-20.md` first.
+**Historical controlled-pilot cutover record:** before public admission, the hash-verified release candidate was reachable at `https://learning.myraahi.co.in`, the pre-cleanup logical backup was checksum-verified, synthetic public data and harness Auth users were removed, synthetic writers and `dev-test-identities` were sealed, retired MessageCentral secrets were removed, Dhanbad + Gomoh were the only live Locations, and the genuine two-user Google/RLS canary was green. At that historical point Google OAuth was still in Testing and real users had not yet been admitted. This is superseded by the PUBLIC GO-LIVE state above; see `87-controlled-pilot-cutover-evidence-2026-09-20.md` only for cutover evidence.
 
 **Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1038_v13_remove_public_trust_policy_rpc`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
@@ -23,6 +25,8 @@ The old 2026-09-13 zero-Auth preflight is historical only. Real hosted Google/ph
 Do **not** restart product design, rebuild the database, recreate the DEV-write marker, re-enable synthetic writers, or run destructive pilot cleanup. Google OAuth is already public and production data must be treated as real user data.
 
 Read next:
+
+1. `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` - **current execution candidate: V1.4A investor/delight source qualified locally, not yet deployed**
 
 1. `89-public-go-live-evidence-2026-09-20.md` - **latest continuation state; Raahi Learning is PUBLIC LIVE; read this first in a new chat**
 

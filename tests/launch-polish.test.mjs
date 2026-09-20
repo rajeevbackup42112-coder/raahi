@@ -33,7 +33,7 @@ test('public policy pages contain no DEV or fixture language',()=>{
   }
   assert.match(privacy,/Google is used to authenticate you/);
   assert.match(privacy,/We do not sell personal data to advertisers/);
-  assert.match(terms,/controlled pilot for Gomoh and Dhanbad/i);
+  assert.match(terms,/early public release in Gomoh and Dhanbad/i);
 });
 
 test('reconstructed browser build includes launch polish and policy pages',()=>{

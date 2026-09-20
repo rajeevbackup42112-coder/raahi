@@ -30,7 +30,7 @@ if(output===source||output.startsWith(source+path.sep)||source.startsWith(output
 if(fs.existsSync(output))throw new Error('OUTPUT_ALREADY_EXISTS');
 const sourceMeta=JSON.parse(fs.readFileSync(path.join(source,'build-meta.json'),'utf8'));
 if(sourceMeta.commit_sha!==commit)throw new Error('SOURCE_COMMIT_MISMATCH');
-const names=['styles.css','live.js','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','privacy.html','terms.html'];
+const names=['styles.css','live.js','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','delight-v14.css','delight-v14.js','privacy.html','terms.html'];
 const files=new Map(names.map(n=>[n,fs.readFileSync(path.join(source,n),'utf8')]));
 let live=files.get('live.js');
 const devUrl="const SUPABASE_URL = 'https://iiwwmqokaeflaenhlyip.supabase.co';";
@@ -42,12 +42,12 @@ const releasePhoneTrustConfig = mode==='CONTROLLED_PILOT'
   ? {phoneTrustMode:'controlled_pilot_google_only',phoneTrustProvider:'disabled'}
   : {phoneTrustMode:'phone_trust_required',phoneTrustProvider:'disabled'};
 files.set('index.html',`<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Find local teachers, Classes and learning opportunities with Raahi Learning."><meta name="theme-color" content="#6c5ce7"><title>Raahi Learning</title><link rel="stylesheet" href="./styles.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Find teachers, learning opportunities and local learning communities with Raahi."><meta name="theme-color" content="#6c5ce7"><title>Raahi Learning Network</title><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./delight-v14.css"></head>
 <body><div id="app"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script>window.RAAHI_RELEASE_CONFIG=Object.freeze(${JSON.stringify(releasePhoneTrustConfig)});</script>
 <script src="./live.js"></script><script src="./app.live-core-v13.js"></script>
-<script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script>
+<script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script><script src="./delight-v14.js"></script>
 </body></html>\n`);
 for(const [name,content] of files){
   if(/dev\.learning\.myraahi|sb_secret_|dev-test-identities|dev-test-login/.test(content))throw new Error('DEV_OR_SECRET_REFERENCE: '+name);
