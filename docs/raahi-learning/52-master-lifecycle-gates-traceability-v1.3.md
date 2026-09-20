@@ -121,3 +121,37 @@ Release configuration must match server policy:
 MessageCentral is retired for the pilot and its deployed Edge Function is sealed at version 6.
 
 Fresh Stage regression is required before the post-change baseline can be re-frozen.
+
+
+## Google-only Stage re-closure — 2026-09-20
+
+**STAGE READY CLOSED AGAIN.**
+
+Canonical post-change evidence:
+
+`82-stage-ready-google-only-pilot-closeout-v1.3.md`
+
+Final current-source validation commit:
+
+`61fd03555910cb16f744d653317c31986e1039cd`
+
+Green proof set:
+
+- Model Tests `35467717423`;
+- DEV E2E `35467717381`;
+- UI Core `35467717405`;
+- UI Parent/Organization `35467717378`;
+- UI Privileged/Admin `35467717353`;
+- UI Ads `35467717394`;
+- Organization staff boundaries `35467402738`;
+- Organization authority side effects `35467397044` clean rerun.
+
+Migration ceiling:
+
+`1038_v13_remove_public_trust_policy_rpc`
+
+Current server trust policy:
+
+`controlled_pilot_google_only`
+
+Phone trust remains architecturally preserved but is not enforced during the first controlled pilot.
