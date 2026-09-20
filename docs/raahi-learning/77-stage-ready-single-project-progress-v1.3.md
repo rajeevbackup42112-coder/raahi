@@ -1,12 +1,14 @@
 # Stage Ready status
 
+Current closeout: `82-stage-ready-google-only-pilot-closeout-v1.3.md`
+
 Historical pre-change closeout: `80-stage-ready-closeout-v1.3.md`
 
 Current approved rule change: `81-controlled-pilot-google-only-trust-v1.3.md`
 
 # Raahi Learning V1.3 — Stage-ready progression on single Free project
 
-Status: **STAGE REVALIDATION — APPROVED GOOGLE-ONLY PILOT CHANGE**  
+Status: **STAGE READY — GOOGLE-ONLY CONTROLLED PILOT BASELINE**  
 Date: 2026-09-19
 
 This checkpoint supersedes the earlier assumption that a separate non-DEV Supabase target must be created before the first real-user release.
@@ -222,13 +224,15 @@ Do not remove young-system indexes merely because the advisor has not observed u
 
 ## 9. Stage Ready work still open
 
-Stage Ready is now closed. Final evidence is frozen in `80-stage-ready-closeout-v1.3.md`.
+Stage Ready is closed again on the post-1038 Google-only pilot baseline.
 
-Open work is now external/provider and cutover-only:
-- MessageCentral account + real-phone proof;
+Open work is now external/cutover-only:
 - production Google OAuth project/client + public-origin proof;
+- support mailbox readiness;
 - controlled-pilot cutover;
 - explicit go-live approval.
+
+Phone/WhatsApp verification is not a first-pilot gate.
 ## 10. Pilot-cutover actions that remain intentionally blocked
 
 At the actual controlled-pilot cutover:
