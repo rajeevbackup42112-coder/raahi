@@ -1,6 +1,6 @@
 # Raahi Learning V1.3 — Controlled Pilot cutover runbook (same Supabase project)
 
-Status: **PREPARED — DO NOT EXECUTE UNTIL STAGE READY + EXPLICIT GO-LIVE APPROVAL**  
+Status: **EXECUTED THROUGH TECHNICAL CUTOVER — FINAL REAL-USER ADMISSION REQUIRES EXPLICIT GO-LIVE APPROVAL**
 Date: 2026-09-19
 
 This runbook implements the approved single-project strategy from docs 76–77.
@@ -302,36 +302,23 @@ Gomoh activation is a cutover action, not a Stage action.
 
 ## 11. Controlled-pilot canary
 
-Use workflow:
+The controlled pilot is Google-only. Do **not** create password identities or weaken Auth merely to satisfy an automated test harness.
 
-`.github/workflows/raahi-learning-production-canary.yml`
+The workflow `.github/workflows/raahi-learning-production-canary.yml` is reserved for a future isolated non-DEV environment whose canary identities intentionally use password auth. It must fail closed for `CONTROLLED_PILOT` mode.
 
-Mode:
+For the same-project Google-only controlled pilot, perform the genuine browser canary on the final public HTTPS origin:
 
-`CONTROLLED_PILOT`
+1. prove `build-meta.json` is reachable and reports controlled-pilot release mode;
+2. prove the DEV login marker is absent;
+3. prove anonymous `list_public_locations` remains denied;
+4. sign in with two explicitly allowed Google test users through the production Google OAuth client;
+5. after the pre-pilot public reset, allow each preserved genuine Auth identity to bootstrap a fresh Raahi Account through the normal product path;
+6. prove each user can read its own Account and cannot read the other Account;
+7. prove authenticated Location and notification projections are healthy for both users;
+8. prove Dhanbad and Gomoh are the only live Locations;
+9. prove selected-Location persistence through `get_my_account_context` after switching one canary to Gomoh.
 
-Confirmation:
-
-`CONTROLLED_PILOT_SAME_PROJECT`
-
-Expected project ref:
-
-`iiwwmqokaeflaenhlyip`
-
-Origin:
-
-the final public HTTPS Learning origin, not DEV.
-
-Canary must prove:
-
-- public build-meta available;
-- DEV login marker absent;
-- deferred anonymous Location RPC still denied;
-- two real canary users authenticate;
-- own Account allowed;
-- cross-Account denied;
-- authenticated Location/notification projections healthy.
-
+Record the exact browser/SQL evidence in the cutover evidence document. Do not publish the Google OAuth app or admit the pilot audience until the separate final go-live approval.
 ## 12. Go-live gate
 
 Only after all sections above pass:

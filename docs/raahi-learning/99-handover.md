@@ -10,15 +10,19 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
+**2026-09-20 controlled-pilot cutover update:** the hash-verified release candidate is publicly reachable at `https://learning.myraahi.co.in`, production Google OAuth works, the pre-cleanup logical backup is checksum-verified, synthetic public data and harness Auth users are removed, synthetic writers and `dev-test-identities` are sealed, retired MessageCentral secrets are removed, Dhanbad + Gomoh are the only live Locations, and the genuine two-user Google/RLS canary is green. Google OAuth remains in Testing with only two canary users. **Real pilot users have not been admitted.** Read `87-controlled-pilot-cutover-evidence-2026-09-20.md` first.
+
 **Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1038_v13_remove_public_trust_policy_rpc`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
 The old 2026-09-13 zero-Auth preflight is historical only. Real hosted Google/phone identities now exist, Auth→Account continuity is proven, the original Rajeev R4 phone-interruption/resume chain remains durable, and the final Class-message / notification / copied-link privacy boundary is autonomously proven in isolated cloud browsers. The normal regression foundation now uses DEV-only OIDC-protected test identities with genuine Supabase sessions and intact RLS. See `50-dev-test-identity-session-harness-v1.3.md`, `51-hosted-auth-r4-walking-skeleton-closure-v1.3.md`, and `52-master-lifecycle-gates-traceability-v1.3.md`.
 
-Do **not** restart product design, rebuild the database, continue random bug fixing, or deploy publicly.
+Do **not** restart product design, rebuild the database, or continue random bug fixing. The public origin is already deployed. Do **not** publish Google OAuth to the general public or admit the pilot audience without the separate final go-live approval.
 
 Read next:
+
+1. `87-controlled-pilot-cutover-evidence-2026-09-20.md` — **latest continuation state; final technical cutover evidence; read this first in a new chat**
 
 1. `86-public-origin-google-oauth-proof-2026-09-20.md` — **latest continuation state; public origin + production Google OAuth proof; read this first in a new chat**\n2. `85-production-oauth-hosting-readiness-2026-09-20.md` — prior production OAuth/hosting readiness state\n2. `84-current-execution-handover-2026-09-20.md` — prior Stage Ready execution handover
 2. `83-production-google-oauth-preparation-v1.3.md` — **exact next external gate: production Google OAuth project/client and values**

@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "NON_DEV or CONTROLLED_PILOT"
+        description: "NON_DEV only; controlled pilot uses genuine Google browser canary"
         required: true
         default: "NON_DEV"
         type: string
       confirmation:
-        description: "NON_DEV_LEARNING_TARGET or CONTROLLED_PILOT_SAME_PROJECT"
+        description: "NON_DEV_LEARNING_TARGET"
         required: true
         type: string
       expected_project_ref:
@@ -57,19 +57,9 @@ jobs:
             *) exit 1 ;;
           esac
 
-          case "$RAAHI_CANARY_MODE" in
-            NON_DEV)
-              test "$RAAHI_CANARY_CONFIRM_TARGET" = "NON_DEV_LEARNING_TARGET"
-              test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
-              ;;
-            CONTROLLED_PILOT)
-              test "$RAAHI_CANARY_CONFIRM_TARGET" = "CONTROLLED_PILOT_SAME_PROJECT"
-              test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" = "iiwwmqokaeflaenhlyip"
-              ;;
-            *)
-              exit 1
-              ;;
-          esac
+          test "$RAAHI_CANARY_MODE" = "NON_DEV"
+          test "$RAAHI_CANARY_CONFIRM_TARGET" = "NON_DEV_LEARNING_TARGET"
+          test "$RAAHI_CANARY_EXPECTED_PROJECT_REF" != "iiwwmqokaeflaenhlyip"
 
           test -n "$RAAHI_CANARY_SUPABASE_URL"
           test -n "$RAAHI_CANARY_PUBLISHABLE_KEY"

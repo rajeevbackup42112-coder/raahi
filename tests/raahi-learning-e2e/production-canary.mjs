@@ -9,8 +9,6 @@ const FORBIDDEN_REFS=new Set([
 ]);
 const FORBIDDEN_ORIGINS=new Set(['https://dev.learning.myraahi.co.in']);
 const NON_DEV_CONFIRMATION='NON_DEV_LEARNING_TARGET';
-const PILOT_CONFIRMATION='CONTROLLED_PILOT_SAME_PROJECT';
-const LEARNING_DEV_REF='iiwwmqokaeflaenhlyip';
 
 function required(env,key){
   const value=env[key]?.trim();
@@ -33,15 +31,10 @@ export function parseCanaryConfig(env=process.env){
   const origin=required(env,'RAAHI_CANARY_ORIGIN').replace(/\/$/,'');
   const publishableKey=required(env,'RAAHI_CANARY_PUBLISHABLE_KEY');
 
-  if(mode==='NON_DEV'){
-    if(confirmation!==NON_DEV_CONFIRMATION)throw new Error('CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
-    if(FORBIDDEN_REFS.has(projectRef))throw new Error('FORBIDDEN_CANARY_PROJECT_'+projectRef);
-  }else if(mode==='CONTROLLED_PILOT'){
-    if(confirmation!==PILOT_CONFIRMATION)throw new Error('PILOT_CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
-    if(projectRef!==LEARNING_DEV_REF)throw new Error('PILOT_CANARY_PROJECT_MUST_BE_LEARNING_DEV');
-  }else{
-    throw new Error('INVALID_RAAHI_CANARY_MODE');
-  }
+  if(mode==='CONTROLLED_PILOT')throw new Error('CONTROLLED_PILOT_GOOGLE_BROWSER_CANARY_REQUIRED');
+  if(mode!=='NON_DEV')throw new Error('INVALID_RAAHI_CANARY_MODE');
+  if(confirmation!==NON_DEV_CONFIRMATION)throw new Error('CANARY_TARGET_NOT_EXPLICITLY_CONFIRMED');
+  if(FORBIDDEN_REFS.has(projectRef))throw new Error('FORBIDDEN_CANARY_PROJECT_'+projectRef);
 
   if(FORBIDDEN_ORIGINS.has(origin))throw new Error('FORBIDDEN_CANARY_ORIGIN');
   if(!origin.startsWith('https://'))throw new Error('CANARY_ORIGIN_MUST_BE_HTTPS');
