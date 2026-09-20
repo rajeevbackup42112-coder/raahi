@@ -244,7 +244,7 @@ Next work:
 User-controlled / external gates:
 - public pilot origin: **https://learning.myraahi.co.in**;
 - production Google OAuth project/client and domain/branding configuration;
-- ensure `support@myraahi.co.in` is active;
+- `support@myraahi.co.in` is active on Zoho Mail Free with live MX/SPF/DKIM and proven two-way delivery;
 - explicit Rajeev approval immediately before public Gomoh + Dhanbad launch.
 
 A dedicated WhatsApp business SIM, Meta production phone registration and OTP template approval are intentionally **not** pilot launch gates.
