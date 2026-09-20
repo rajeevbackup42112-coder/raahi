@@ -1,5 +1,7 @@
 # Raahi Learning V1.3 — Controlled-Pilot Cutover Evidence — 2026-09-20
 
+> Superseded for current production state by `89-public-go-live-evidence-2026-09-20.md`. This file remains the technical cutover evidence.
+
 Status: **READY FOR FINAL GO-LIVE APPROVAL — REAL PILOT USERS NOT YET ADMITTED**
 
 Repository: `rajeevbackup42112-coder/raahi`  

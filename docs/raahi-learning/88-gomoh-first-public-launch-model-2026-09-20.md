@@ -1,6 +1,6 @@
 # Raahi Learning V1.3 — Gomoh-First Public Launch Model — 2026-09-20
 
-Status: **FROZEN LAUNCH MODEL — PUBLIC ADMISSION STILL REQUIRES FINAL APPROVAL**
+Status: **FROZEN AND EXECUTED — PUBLIC LIVE**
 
 ## 1. Core Location rule
 

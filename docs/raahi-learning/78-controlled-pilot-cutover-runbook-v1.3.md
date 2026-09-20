@@ -1,6 +1,6 @@
 # Raahi Learning V1.3 — Controlled Pilot cutover runbook (same Supabase project)
 
-Status: **EXECUTED THROUGH TECHNICAL CUTOVER — FINAL REAL-USER ADMISSION REQUIRES EXPLICIT GO-LIVE APPROVAL**
+Status: **COMPLETED — PUBLIC GO-LIVE APPROVED AND EXECUTED 2026-09-20**
 Date: 2026-09-19
 
 This runbook implements the approved single-project strategy from docs 76–77.
@@ -333,6 +333,9 @@ Only after all sections above pass:
 8. explicit Rajeev go-live approval.
 
 Then admit the controlled pilot audience.
+
+
+**PUBLIC GO-LIVE EXECUTED 2026-09-20:** explicit approval was received; Google OAuth publishing status is now In production; non-test-user OAuth proof passed; see `89-public-go-live-evidence-2026-09-20.md`.
 
 ## 13. During Free-plan pilot
 
