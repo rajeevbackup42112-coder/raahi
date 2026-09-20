@@ -22,6 +22,8 @@ Do **not** restart product design, rebuild the database, or continue random bug 
 
 Read next:
 
+1. `88-gomoh-first-public-launch-model-2026-09-20.md` - **frozen public-launch Location model: Dhanbad + Gomoh selectable; Gomoh-first acquisition, no geographic account lock**
+
 1. `87-controlled-pilot-cutover-evidence-2026-09-20.md` — **latest continuation state; final technical cutover evidence; read this first in a new chat**
 
 1. `86-public-origin-google-oauth-proof-2026-09-20.md` — **latest continuation state; public origin + production Google OAuth proof; read this first in a new chat**\n2. `85-production-oauth-hosting-readiness-2026-09-20.md` — prior production OAuth/hosting readiness state\n2. `84-current-execution-handover-2026-09-20.md` — prior Stage Ready execution handover

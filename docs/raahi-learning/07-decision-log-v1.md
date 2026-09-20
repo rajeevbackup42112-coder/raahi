@@ -162,6 +162,19 @@ This amendment changes authentication UX only; it does not reopen the domain mod
 - The final V1.3 UX review does **not** re-open one-managing-guardian, public learner directory, unrestricted DM, public ratings, anonymous Community, or other intentionally deferred V1 complexity.
 - Logged-out marketplace discovery is deferred until acquisition evidence justifies the additional anonymous surface.
 
+
+## V1.3 public-launch Location amendment
+
+- A Raahi Account is not permanently bound to one city/locality.
+- Selected Location is the current local context for discovery, Community and other locality-scoped public surfaces.
+- Users may switch Locations freely; switching Location does not alter Account identity, Learners, Classes, Messages, history or existing relationships.
+- Dhanbad and Gomoh are both live/selectable for first public launch.
+- Gomoh is the first acquisition/promotion market, not an authorization boundary.
+- A Gomoh user switching to Dhanbad is normal supported behavior.
+- Future Locations such as Topchachi, Bokaro and Ranchi are added as independent configurable Locations when ready; no new account model is required.
+- Do not introduce a special Dhanbad-region hierarchy before evidence shows it is necessary.
+- See `88-gomoh-first-public-launch-model-2026-09-20.md`.
+
 ## Change-control rule
 
 A future agent should not reintroduce a removed entity/state/role because it “sounds standard”. First demonstrate a concrete scenario that cannot be represented safely with the frozen simpler model. Then perform impact analysis across business rules, entities, relationships, states, permissions, money, matching/discovery, UI and tests before changing the model.
