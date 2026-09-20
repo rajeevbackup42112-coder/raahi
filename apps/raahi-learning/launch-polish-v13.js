@@ -14,7 +14,7 @@
      'Sign in securely with Google. Your Raahi learning profile and access stay separate from your Google profile.'],
     ['Phone is not a primary login in V1.3. Raahi asks for a phone trust check only for selected sensitive actions.',
      pilotGoogleOnly
-       ? 'During this controlled pilot, Google sign-in is all you need. Phone verification is not required.'
+       ? 'Google sign-in is all you need. Phone verification is not required.'
        : 'For some sensitive actions, Raahi may ask you to confirm your phone number.'],
     ['Discover public learning options in the selected Location while Classes and history remain relationship-scoped.',
      'Discover teachers and learning options near you. Your Classes and learning history stay private.'],

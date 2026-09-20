@@ -23,7 +23,8 @@ test('controlled-pilot release disables phone provider and OTP UI',()=>{
   assert.match(live,/phoneTrustMode/);
   assert.match(live,/Google sign-in is enough for this pilot/);
   assert.match(live,/Phone verification is not required during this pilot/);
-  assert.match(polish,/During this controlled pilot, Google sign-in is all you need/);
+  assert.match(polish,/Google sign-in is all you need\. Phone verification is not required\./);
+  assert.doesNotMatch(polish,/During this controlled pilot/i);
 });
 
 test('future phone-trust machinery is preserved rather than deleted',()=>{

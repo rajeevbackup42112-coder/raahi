@@ -43,3 +43,8 @@ test('reconstructed browser build includes launch polish and policy pages',()=>{
   assert.match(builder,/theme-color/);
   assert.match(builder,/Find local teachers, Classes and learning opportunities with Raahi Learning/);
 });
+
+test('public Google-only copy no longer calls the live service a controlled pilot',()=>{
+  assert.match(polish,/Google sign-in is all you need\. Phone verification is not required\./);
+  assert.doesNotMatch(polish,/During this controlled pilot/i);
+});
