@@ -1,15 +1,6 @@
 name: Raahi Learning Class Lifecycle Side Effects
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'supabase/migrations/1026_v13_class_membership_lifecycle_side_effects.sql'
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/class-lifecycle-side-effects.mjs'
-      - '.github/workflows/raahi-learning-class-lifecycle-side-effects.yml'
   workflow_dispatch:
 
 permissions:
