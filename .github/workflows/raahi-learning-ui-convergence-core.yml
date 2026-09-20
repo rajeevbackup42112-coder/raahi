@@ -2,16 +2,6 @@ name: Raahi Learning UI Convergence Core
 # Exact-build convergence proof; runner rechecks build-meta at completion.
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'apps/raahi-learning/launch-polish-v13.js'
-      - 'apps/raahi-learning/live-thread-deeplink-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/ui-convergence-core.mjs'
-      - '.github/workflows/raahi-learning-ui-convergence-core.yml'
   workflow_dispatch:
 
 permissions:

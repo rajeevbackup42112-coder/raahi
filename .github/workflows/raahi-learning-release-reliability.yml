@@ -1,12 +1,6 @@
 name: Raahi Learning Release Reliability Smoke
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'tests/raahi-learning-e2e/release-reliability-smoke.mjs'
-      - '.github/workflows/raahi-learning-release-reliability.yml'
   workflow_dispatch:
 
 permissions:

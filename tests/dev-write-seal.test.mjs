@@ -23,11 +23,8 @@ const workflows=[
   '.github/workflows/raahi-learning-ui-convergence-privileged.yml',
 ];
 
-test('DEV write marker exists during Stage',()=>{
-  assert.ok(fs.existsSync(marker), 'Stage write marker is missing before pilot cutover');
-  const body=fs.readFileSync(marker,'utf8');
-  assert.match(body,/RAAHI_LEARNING_DEV_WRITES_ENABLED/);
-  assert.match(body,/never recreate this marker after real pilot user data exists/i);
+test('DEV write marker is absent after controlled-pilot seal',()=>{
+  assert.equal(fs.existsSync(marker), false, 'Pilot cutover must delete the DEV write marker');
 });
 
 test('every known synthetic writer workflow fails closed on missing marker',()=>{
@@ -45,6 +42,14 @@ test('every known synthetic writer workflow fails closed on missing marker',()=>
   }
 });
 
+test('synthetic writer workflows are manual-only after controlled-pilot seal',()=>{
+  for(const file of workflows){
+    const body=fs.readFileSync(file,'utf8');
+    assert.match(body,/^  workflow_dispatch:\s*$/m, file+' must retain manual workflow_dispatch');
+    assert.doesNotMatch(body,/^  push:\s*$/m, file+' must not auto-run on push after pilot seal');
+  }
+});
+
 test('read-only/pilot workflows are not coupled to DEV write marker',()=>{
   for(const file of [
     '.github/workflows/raahi-learning-model-tests.yml',
@@ -54,6 +59,12 @@ test('read-only/pilot workflows are not coupled to DEV write marker',()=>{
     const body=fs.readFileSync(file,'utf8');
     assert.doesNotMatch(body,/Guard DEV synthetic writes/, file+' should remain independently guarded/read-only');
   }
+});
+
+test('Model Tests remain allowed to run on push',()=>{
+  const body=fs.readFileSync('.github/workflows/raahi-learning-model-tests.yml','utf8');
+  assert.match(body,/^  push:\s*$/m);
+  assert.match(body,/raahi-learning-implementation-v1/);
 });
 
 test('writer inventory remains explicit and unique',()=>{
