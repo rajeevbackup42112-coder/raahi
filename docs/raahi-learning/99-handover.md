@@ -20,7 +20,7 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `85-production-oauth-hosting-readiness-2026-09-20.md` — **latest external-integration continuation state; read this first in a new chat**\n2. `84-current-execution-handover-2026-09-20.md` — prior Stage Ready execution handover
+1. `86-public-origin-google-oauth-proof-2026-09-20.md` — **latest continuation state; public origin + production Google OAuth proof; read this first in a new chat**\n2. `85-production-oauth-hosting-readiness-2026-09-20.md` — prior production OAuth/hosting readiness state\n2. `84-current-execution-handover-2026-09-20.md` — prior Stage Ready execution handover
 2. `83-production-google-oauth-preparation-v1.3.md` — **exact next external gate: production Google OAuth project/client and values**
 2. `82-stage-ready-google-only-pilot-closeout-v1.3.md` — **current Stage Ready closure and exact post-change proof set**
 2. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
@@ -226,7 +226,7 @@ Current exact state:
 
 Current milestone: **STAGE READY — GOOGLE-ONLY CONTROLLED PILOT BASELINE**.
 
-Canonical new-chat handover: `85-production-oauth-hosting-readiness-2026-09-20.md`.
+Canonical new-chat handover: `86-public-origin-google-oauth-proof-2026-09-20.md`.
 
 The pre-change Stage Ready evidence remains historical in doc 80. Fresh post-change closure is doc 82 and is now the canonical launch baseline.
 
