@@ -1,17 +1,6 @@
 name: Raahi Learning Activity Side Effects
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'supabase/migrations/1027_v13_activity_submission_side_effects.sql'
-      - 'supabase/migrations/1028_v13_activity_review_idempotency_fix.sql'
-      - 'supabase/migrations/1029_v13_activity_review_privilege_restore.sql'
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/activity-side-effects.mjs'
-      - '.github/workflows/raahi-learning-activity-side-effects.yml'
   workflow_dispatch:
 
 permissions:
