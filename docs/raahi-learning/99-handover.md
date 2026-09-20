@@ -20,7 +20,8 @@ Do **not** restart product design, rebuild the database, continue random bug fix
 
 Read next:
 
-1. `82-stage-ready-google-only-pilot-closeout-v1.3.md` — **current Stage Ready closure and exact post-change proof set**
+1. `83-production-google-oauth-preparation-v1.3.md` — **exact next external gate: production Google OAuth project/client and values**
+2. `82-stage-ready-google-only-pilot-closeout-v1.3.md` — **current Stage Ready closure and exact post-change proof set**
 2. `81-controlled-pilot-google-only-trust-v1.3.md` — **current approved pilot trust rule and impact analysis**
 2. `78-controlled-pilot-cutover-runbook-v1.3.md` — **current same-project pilot cutover: backup, synthetic cleanup, writer/identity seal, Google auth, Gomoh activation, canary**
 3. `80-stage-ready-closeout-v1.3.md` — **historical pre-1037 Stage Ready baseline; must be superseded by fresh post-change closure**
