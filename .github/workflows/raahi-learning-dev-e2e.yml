@@ -1,15 +1,6 @@
 name: Raahi Learning DEV E2E Harness
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'apps/raahi-learning/**'
-      - 'supabase/migrations/**'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/**'
-      - '.github/workflows/raahi-learning-dev-e2e.yml'
   workflow_dispatch:
 
 permissions:
