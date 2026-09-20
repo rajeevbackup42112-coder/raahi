@@ -1,11 +1,5 @@
 name: Raahi Learning Class Race Recovery
 on:
-  push:
-    branches: [raahi-learning-implementation-v1]
-    paths:
-      - 'apps/raahi-learning/live-thread-deeplink-v13.js'
-      - 'tests/raahi-learning-e2e/class-race-recovery.mjs'
-      - '.github/workflows/raahi-learning-class-race-recovery.yml'
   workflow_dispatch:
 permissions:
   contents: read
