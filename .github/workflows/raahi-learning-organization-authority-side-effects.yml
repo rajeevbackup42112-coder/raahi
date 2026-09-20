@@ -1,15 +1,6 @@
 name: Raahi Learning Organization Authority Side Effects
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'supabase/migrations/20260918131336_1031_v13_organization_authority_side_effects.sql'
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/organization-authority-side-effects.mjs'
-      - '.github/workflows/raahi-learning-organization-authority-side-effects.yml'
   workflow_dispatch:
 
 permissions:
