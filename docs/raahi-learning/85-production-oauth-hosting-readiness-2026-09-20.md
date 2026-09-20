@@ -185,36 +185,65 @@ Therefore the production hostname can be added without disturbing DEV.
 
 The future production CNAME must be created in GoDaddy after the dedicated public Pages project exists.
 
-## 7. Support mailbox — current blocker
+## 7. Support mailbox — operational
 
 Required public address:
 `support@myraahi.co.in`
 
-Current DNS:
-- no MX record for `myraahi.co.in`
+Provider:
+**Zoho Mail Forever Free organization**
 
-Therefore the support address is not yet able to receive mail.
+Organization:
+**Raahi Learning**
 
-GoDaddy currently offers a temporary Microsoft 365 trial, but a short trial should not become a launch dependency.
+Domain ownership:
+**verified**
 
-Recommended zero-cost controlled-pilot option:
-use a durable custom-domain forwarding service and forward `support@myraahi.co.in` to an operator-held mailbox.
+Mailbox:
+**support@myraahi.co.in**
 
-At the time of this readiness pass, ImprovMX Free publicly offers:
-- 1 domain
-- 25 aliases
-- up to 500 forwarded emails/day
-- no paid mailbox requirement
+The mailbox is the first Zoho organization user and is active.
 
-Its free plan does not provide outbound SMTP. This is acceptable for a minimal pilot receive/contact channel if replies are sent from an operator mailbox, but should be revisited for a polished production support identity.
+GoDaddy DNS now carries the exact Zoho India mail records:
 
-Do not modify MX records until the chosen support-mail provider is configured and its exact records are known.
+MX:
+- `@ → mx.zoho.in`, priority 10
+- `@ → mx2.zoho.in`, priority 20
+- `@ → mx3.zoho.in`, priority 50
+
+SPF:
+- `@ TXT v=spf1 include:zoho.in ~all`
+
+DKIM:
+- host `zmail._domainkey`
+- Zoho-generated RSA public key published exactly as supplied by Zoho.
+
+Existing Google site-verification TXT, DMARC and non-mail application records were preserved.
+
+Authoritative GoDaddy DNS verification passed for:
+- all three MX records;
+- SPF;
+- DKIM;
+- Zoho domain-verification TXT.
+
+Independent public resolver verification passed through:
+- Google Public DNS `8.8.8.8`;
+- Cloudflare resolver `1.1.1.1`.
+
+Live mail proof:
+- outbound mail from `support@myraahi.co.in` reached `choudhary.ajit2112@gmail.com`;
+- inbound mail from `choudhary.ajit2112@gmail.com` reached the Zoho inbox for `support@myraahi.co.in`.
+
+Zoho setup wizard reports:
+**Your setup is complete!**
+
+Therefore the public support-address launch prerequisite is closed.
 
 ## 8. Remaining sequence
 
 Before public-origin proof:
 
-1. establish functional `support@myraahi.co.in`;
+1. functional `support@myraahi.co.in` — **DONE**;
 2. obtain explicit product-owner approval to create the public Pages deployment;
 3. create a separate Cloudflare Pages Direct Upload project;
 4. upload the exact prepared controlled-pilot artifact;
