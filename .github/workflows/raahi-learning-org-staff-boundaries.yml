@@ -1,14 +1,6 @@
 name: Raahi Learning Organization Staff Boundaries
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/org-staff-capability-boundaries.mjs'
-      - '.github/workflows/raahi-learning-org-staff-boundaries.yml'
   workflow_dispatch:
 
 permissions:
