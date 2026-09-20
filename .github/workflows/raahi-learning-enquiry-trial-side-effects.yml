@@ -1,15 +1,6 @@
 name: Raahi Learning Enquiry Trial Side Effects
 
 on:
-  push:
-    branches:
-      - raahi-learning-implementation-v1
-    paths:
-      - 'supabase/migrations/1023_v13_enquiry_trial_side_effects.sql'
-      - 'apps/raahi-learning/live-product-fix-v13.js'
-      - 'supabase/functions/dev-test-identities/**'
-      - 'tests/raahi-learning-e2e/enquiry-trial-side-effects.mjs'
-      - '.github/workflows/raahi-learning-enquiry-trial-side-effects.yml'
   workflow_dispatch:
 
 permissions:
