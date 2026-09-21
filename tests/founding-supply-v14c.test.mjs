@@ -89,6 +89,8 @@ test('UI keeps self-service and adds explicit consented help without direct tabl
   assert.match(ui,/Publish these details/);
   assert.match(ui,/No silent onboarding/);
   assert.match(ui,/private draft only/);
+  assert.match(ui,/route === 'founding-supply-help' && live\.session && live\.context/);
+  assert.match(ui,/route === 'founding-supply' && live\.session && live\.context/);
   assert.doesNotMatch(ui,/\.from\s*\(/);
   assert.doesNotMatch(ui,/\.insert\s*\(/);
   assert.doesNotMatch(ui,/\.update\s*\(/);

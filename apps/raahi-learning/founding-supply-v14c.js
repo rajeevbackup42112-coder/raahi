@@ -232,8 +232,8 @@
 
     live.afterRender = function(route, coreApi) {
       originalAfterRender?.(route, coreApi);
-      if (route === 'founding-supply-help' && state.my === null) loadMine();
-      if (route === 'founding-supply' && api.state.role === 'platform' && state.platform === null) loadPlatform();
+      if (route === 'founding-supply-help' && live.session && live.context && state.my === null) loadMine();
+      if (route === 'founding-supply' && live.session && live.context && api.state.role === 'platform' && state.platform === null) loadPlatform();
     };
 
     document.addEventListener('click', async e => {
