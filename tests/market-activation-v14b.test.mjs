@@ -42,8 +42,11 @@ test('Raahi Desk public RPC is a guarded invoker wrapper and table grants stay c
   assert.doesNotMatch(migration,/grant\s+(?:insert|update|delete).*community_posts.*authenticated/i);
 });
 
-test('Raahi Desk UI uses only the canonical RPC and is available only in Platform workspace',()=>{
-  assert.match(ui,/api\.state\.role !== 'platform'/);
+test('Raahi Desk UI uses only the canonical RPC and exposes only scoped market-activation workspaces',()=>{
+  assert.match(ui,/\['platform','manager'\]\.includes\(api\.state\.role\)/);
+  assert.match(ui,/manager_scopes/);
+  assert.match(ui,/canOperateLocation/);
+  assert.match(ui,/This Location is outside your market-activation scope/);
   assert.match(ui,/publish_raahi_desk_post/);
   assert.match(ui,/discover_community_posts/);
   assert.match(ui,/Raahi Desk/);

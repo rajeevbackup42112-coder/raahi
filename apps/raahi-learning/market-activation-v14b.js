@@ -25,24 +25,48 @@
       return data;
     }
 
-    const selectedLocation = () => live.context?.selected_location
+    const managerScopes = () => arr(live.context?.manager_scopes)
+      .filter(x => x.staff_type === 'local_manager' && x.location_state === 'live');
+    const isGlobalOperator = () => arr(live.context?.capabilities).includes('platform_admin');
+    const isMarketActivationRole = () => ['platform','manager'].includes(api.state.role);
+
+    const browseSelectedLocation = () => live.context?.selected_location
       || arr(live.data?.locations).find(x => x.location_id === live.context?.selected_location_id)
-      || arr(live.data?.locations).find(x => x.state === 'live')
       || null;
+    const browseSelectedLocationId = () => browseSelectedLocation()?.location_id || browseSelectedLocation()?.id || null;
+    const canOperateLocation = locationId => Boolean(locationId) && (
+      isGlobalOperator()
+      || managerScopes().some(x => x.location_id === locationId)
+    );
+
+    const selectedLocation = () => {
+      const browse = browseSelectedLocation();
+      const browseId = browse?.location_id || browse?.id || null;
+      if (browse && canOperateLocation(browseId)) return browse;
+      if (!isGlobalOperator()) {
+        const scope = managerScopes()[0];
+        if (!scope) return null;
+        return arr(live.data?.locations).find(x => (x.location_id || x.id) === scope.location_id)
+          || { location_id: scope.location_id, name: scope.location_name, state: scope.location_state };
+      }
+      return browse
+        || arr(live.data?.locations).find(x => x.state === 'live')
+        || null;
+    };
 
     const selectedLocationId = () => selectedLocation()?.location_id || selectedLocation()?.id || null;
     const selectedLocationName = () => selectedLocation()?.name || 'selected Location';
 
-    function platformDenied() {
+    function operatorDenied() {
       return api.layout(`${api.pageHead('Raahi Desk','Platform-authored local learning content.')}
         <div class="card empty">
-          <h3>Platform workspace required</h3>
-          <p>Opening this route does not grant editorial authority.</p>
+          <h3>Market activation access required</h3>
+          <p>Raahi Desk is available only to the global Platform Admin or a Local Manager inside that manager's assigned Location.</p>
         </div>`);
     }
 
     function pageRaahiDesk() {
-      if (!live.session || !live.context || api.state.role !== 'platform') return platformDenied();
+      if (!live.session || !live.context || !isMarketActivationRole()) return operatorDenied();
       const loc = selectedLocation();
       if (!loc) {
         return api.layout(`${api.pageHead('Raahi Desk','Platform-authored local learning content.')}
@@ -54,7 +78,7 @@
         <div class="card">
           <div class="between">
             <div><div class="tiny muted">Publishing to</div><h3>${h(selectedLocationName())}</h3></div>
-            <button class="pill-btn small" data-route="location-picker">Change Location</button>
+            ${isGlobalOperator() ? '<button class="pill-btn small" data-route="location-picker">Change Location</button>' : ''}
           </div>
           <div class="notice" style="margin-top:12px">
             This post will be publicly attributed to <strong>Raahi Desk</strong> and marked <strong>Platform-authored</strong>.
@@ -84,9 +108,12 @@
     }
 
     api.routeMeta['raahi-desk'] = 'Raahi Desk';
-    const platformNav = api.roleNav?.platform;
-    if (Array.isArray(platformNav) && !platformNav.some(x => x?.[0] === 'raahi-desk')) {
-      platformNav.splice(1, 0, ['raahi-desk','✦','Raahi Desk']);
+    for (const role of ['platform','manager']) {
+      const nav = api.roleNav?.[role];
+      if (Array.isArray(nav) && !nav.some(x => x?.[0] === 'raahi-desk')) {
+        const communityIndex = nav.findIndex(x => x?.[0] === 'community');
+        nav.splice(communityIndex >= 0 ? communityIndex : 1, 0, ['raahi-desk','✦','Raahi Desk']);
+      }
     }
 
     live.renderRoute = function(route, coreApi) {
@@ -100,7 +127,7 @@
 
     function polishEditorialContent(route) {
       if (route === 'community') {
-        if (api.state.role === 'platform') {
+        if (isMarketActivationRole() && canOperateLocation(browseSelectedLocationId())) {
           const normalNewPost = document.querySelector('[data-route="community-new"]');
           if (normalNewPost) {
             normalNewPost.dataset.route = 'raahi-desk';
@@ -166,14 +193,14 @@
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      if (api.state.role !== 'platform') {
-        api.toast('Platform workspace required','danger');
+      if (!isMarketActivationRole()) {
+        api.toast('Market activation access required','danger');
         return;
       }
 
       const locationId = selectedLocationId();
-      if (!locationId) {
-        api.toast('Choose a live Location first','danger');
+      if (!locationId || !canOperateLocation(locationId)) {
+        api.toast('This Location is outside your market-activation scope','danger');
         return;
       }
 

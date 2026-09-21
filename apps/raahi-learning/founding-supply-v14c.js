@@ -34,6 +34,11 @@
     }
 
     const locations = () => arr(live.data?.locations);
+    const managerScopes = () => arr(live.context?.manager_scopes)
+      .filter(x => x.staff_type === 'local_manager' && x.location_state === 'live');
+    const isGlobalOperator = () => arr(live.context?.capabilities).includes('platform_admin');
+    const isMarketActivationRole = () => ['platform','manager'].includes(api.state.role);
+
     const selectedLocation = () => live.context?.selected_location
       || locations().find(x => x.location_id === live.context?.selected_location_id)
       || locations().find(x => x.state === 'live')
@@ -132,10 +137,10 @@
         <div class="card"><p>Status: <strong>${h(r.state || 'unknown')}</strong></p></div>`);
     }
 
-    function platformDenied() {
+    function operatorDenied() {
       return api.layout(`${api.pageHead('Founding Supply','Genuine Teacher-assisted onboarding.')}
-        <div class="card empty"><h3>Platform workspace required</h3>
-        <p>Opening this route does not grant authority to prepare Teacher drafts.</p></div>`);
+        <div class="card empty"><h3>Market activation access required</h3>
+        <p>Founding Supply is available only to the global Platform Admin or a Local Manager for that manager's assigned Location.</p></div>`);
     }
 
     function platformRequestCard(r) {
@@ -174,14 +179,17 @@
     }
 
     function pagePlatformFoundingSupply() {
-      if (!live.session || !live.context || api.state.role !== 'platform') return platformDenied();
+      if (!live.session || !live.context || !isMarketActivationRole()) return operatorDenied();
       if (state.platform === null) {
         return api.layout(`${api.pageHead('Founding Supply','Genuine Teacher-assisted onboarding.')}
           <div class="card empty"><h3>Loading genuine requests…</h3></div>`);
       }
       const active = arr(state.platform).filter(x => ['requested','draft_ready'].includes(x.state));
+      const scopeCopy = isGlobalOperator()
+        ? 'You can operate genuine requests across live Locations.'
+        : `You can operate only your assigned Location${managerScopes().length === 1 ? `: <strong>${h(managerScopes()[0].location_name || '')}</strong>` : 's'}.`;
       return api.layout(`${api.pageHead('Founding Supply','Teachers asked for help first. Raahi prepares; the Teacher publishes.')}
-        <div class="card"><div class="notice"><strong>No silent onboarding.</strong> Only Accounts that explicitly requested assistance appear in this queue. Drafts remain private until the Teacher accepts.</div></div>
+        <div class="card"><div class="notice"><strong>No silent onboarding.</strong> Only Accounts that explicitly requested assistance appear in this queue. Drafts remain private until the Teacher accepts.<br>${scopeCopy}</div></div>
         <div class="section stack">
           ${active.length ? active.map(platformRequestCard).join('') : '<div class="card empty"><h3>No active Teacher assistance requests</h3><p>Nothing is manufactured to fill this queue.</p></div>'}
         </div>`);
@@ -189,10 +197,12 @@
 
     api.routeMeta['founding-supply-help'] = 'Teacher Setup Help';
     api.routeMeta['founding-supply'] = 'Founding Supply';
-    const platformNav = api.roleNav?.platform;
-    if (Array.isArray(platformNav) && !platformNav.some(x => x?.[0] === 'founding-supply')) {
-      const deskIndex = platformNav.findIndex(x => x?.[0] === 'raahi-desk');
-      platformNav.splice(deskIndex >= 0 ? deskIndex + 1 : 1, 0, ['founding-supply','♧','Founding Supply']);
+    for (const role of ['platform','manager']) {
+      const nav = api.roleNav?.[role];
+      if (Array.isArray(nav) && !nav.some(x => x?.[0] === 'founding-supply')) {
+        const deskIndex = nav.findIndex(x => x?.[0] === 'raahi-desk');
+        nav.splice(deskIndex >= 0 ? deskIndex + 1 : 1, 0, ['founding-supply','♧','Founding Supply']);
+      }
     }
 
     live.renderRoute = function(route, coreApi) {
@@ -233,7 +243,7 @@
     live.afterRender = function(route, coreApi) {
       originalAfterRender?.(route, coreApi);
       if (route === 'founding-supply-help' && live.session && live.context && state.my === null) loadMine();
-      if (route === 'founding-supply' && live.session && live.context && api.state.role === 'platform' && state.platform === null) loadPlatform();
+      if (route === 'founding-supply' && live.session && live.context && isMarketActivationRole() && state.platform === null) loadPlatform();
     };
 
     document.addEventListener('click', async e => {
