@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `96-current-execution-handover-v14a-public-live-2026-09-21.md` first.**
+**For the current state, read `100-current-execution-handover-v14b-public-live-2026-09-21.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**2026-09-21 V1.4A PUBLIC LIVE:** the investor/delight presentation pass is deployed at `https://learning.myraahi.co.in` from exact source SHA `36f13d49c1c330e3334d89fa06dd090f67650bd7`. Production `build-meta.json` matches that SHA, all published artifact hashes match, authenticated Home/Explore/Community/Messages are green, and Dhanbad -> Gomoh -> Dhanbad Location switching is green. Final qualification: **49/49 production guards**, **5,349,572 model cases with 0 failures**, production-like load guard **9/9**, and GitHub Model Tests run **#647** passed on the exact source SHA. Read `96-current-execution-handover-v14a-public-live-2026-09-21.md` first, then `95-v14a-public-live-evidence-2026-09-21.md`. The next slice is market activation / seeding from doc 92, not another V1.4A redesign.
+**2026-09-21 V1.4B RAAHI DESK PUBLIC LIVE:** market-activation Slice 1 is deployed at `https://learning.myraahi.co.in` from exact source SHA `3735e7e2717a04043bd7af7552a7b0b5ec757622`. The permanent Supabase migration `20260921055900_v14_raahi_desk_provenance` is applied and transactionally proven. Community now distinguishes `organic`, `platform_editorial` and reserved future `assisted` provenance. Public platform-editorial content renders as **Raahi Desk · Platform-authored** while the real operator remains auditable internally. Production `build-meta.json` matches the exact SHA, all public file hashes match, signed-out and ordinary authenticated Accounts cannot access the Raahi Desk composer, and Dhanbad -> Gomoh -> Dhanbad remains green. GitHub Model Tests run **#649** passed. There are currently **0 active Platform Admins and 0 seeded Community posts**, so no fake or accidental market activity was introduced. Read `100-current-execution-handover-v14b-public-live-2026-09-21.md` first, then `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md`. The next engine is genuine Founding Supply onboarding.
 
 **2026-09-20 PUBLIC GO-LIVE:** Google Auth Platform is now **In production** and External. A Google identity outside the former two-user OAuth test list completed consent on the public origin, landed on Home, and bootstrapped a fresh active Raahi Account. Dhanbad + Gomoh are live/selectable; promotion is Gomoh-first, not Gomoh-restricted. Production data must now be treated as real user data. Read `89-public-go-live-evidence-2026-09-20.md` first.
 
@@ -26,10 +26,13 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `96-current-execution-handover-v14a-public-live-2026-09-21.md` - **canonical current execution handover; V1.4A is PUBLIC LIVE and the next slice is market activation / seeding**
-2. `95-v14a-public-live-evidence-2026-09-21.md` - **exact V1.4A production deployment, rollback anchor, hash verification and browser-canary evidence**
-3. `92-market-activation-seeding-blueprint-v1.4.md` - **next product/domain slice**
-4. `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` - historical pre-deployment V1.4A implementation evidence
+1. `100-current-execution-handover-v14b-public-live-2026-09-21.md` - **canonical current execution handover; V1.4B Raahi Desk is PUBLIC LIVE; next engine is Founding Supply**
+2. `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md` - **exact V1.4B migration, preview, production, rollback and browser-canary evidence**
+3. `97-raahi-desk-provenance-domain-contract-v1.4b.md` - **frozen Raahi Desk authority/provenance contract**
+4. `92-market-activation-seeding-blueprint-v1.4.md` - **market-activation master blueprint**
+5. `96-current-execution-handover-v14a-public-live-2026-09-21.md` - historical V1.4A handover
+6. `95-v14a-public-live-evidence-2026-09-21.md` - historical V1.4A production evidence
+7. `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` - historical pre-deployment V1.4A implementation evidence
 
 5. `89-public-go-live-evidence-2026-09-20.md` - public Google admission baseline
 
