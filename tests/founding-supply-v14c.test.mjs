@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const ui=fs.readFileSync('apps/raahi-learning/founding-supply-v14c.js','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260921093000_v14c_founding_supply_assisted_teacher_onboarding.sql','utf8');
-const fkIndexes=fs.readFileSync('supabase/migrations/20260921094500_v14c_founding_supply_fk_indexes.sql','utf8');
-const explicitDeny=fs.readFileSync('supabase/migrations/20260921095000_v14c_founding_supply_explicit_browser_deny.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260921093234_v14c_founding_supply_assisted_teacher_onboarding.sql','utf8');
+const fkIndexes=fs.readFileSync('supabase/migrations/20260921093410_v14c_founding_supply_fk_indexes.sql','utf8');
+const explicitDeny=fs.readFileSync('supabase/migrations/20260921093510_v14c_founding_supply_explicit_browser_deny.sql','utf8');
 const builder=fs.readFileSync('apps/raahi-learning/build-source-v13.mjs','utf8');
 const packager=fs.readFileSync('scripts/prepare-learning-release.mjs','utf8');
 
