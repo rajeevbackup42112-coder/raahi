@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `100-current-execution-handover-v14b-public-live-2026-09-21.md` first.**
+**For the current state, read `103-current-execution-handover-v14c-public-live-2026-09-21.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -10,13 +10,13 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**2026-09-21 V1.4B RAAHI DESK PUBLIC LIVE:** market-activation Slice 1 is deployed at `https://learning.myraahi.co.in` from exact source SHA `3735e7e2717a04043bd7af7552a7b0b5ec757622`. The permanent Supabase migration `20260921055900_v14_raahi_desk_provenance` is applied and transactionally proven. Community now distinguishes `organic`, `platform_editorial` and reserved future `assisted` provenance. Public platform-editorial content renders as **Raahi Desk · Platform-authored** while the real operator remains auditable internally. Production `build-meta.json` matches the exact SHA, all public file hashes match, signed-out and ordinary authenticated Accounts cannot access the Raahi Desk composer, and Dhanbad -> Gomoh -> Dhanbad remains green. GitHub Model Tests run **#649** passed. There are currently **0 active Platform Admins and 0 seeded Community posts**, so no fake or accidental market activity was introduced. Read `100-current-execution-handover-v14b-public-live-2026-09-21.md` first, then `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md`. The next engine is genuine Founding Supply onboarding.
+**2026-09-21 V1.4C FOUNDING SUPPLY PUBLIC LIVE:** the assisted Teacher onboarding walking skeleton is deployed at `https://learning.myraahi.co.in` from exact application SHA `c990d9a8b854b362d88bb4e1b7b8cf99a6538d95`. A genuine Teacher must request help first; Raahi may prepare only a private bounded draft; only that same authenticated Teacher can accept and publish the exact proposal. Permanent migrations `20260921093234`, `20260921093410`, and `20260921093510` are applied and transactionally proven. Production artifact hashes match with zero forbidden public matches. Home/Explore/Community/Messages, Teacher Setup/Help, ordinary-user Platform denial, signed-out behavior, Privacy/Terms, and Dhanbad -> Gomoh -> Dhanbad are green. There are currently **0 active Platform Admins, 0 assisted requests, and 0 assisted Teacher Profiles/Teaching Options**, so no fake supply was introduced. Read `103-current-execution-handover-v14c-public-live-2026-09-21.md` first, then `102-v14c-founding-supply-public-live-evidence-2026-09-21.md`. The next genuine gate is deliberate Platform Admin ownership, followed by one real Teacher end-to-end proof.
 
 **2026-09-20 PUBLIC GO-LIVE:** Google Auth Platform is now **In production** and External. A Google identity outside the former two-user OAuth test list completed consent on the public origin, landed on Home, and bootstrapped a fresh active Raahi Account. Dhanbad + Gomoh are live/selectable; promotion is Gomoh-first, not Gomoh-restricted. Production data must now be treated as real user data. Read `89-public-go-live-evidence-2026-09-20.md` first.
 
 **Historical controlled-pilot cutover record:** before public admission, the hash-verified release candidate was reachable at `https://learning.myraahi.co.in`, the pre-cleanup logical backup was checksum-verified, synthetic public data and harness Auth users were removed, synthetic writers and `dev-test-identities` were sealed, retired MessageCentral secrets were removed, Dhanbad + Gomoh were the only live Locations, and the genuine two-user Google/RLS canary was green. At that historical point Google OAuth was still in Testing and real users had not yet been admitted. This is superseded by the PUBLIC GO-LIVE state above; see `87-controlled-pilot-cutover-evidence-2026-09-20.md` only for cutover evidence.
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. DEV migration ceiling is now `1038_v13_remove_public_trust_policy_rpc`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. Current migration ceiling is now `20260921093510_v14c_founding_supply_explicit_browser_deny`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -26,13 +26,16 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `100-current-execution-handover-v14b-public-live-2026-09-21.md` - **canonical current execution handover; V1.4B Raahi Desk is PUBLIC LIVE; next engine is Founding Supply**
-2. `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md` - **exact V1.4B migration, preview, production, rollback and browser-canary evidence**
-3. `97-raahi-desk-provenance-domain-contract-v1.4b.md` - **frozen Raahi Desk authority/provenance contract**
-4. `92-market-activation-seeding-blueprint-v1.4.md` - **market-activation master blueprint**
-5. `96-current-execution-handover-v14a-public-live-2026-09-21.md` - historical V1.4A handover
-6. `95-v14a-public-live-evidence-2026-09-21.md` - historical V1.4A production evidence
-7. `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` - historical pre-deployment V1.4A implementation evidence
+1. `103-current-execution-handover-v14c-public-live-2026-09-21.md` - **canonical current execution handover; V1.4C Founding Supply is PUBLIC LIVE; next gate is Platform Admin ownership**
+2. `102-v14c-founding-supply-public-live-evidence-2026-09-21.md` - **exact V1.4C migrations, preview defect/fix, production, rollback and canary evidence**
+3. `101-founding-supply-assisted-teacher-onboarding-contract-v1.4c.md` - **frozen Teacher-requested/private-draft/same-Teacher-acceptance contract**
+4. `100-current-execution-handover-v14b-public-live-2026-09-21.md` - historical V1.4B handover
+5. `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md` - historical V1.4B public-live evidence
+6. `97-raahi-desk-provenance-domain-contract-v1.4b.md` - Raahi Desk provenance contract
+7. `92-market-activation-seeding-blueprint-v1.4.md` - **market-activation master blueprint**
+8. `96-current-execution-handover-v14a-public-live-2026-09-21.md` - historical V1.4A handover
+9. `95-v14a-public-live-evidence-2026-09-21.md` - historical V1.4A production evidence
+10. `93-investor-delight-v14a-implementation-evidence-2026-09-20.md` - historical pre-deployment V1.4A implementation evidence
 
 5. `89-public-go-live-evidence-2026-09-20.md` - public Google admission baseline
 
