@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 
 function makeFixture(root){
   const source=path.join(root,'source');fs.mkdirSync(source);
-  for(const name of ['styles.css','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','delight-v14.css','delight-v14.js','market-activation-v14b.js'])fs.writeFileSync(path.join(source,name),'/* package fixture */');
+  for(const name of ['styles.css','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','delight-v14.css','delight-v14.js','market-activation-v14b.js','founding-supply-v14c.js'])fs.writeFileSync(path.join(source,name),'/* package fixture */');
   fs.writeFileSync(path.join(source,'privacy.html'),'<html>Privacy</html>');
   fs.writeFileSync(path.join(source,'terms.html'),'<html>Terms</html>');
   fs.writeFileSync(path.join(source,'live.js'),"const SUPABASE_URL = 'https://iiwwmqokaeflaenhlyip.supabase.co';\nconst SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bz0YgDXY-WkKxZnogGsfUg_Qgl7E-Wi';");
@@ -34,12 +34,13 @@ test('Dedicated production packaging refuses DEV, secrets and overwrite; ships p
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/delight-v14\.css/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/delight-v14\.js/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/market-activation-v14b\.js/);
+    assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/founding-supply-v14c\.js/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/\"phoneTrustMode\":\"phone_trust_required\"/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/\"phoneTrustProvider\":\"disabled\"/);
     assert.equal(fs.readFileSync(path.join(output,'live.js'),'utf8').includes('iiwwmqokaeflaenhlyip'),false);
     const meta=JSON.parse(fs.readFileSync(path.join(output,'build-meta.json'),'utf8'));
     assert.equal(meta.release_mode,'NON_DEV');
-    assert.equal(Object.keys(meta.files).length,12);
+    assert.equal(Object.keys(meta.files).length,13);
     assert.notEqual(run({}).status,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -60,6 +61,7 @@ test('Controlled pilot packaging explicitly permits Learning DEV backend but nev
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/delight-v14\.css/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/delight-v14\.js/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/market-activation-v14b\.js/);
+    assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/founding-supply-v14c\.js/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustMode\":\"controlled_pilot_google_only\"/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustProvider\":\"disabled\"/);
     assert.notEqual(run('bad-origin',{RAAHI_RELEASE_ORIGIN:'https://dev.learning.myraahi.co.in'}).status,0);
