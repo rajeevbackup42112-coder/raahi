@@ -163,23 +163,22 @@ Regression coverage now asserts the session/context guard.
 
 Do not remove this guard.
 
-## 11. Next genuine decision
+## 11. Current admin ownership and next genuine decision
 
-The next step requires an ownership decision:
+City-scoped ownership is now established:
+- `rajeev.backup1.2112@gmail.com` = Gomoh `local_manager`;
+- `rajeev.backup2.2112@gmail.com` = Dhanbad `local_manager`.
 
-**Which real Raahi operator Account should receive the first `platform_admin` capability?**
+Neither Account has global `platform_admin`.
 
-Do not infer this from a random signed-in test Account.
+See `104-city-admin-ownership-bootstrap-2026-09-21.md`.
 
-Once a deliberate operator Account is selected:
-1. grant `platform_admin` through an auditable controlled operation;
-2. verify the Platform workspace exposes Raahi Desk + Founding Supply only for that Account;
-3. onboard one genuine Teacher end-to-end;
-4. verify the Teacher initiates the assistance request;
-5. Platform prepares private draft;
-6. Teacher reviews and accepts;
-7. verify genuine public Explore supply;
-8. verify normal Teacher editing/availability controls afterward.
+The next genuine product decision is authority scope for market activation:
+
+1. keep Raahi Desk + Founding Supply global-Platform-only and choose a separate global Platform Admin; or
+2. extend those workflows with carefully Location-scoped Local Manager authority, so each city admin may operate only inside the assigned Location.
+
+Do not silently widen Local Manager authority and do not grant global Platform Admin merely to make the screens accessible.
 
 Then repeat with a very small founding cohort before broader promotion.
 
