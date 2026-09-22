@@ -44,6 +44,9 @@ body{
 
 .v14-local-hero .eyebrow{color:#6a56ef;letter-spacing:.13em}
 .v14-local-hero p{font-size:17px;max-width:720px;color:#626b80}
+.v14-teach-entry{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.92rem;color:var(--muted,#6b7280)}
+.v14-teach-entry .ghost-btn{padding:6px 10px;min-height:auto}
+@media(max-width:640px){.v14-teach-entry{justify-content:center;flex-wrap:wrap}}
 .empty.v14-empty{padding:34px 24px;background:linear-gradient(145deg,#fff,#fffcf6);border-style:dashed}
 .empty.v14-empty .empty-icon{background:linear-gradient(145deg,var(--raahi-lilac),var(--raahi-sky));color:var(--primary)}
 .empty.v14-empty .empty-icon svg{width:30px;height:30px}

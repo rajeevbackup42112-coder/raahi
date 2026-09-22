@@ -85,6 +85,16 @@
     const find=hero.querySelector('[data-route="explore"]'); if(find) find.textContent='Find a teacher';
     const need=hero.querySelector('[data-route="request-new"]'); if(need) need.textContent='I need tuition';
 
+    const live=window.RaahiLearningLive;
+    const canTeach=Array.isArray(live?.context?.capabilities) && live.context.capabilities.includes('teach');
+    if(!canTeach && !hero.querySelector('.v14-teach-entry')){
+      const entry=document.createElement('div');
+      entry.className='v14-teach-entry';
+      entry.innerHTML='<span>Are you a teacher?</span><button class="ghost-btn small" data-route="teacher-setup">Start teaching</button>';
+      const actions=hero.querySelector('.hero-actions');
+      (actions||hero).insertAdjacentElement('afterend',entry);
+    }
+
     for(const section of main.querySelectorAll(':scope > .section')){
       const title=section.querySelector(':scope > .section-title h2'); if(!title) continue;
       const text=title.textContent.trim();
