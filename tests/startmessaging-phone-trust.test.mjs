@@ -71,6 +71,31 @@ test('browser bridge supports StartMessaging without exposing the API key',()=>{
   assert.doesNotMatch(live,/sm_live_/);
 });
 
+test('Indian phone UX accepts national numbers and adds +91 automatically',()=>{
+  assert.match(live,/Indian mobile number/);
+  assert.match(live,/Enter your 10-digit mobile number\. Raahi adds \+91 automatically/);
+  assert.match(live,/normalizeIndianMobileInput/);
+  assert.match(live,/digits\.length === 12 && digits\.startsWith\('91'\)/);
+  assert.match(live,/digits\.length === 11 && digits\.startsWith\('0'\)/);
+  assert.match(live,/return '\+91' \+ digits/);
+  assert.doesNotMatch(live,/Phone in E\.164 format/);
+  assert.doesNotMatch(live,/Enter a valid Indian mobile number in \+91 format/);
+
+  assert.match(edge,/digits\.length===12&&digits\.startsWith\('91'\)/);
+  assert.match(edge,/digits\.length===11&&digits\.startsWith\('0'\)/);
+  assert.match(edge,/return '\+91'\+digits/);
+});
+
+test('Settings exposes a real local-device logout and clears transient phone flow',()=>{
+  assert.match(live,/Log out on this device/);
+  assert.match(live,/data-live-fix-logout/);
+  assert.match(live,/auth\.signOut\(\{ scope:'local' \}\)/);
+  assert.match(live,/sessionStorage\.removeItem\(PHONE_FLOW_KEY\)/);
+  assert.match(live,/clearPendingAction\(\)/);
+  assert.match(live,/location\.replace\(cleanUrl\)/);
+  assert.match(live,/route === 'settings' && live\.session/);
+});
+
 test('production activation remains sealed until hosted Raahi provider proof completes',()=>{
   assert.match(release,/phoneTrustMode:'controlled_pilot_google_only'/);
   assert.match(release,/phoneTrustProvider:'disabled'/);

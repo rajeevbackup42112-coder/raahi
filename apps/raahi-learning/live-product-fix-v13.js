@@ -99,6 +99,31 @@
       return api.layout(`${api.pageHead('Learning profiles','Manage only the learner relationships this Account currently owns.','<button class="primary-btn" data-route="learner-add">Add learner</button>')}<div class="stack">${learners.map(l => `<div class="card"><div class="between"><div><h3>${h(l.display_name)}</h3><p class="card-sub">${h(l.access_type === 'self' ? 'Self learning access' : 'Managed by this Account')}</p></div><div class="row">${l.access_type === 'manage' ? `<button class="pill-btn small" data-live-enable-self="${l.learner_id}">Set up learner login</button><button class="pill-btn small" data-live-share-learner="${l.learner_id}">Private Class code</button><button class="danger-btn small" data-live-fix-end-management="${l.access_id}">End my management</button>` : ''}</div></div>${l.access_type === 'manage' ? '<p class="tiny muted">Ending management succeeds only if another valid learner-side access path already exists. The server rechecks this invariant.</p>' : ''}</div>`).join('') || api.empty('No learner profiles','Add your own learning profile or a learner you manage.')}</div>`);
     }
 
+    function normalizeIndianMobileInput(value) {
+      let digits = String(value || '').replace(/\D/g, '');
+      if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+      if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+      if (!/^[6-9]\d{9}$/.test(digits)) throw new Error('Enter a valid 10-digit Indian mobile number.');
+      return '+91' + digits;
+    }
+
+    function formatIndianMobileField(input) {
+      let digits = String(input?.value || '').replace(/\D/g, '');
+      if (digits.length >= 12 && digits.startsWith('91')) digits = digits.slice(2);
+      if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+      if (input) input.value = digits.slice(0, 10);
+    }
+
+    async function signOutCurrentDevice() {
+      sessionStorage.removeItem(PHONE_FLOW_KEY);
+      clearPendingAction();
+      live.__phoneTrustV13 = null;
+      const { error } = await live.client.auth.signOut({ scope:'local' });
+      if (error) throw error;
+      const cleanUrl = location.origin + location.pathname + '#/welcome';
+      location.replace(cleanUrl);
+    }
+
     function pagePhoneCheck() {
       if (phoneTrustMode() === 'controlled_pilot_google_only') {
         return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Pilot access</div><h1>Google sign-in is enough for this pilot</h1><p class="muted">Phone verification is not required during the controlled Gomoh + Dhanbad pilot.</p><button class="primary-btn wide" data-live-fix-resume-action>Continue</button></div></div>`;
@@ -107,7 +132,7 @@
       if (!trust) return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Phone trust check</div><h1>Checking your phone trust…</h1><p class="muted">Raahi is reading the current server-verified trust state.</p></div></div>`;
       if (trust.state === 'fresh') return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Phone trust</div><h1>Phone confirmed</h1><p class="muted">Your current phone trust is fresh.</p><button class="primary-btn wide" data-live-fix-resume-action>Continue</button></div></div>`;
       const hasPhone = !!trust.has_phone;
-      return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Quick phone check</div><h1>${hasPhone ? 'Confirm you still have this phone' : 'Add a phone for trust-sensitive actions'}</h1><p class="muted">This is not a second login and does not change your Raahi roles or learner authority.</p>${hasPhone ? `<div class="notice">Current phone: ${h(trust.masked_phone || '')}</div>` : '<div class="field"><label>Phone in E.164 format</label><input id="live-fix-phone" inputmode="tel" placeholder="+91…"></div>'}<button class="primary-btn wide" data-live-fix-send-phone-otp>${hasPhone ? 'Send confirmation code' : 'Send phone code'}</button><div class="divider"></div><div class="field"><label>Verification code</label><input id="live-fix-phone-otp" inputmode="numeric" autocomplete="one-time-code"></div><button class="pill-btn wide" data-live-fix-verify-phone>Verify & continue</button><button class="ghost-btn wide" data-route="settings">Cancel</button></div></div>`;
+      return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Quick phone check</div><h1>${hasPhone ? 'Confirm you still have this phone' : 'Add a phone for trust-sensitive actions'}</h1><p class="muted">This is not a second login and does not change your Raahi roles or learner authority.</p>${hasPhone ? `<div class="notice">Current phone: ${h(trust.masked_phone || '')}</div>` : '<div class="field"><label>Indian mobile number</label><div class="row" style="gap:8px;align-items:center"><span class="pill-btn" aria-hidden="true" style="pointer-events:none">+91</span><input id="live-fix-phone" inputmode="numeric" autocomplete="tel-national" maxlength="12" placeholder="9876543210" aria-describedby="live-fix-phone-help"></div><span class="field-note" id="live-fix-phone-help">Enter your 10-digit mobile number. Raahi adds +91 automatically. You can also paste a number starting with +91.</span></div>'}<button class="primary-btn wide" data-live-fix-send-phone-otp>${hasPhone ? 'Send confirmation code' : 'Send phone code'}</button><div class="divider"></div><div class="field"><label>Verification code</label><input id="live-fix-phone-otp" inputmode="numeric" autocomplete="one-time-code"></div><button class="pill-btn wide" data-live-fix-verify-phone>Verify & continue</button><button class="ghost-btn wide" data-route="settings">Cancel</button></div></div>`;
     }
 
     const originalRender = live.renderRoute;
@@ -186,8 +211,7 @@
       if (provider === 'messagecentral' || provider === 'startmessaging') {
         let phone = null;
         if (!trust.has_phone) {
-          phone = document.querySelector('#live-fix-phone')?.value?.trim();
-          if (!/^\+91[6-9]\d{9}$/.test(phone || '')) throw new Error('Enter a valid Indian mobile number in +91 format.');
+          phone = normalizeIndianMobileInput(document.querySelector('#live-fix-phone')?.value);
         }
         const sent = await externalPhoneTrust(provider, { action:'send', ...(phone ? { phone } : {}) });
         sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({
@@ -208,8 +232,7 @@
         if (error) throw error;
         sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ provider:'supabase', phone:e164, type:'sms' }));
       } else {
-        const phone = document.querySelector('#live-fix-phone')?.value?.trim();
-        if (!/^\+[1-9]\d{7,14}$/.test(phone || '')) throw new Error('Enter a valid E.164 phone number including + and country code.');
+        const phone = normalizeIndianMobileInput(document.querySelector('#live-fix-phone')?.value);
         const { error } = await live.client.auth.updateUser({ phone });
         if (error) throw error;
         sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({ provider:'supabase', phone, type:'phone_change' }));
@@ -248,8 +271,12 @@
       }
     }
 
+    document.addEventListener('input', e => {
+      if (e.target?.id === 'live-fix-phone') formatIndianMobileField(e.target);
+    }, true);
+
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -401,6 +428,7 @@
         }
         if (t.hasAttribute('data-live-fix-send-phone-otp')) { await sendPhoneOtp(); return; }
         if (t.hasAttribute('data-live-fix-verify-phone')) { await verifyPhoneOtp(); return; }
+        if (t.hasAttribute('data-live-fix-logout')) { await signOutCurrentDevice(); return; }
         if (t.hasAttribute('data-live-fix-resume-action')) {
           const pending = loadPendingAction();
           if (pending) {
@@ -414,6 +442,18 @@
 
     live.afterRender = function(route, coreApi) {
       originalAfterRender(route, coreApi);
+
+      if (route === 'settings' && live.session) {
+        const main = document.querySelector('.main');
+        if (main && !main.querySelector('[data-live-fix-account-access]')) {
+          const section = document.createElement('div');
+          section.className = 'section';
+          section.dataset.liveFixAccountAccess = 'true';
+          section.innerHTML = '<div class="card"><h3>Account access</h3><p class="card-sub">Signed in with Google on this device.</p><button class="pill-btn" data-live-fix-logout>Log out on this device</button></div>';
+          main.append(section);
+        }
+      }
+
       if (route === 'phone-check' || route === 'otp') {
         if (live.__phoneTrustV13?.state === 'fresh' && loadPendingAction()) setTimeout(() => {}, 0);
       }
