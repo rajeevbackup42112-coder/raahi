@@ -19,7 +19,8 @@ test('V1.4 delight layer is presentation-only',()=>{
   assert.match(js,/Find a teacher/);
   assert.match(js,/I need tuition/);
   assert.match(js,/Are you a teacher\?/);
-  assert.match(js,/data-route="teacher-setup">Start teaching/);
+  assert.match(js,/data-v14-start-teaching>Start teaching/);
+  assert.match(js,/location\.hash='#\/teacher-setup'/);
   assert.match(css,/v14-teach-entry/);
   assert.doesNotMatch(js,/[\u00c3\u00e2\ufffd]/);
 });

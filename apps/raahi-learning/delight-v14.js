@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // Presentation-only V1.4 delight layer. No data fetches, RPCs, writes, authority or routing changes.
+  // Presentation-only V1.4 delight layer. No data fetches, RPCs, writes or authority changes.
   const icons={
     home:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 10.7 12 3.8l8.5 6.9v8.2a1.6 1.6 0 0 1-1.6 1.6H5.1a1.6 1.6 0 0 1-1.6-1.6v-8.2Z" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 20.5v-6.2h5.6v6.2" stroke="currentColor" stroke-width="1.8"/></svg>',
     explore:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.4 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
@@ -90,7 +90,11 @@
     if(!canTeach && !hero.querySelector('.v14-teach-entry')){
       const entry=document.createElement('div');
       entry.className='v14-teach-entry';
-      entry.innerHTML='<span>Are you a teacher?</span><button class="ghost-btn small" data-route="teacher-setup">Start teaching</button>';
+      entry.innerHTML='<span>Are you a teacher?</span><button type="button" class="ghost-btn small" data-v14-start-teaching>Start teaching</button>';
+      entry.querySelector('[data-v14-start-teaching]')?.addEventListener('click',()=>{
+        location.hash='#/teacher-setup';
+        window.scrollTo(0,0);
+      });
       const actions=hero.querySelector('.hero-actions');
       (actions||hero).insertAdjacentElement('afterend',entry);
     }
