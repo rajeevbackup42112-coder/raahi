@@ -20,6 +20,15 @@ test('StartMessaging is delivery-only while Supabase Auth remains durable trust 
   assert.match(edge,/auth\.admin\.updateUserById/);
   assert.match(edge,/phone_confirm:true/);
   assert.match(edge,/updated\.user\?\.id!==user\.id/);
+  assert.match(edge,/samePhone\(updated\.user\?\.phone,c\.phone_e164\)/);
+  assert.match(edge,/canonicalPhone/);
+});
+
+test('post-confirmation recovery reconciles equivalent phone formatting without another OTP',()=>{
+  assert.match(edge,/Number\(c\.verify_attempts\)>0/);
+  assert.match(edge,/confirmedAt>=Date\.parse\(c\.created_at\)/);
+  assert.match(edge,/samePhone\(latest\.user\?\.phone,c\.phone_e164\)/);
+  assert.match(edge,/reconciled:true/);
 });
 
 test('OTP plaintext is never persisted or returned by the StartMessaging bridge',()=>{

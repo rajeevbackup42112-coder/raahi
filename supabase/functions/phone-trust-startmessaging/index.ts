@@ -42,6 +42,12 @@ function normalizeIndiaPhone(value:unknown){
   return phone;
 }
 function masked(phone:string){return '••••'+phone.slice(-4);}
+function canonicalPhone(value:unknown){
+  return String(value||'').replace(/\D/g,'');
+}
+function samePhone(a:unknown,b:unknown){
+  return canonicalPhone(a)===canonicalPhone(b);
+}
 function fresh(at:string|null|undefined){
   if(!at)return false;
   const t=Date.parse(at);
@@ -226,7 +232,7 @@ async function verifyChallenge(req:Request,user:any,body:any){
 
   const {data:c,error}=await admin
     .from('phone_trust_challenges')
-    .select('id,auth_user_id,phone_e164,state,verify_attempts,expires_at,otp_digest')
+    .select('id,auth_user_id,phone_e164,state,verify_attempts,expires_at,created_at,otp_digest')
     .eq('id',challengeId)
     .eq('auth_user_id',user.id)
     .eq('provider',PROVIDER)
@@ -236,11 +242,32 @@ async function verifyChallenge(req:Request,user:any,body:any){
 
   if(c.state==='verified'){
     const {data:latest}=await admin.auth.admin.getUserById(user.id);
-    if(latest.user?.id===user.id&&latest.user?.phone===c.phone_e164&&latest.user?.phone_confirmed_at){
+    if(latest.user?.id===user.id&&samePhone(latest.user?.phone,c.phone_e164)&&latest.user?.phone_confirmed_at){
       return reply(req,200,{ok:true,verified:true,masked_phone:masked(c.phone_e164),provider:PROVIDER,replay:true});
     }
     throw new Error('CHALLENGE_NOT_ACTIVE');
   }
+
+  // Crash/partial-failure recovery: if a prior valid OTP attempt already confirmed
+  // this exact phone on the same Auth user after this challenge was issued, reconcile
+  // the ledger without requiring the user to receive or re-enter another OTP.
+  if(c.state==='sent'&&Number(c.verify_attempts)>0){
+    const {data:latest}=await admin.auth.admin.getUserById(user.id);
+    const confirmedAt=latest.user?.phone_confirmed_at ? Date.parse(latest.user.phone_confirmed_at) : NaN;
+    if(
+      latest.user?.id===user.id &&
+      samePhone(latest.user?.phone,c.phone_e164) &&
+      Number.isFinite(confirmedAt) &&
+      confirmedAt>=Date.parse(c.created_at)
+    ){
+      await admin.from('phone_trust_challenges')
+        .update({state:'verified',verified_at:latest.user!.phone_confirmed_at,updated_at:new Date().toISOString()})
+        .eq('id',c.id)
+        .eq('state','sent');
+      return reply(req,200,{ok:true,verified:true,masked_phone:masked(c.phone_e164),provider:PROVIDER,replay:true,reconciled:true});
+    }
+  }
+
   if(c.state!=='sent')throw new Error('CHALLENGE_NOT_ACTIVE');
   if(Date.parse(c.expires_at)<=Date.now()){
     await admin.from('phone_trust_challenges').update({state:'expired',updated_at:new Date().toISOString()}).eq('id',c.id);
@@ -284,7 +311,7 @@ async function verifyChallenge(req:Request,user:any,body:any){
     if(/already|exists|registered/i.test(updateError.message||''))throw new Error('PHONE_ALREADY_IN_USE');
     throw new Error('PHONE_CONFIRM_FAILED');
   }
-  if(updated.user?.id!==user.id||updated.user?.phone!==c.phone_e164||!updated.user?.phone_confirmed_at){
+  if(updated.user?.id!==user.id||!samePhone(updated.user?.phone,c.phone_e164)||!updated.user?.phone_confirmed_at){
     throw new Error('IDENTITY_CONTINUITY_FAILED');
   }
 
