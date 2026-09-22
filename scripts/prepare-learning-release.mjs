@@ -30,7 +30,7 @@ if(output===source||output.startsWith(source+path.sep)||source.startsWith(output
 if(fs.existsSync(output))throw new Error('OUTPUT_ALREADY_EXISTS');
 const sourceMeta=JSON.parse(fs.readFileSync(path.join(source,'build-meta.json'),'utf8'));
 if(sourceMeta.commit_sha!==commit)throw new Error('SOURCE_COMMIT_MISMATCH');
-const names=['styles.css','live.js','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','delight-v14.css','delight-v14.js','market-activation-v14b.js','founding-supply-v14c.js','privacy.html','terms.html'];
+const names=['styles.css','live.js','app.live-core-v13.js','live-product-fix-v13.js','live-thread-deeplink-v13.js','launch-polish-v13.js','delight-v14.css','delight-v14.js','market-activation-v14b.js','founding-supply-v14c.js','admin-management-v14e.js','privacy.html','terms.html'];
 const files=new Map(names.map(n=>[n,fs.readFileSync(path.join(source,n),'utf8')]));
 let live=files.get('live.js');
 const devUrl="const SUPABASE_URL = 'https://iiwwmqokaeflaenhlyip.supabase.co';";
@@ -47,7 +47,7 @@ files.set('index.html',`<!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script>window.RAAHI_RELEASE_CONFIG=Object.freeze(${JSON.stringify(releasePhoneTrustConfig)});</script>
 <script src="./live.js"></script><script src="./app.live-core-v13.js"></script>
-<script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script><script src="./delight-v14.js"></script><script src="./market-activation-v14b.js"></script><script src="./founding-supply-v14c.js"></script>
+<script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script><script src="./delight-v14.js"></script><script src="./market-activation-v14b.js"></script><script src="./founding-supply-v14c.js"></script><script src="./admin-management-v14e.js"></script>
 </body></html>\n`);
 for(const [name,content] of files){
   if(/dev\.learning\.myraahi|sb_secret_|dev-test-identities|dev-test-login/.test(content))throw new Error('DEV_OR_SECRET_REFERENCE: '+name);
