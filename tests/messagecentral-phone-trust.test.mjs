@@ -49,8 +49,8 @@ test('challenge ledger stores provider references but never OTP codes and has no
 
 test('MessageCentral bridge remains dormant and release does not select it during pilot',()=>{
   assert.match(live,/window\.RAAHI_RELEASE_CONFIG\?\.phoneTrustProvider \|\| 'supabase'/);
-  assert.match(live,/messageCentralPhoneTrust/);
-  assert.match(live,/provider:'messagecentral'/);
+  assert.match(live,/externalPhoneTrust/);
+  assert.match(live,/provider === 'messagecentral'/);
   assert.match(live,/signInWithOtp/);
   assert.match(live,/verifyOtp/);
   assert.match(release,/phoneTrustMode:'controlled_pilot_google_only'/);

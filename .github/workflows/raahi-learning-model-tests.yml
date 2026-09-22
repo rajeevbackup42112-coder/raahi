@@ -21,6 +21,9 @@ on:
       - 'tests/scoped-market-activation-v14d.test.mjs'
       - 'apps/raahi-learning/admin-management-v14e.js'
       - 'tests/admin-management-v14e.test.mjs'
+      - 'apps/raahi-learning/live-product-fix-v13.js'
+      - 'supabase/functions/phone-trust-startmessaging/**'
+      - 'tests/startmessaging-phone-trust.test.mjs'
       - 'supabase/migrations/**'
       - 'docs/raahi-learning/**'
 
@@ -47,7 +50,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Verify production packaging and operational guards
-        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs tests/messagecentral-phone-trust.test.mjs tests/controlled-pilot-google-only-trust.test.mjs tests/pilot-messagecentral-seal.test.mjs tests/delight-v14.test.mjs tests/market-activation-v14b.test.mjs tests/founding-supply-v14c.test.mjs tests/scoped-market-activation-v14d.test.mjs tests/admin-management-v14e.test.mjs
+        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs tests/messagecentral-phone-trust.test.mjs tests/controlled-pilot-google-only-trust.test.mjs tests/pilot-messagecentral-seal.test.mjs tests/delight-v14.test.mjs tests/market-activation-v14b.test.mjs tests/founding-supply-v14c.test.mjs tests/scoped-market-activation-v14d.test.mjs tests/admin-management-v14e.test.mjs tests/startmessaging-phone-trust.test.mjs
 
       - name: Verify operations script syntax
         run: |

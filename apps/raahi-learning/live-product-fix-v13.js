@@ -36,8 +36,14 @@
     const phoneTrustMode = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustMode || 'phone_trust_required');
     const phoneTrustProvider = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustProvider || 'supabase');
 
-    async function messageCentralPhoneTrust(body) {
-      const { data, error } = await live.client.functions.invoke('phone-trust-messagecentral', { body });
+    async function externalPhoneTrust(provider, body) {
+      const functionName = provider === 'startmessaging'
+        ? 'phone-trust-startmessaging'
+        : provider === 'messagecentral'
+          ? 'phone-trust-messagecentral'
+          : null;
+      if (!functionName) throw new Error('Phone verification provider is unavailable.');
+      const { data, error } = await live.client.functions.invoke(functionName, { body });
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || 'Phone verification failed.');
       return data;
@@ -176,15 +182,16 @@
       if (phoneTrustMode() === 'controlled_pilot_google_only') throw new Error('Phone verification is not required during this pilot.');
       const trust = live.__phoneTrustV13 || await rpc('get_my_phone_trust');
 
-      if (phoneTrustProvider() === 'messagecentral') {
+      const provider = phoneTrustProvider();
+      if (provider === 'messagecentral' || provider === 'startmessaging') {
         let phone = null;
         if (!trust.has_phone) {
           phone = document.querySelector('#live-fix-phone')?.value?.trim();
           if (!/^\+91[6-9]\d{9}$/.test(phone || '')) throw new Error('Enter a valid Indian mobile number in +91 format.');
         }
-        const sent = await messageCentralPhoneTrust({ action:'send', ...(phone ? { phone } : {}) });
+        const sent = await externalPhoneTrust(provider, { action:'send', ...(phone ? { phone } : {}) });
         sessionStorage.setItem(PHONE_FLOW_KEY, JSON.stringify({
-          provider:'messagecentral',
+          provider,
           challenge_id:sent.challenge_id,
         }));
         api.toast('Verification code sent','success');
@@ -217,9 +224,9 @@
       const flow = JSON.parse(sessionStorage.getItem(PHONE_FLOW_KEY) || 'null');
       if (!flow) throw new Error('Send a verification code first.');
 
-      if (flow.provider === 'messagecentral') {
+      if (flow.provider === 'messagecentral' || flow.provider === 'startmessaging') {
         if (!flow.challenge_id) throw new Error('Send a verification code first.');
-        await messageCentralPhoneTrust({ action:'verify', challenge_id:flow.challenge_id, code:token });
+        await externalPhoneTrust(flow.provider, { action:'verify', challenge_id:flow.challenge_id, code:token });
         await live.client.auth.refreshSession().catch(() => {});
       } else {
         if (!flow.phone || !flow.type) throw new Error('Send a verification code first.');
