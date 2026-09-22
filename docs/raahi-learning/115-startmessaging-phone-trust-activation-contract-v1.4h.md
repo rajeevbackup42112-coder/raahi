@@ -14,6 +14,7 @@ Release configuration:
 
 Database runtime setting:
 - `phone_trust_mode = phone_trust_required`
+- activation also recreates the public read-only `get_phone_trust_policy()` projection because the live database was found to be missing that historical convenience function
 
 ## What does not change
 

@@ -11,7 +11,9 @@ test('activation sets the server trust mode to required',()=>{
   assert.match(migration,/setting_key,setting_value/);
   assert.match(migration,/phone_trust_mode','phone_trust_required/);
   assert.match(migration,/phone_trust_enforcement_enabled/);
+  assert.match(migration,/create or replace function public\.get_phone_trust_policy/);
   assert.match(migration,/PHONE_TRUST_ACTIVATION_FAILED/);
+  assert.match(migration,/PHONE_TRUST_POLICY_PROJECTION_FAILED/);
 });
 
 test('release UI and server provider are activated as one coherent contract',()=>{
