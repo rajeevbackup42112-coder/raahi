@@ -96,9 +96,10 @@ test('phone-check exposes a real local-device logout and clears transient phone 
   assert.match(live,/Verification code[\s\S]*data-live-fix-logout>Log out/);
 });
 
-test('production activation remains sealed until hosted Raahi provider proof completes',()=>{
-  assert.match(release,/phoneTrustMode:'controlled_pilot_google_only'/);
-  assert.match(release,/phoneTrustProvider:'disabled'/);
-  assert.doesNotMatch(release,/phoneTrustProvider:'startmessaging'/);
+test('production release activates StartMessaging after hosted proof without exposing its secret',()=>{
+  assert.match(release,/phoneTrustMode:'phone_trust_required'/);
+  assert.match(release,/phoneTrustProvider:'startmessaging'/);
+  assert.doesNotMatch(release,/controlled_pilot_google_only/);
   assert.doesNotMatch(release,/STARTMESSAGING_API_KEY/);
+  assert.doesNotMatch(release,/sm_live_/);
 });

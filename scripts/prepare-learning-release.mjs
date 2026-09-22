@@ -38,9 +38,13 @@ const devKey="const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bz0YgDXY-WkKxZnog
 if(live.split(devUrl).length!==2||live.split(devKey).length!==2)throw new Error('SOURCE_CONFIG_CONTRACT_CHANGED');
 live=live.replace(devUrl,`const SUPABASE_URL = 'https://${ref}.supabase.co';`).replace(devKey,`const SUPABASE_PUBLISHABLE_KEY = '${key}';`);
 files.set('live.js',live);
-const releasePhoneTrustConfig = mode==='CONTROLLED_PILOT'
-  ? {phoneTrustMode:'controlled_pilot_google_only',phoneTrustProvider:'disabled'}
-  : {phoneTrustMode:'phone_trust_required',phoneTrustProvider:'disabled'};
+// StartMessaging activation passed the hosted provider, identity continuity,
+ // fresh-trust and protected-command gates. Google remains primary sign-in;
+ // phone verification is requested only by the existing trust-sensitive commands.
+const releasePhoneTrustConfig = {
+  phoneTrustMode:'phone_trust_required',
+  phoneTrustProvider:'startmessaging'
+};
 files.set('index.html',`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Find teachers, learning opportunities and local learning communities with Raahi."><meta name="theme-color" content="#6c5ce7"><title>Raahi Learning Network</title><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./delight-v14.css"></head>
 <body><div id="app"></div>
