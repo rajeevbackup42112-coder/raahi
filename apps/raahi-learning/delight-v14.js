@@ -90,11 +90,7 @@
     if(!canTeach && !hero.querySelector('.v14-teach-entry')){
       const entry=document.createElement('div');
       entry.className='v14-teach-entry';
-      entry.innerHTML='<span>Are you a teacher?</span><button type="button" class="ghost-btn small" data-v14-start-teaching>Start teaching</button>';
-      entry.querySelector('[data-v14-start-teaching]')?.addEventListener('click',()=>{
-        location.hash='#/teacher-setup';
-        window.scrollTo(0,0);
-      });
+      entry.innerHTML='<span>Are you a teacher?</span><a class="ghost-btn small" href="#/teacher-setup" data-v14-start-teaching>Start teaching</a>';
       const actions=hero.querySelector('.hero-actions');
       (actions||hero).insertAdjacentElement('afterend',entry);
     }
