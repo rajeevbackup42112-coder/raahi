@@ -5,7 +5,7 @@ begin;
 
 insert into auth.users(id,aud,role,email,phone,phone_confirmed_at)
 values(
-  '8h111111-1111-4111-8111-111111111111',
+  '8a111111-1111-4111-8111-111111111111',
   'authenticated',
   'authenticated',
   'v14h-fresh@test.invalid',
@@ -15,7 +15,7 @@ values(
 
 insert into auth.users(id,aud,role,email)
 values(
-  '8h222222-2222-4222-8222-222222222222',
+  '8a222222-2222-4222-8222-222222222222',
   'authenticated',
   'authenticated',
   'v14h-unverified@test.invalid'
@@ -23,7 +23,7 @@ values(
 
 set local role authenticated;
 
-select set_config('request.jwt.claim.sub','8h111111-1111-4111-8111-111111111111',true);
+select set_config('request.jwt.claim.sub','8a111111-1111-4111-8111-111111111111',true);
 select public.bootstrap_account('V14H Fresh');
 do $$
 begin
@@ -34,7 +34,7 @@ begin
 end
 $$;
 
-select set_config('request.jwt.claim.sub','8h222222-2222-4222-8222-222222222222',true);
+select set_config('request.jwt.claim.sub','8a222222-2222-4222-8222-222222222222',true);
 select public.bootstrap_account('V14H Unverified');
 do $$
 begin
