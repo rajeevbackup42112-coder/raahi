@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `117-current-execution-handover-v14h-public-live-2026-09-23.md` first.**
+**For the current state, read `118-current-execution-handover-first-real-teacher-2026-09-23.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-23 FIRST REAL TEACHER PROOF IN PROGRESS:** the first genuine Teacher test Account is active but has no teacher capability/profile/request yet. A discoverability defect was found: returning ordinary Accounts could not see a path to Teacher setup from Home. Source `b48fd7387e97f6df7c8324c73ad951c883b8c96b` adds **Are you a teacher? Start teaching** to Home for non-teacher Accounts; CI #670 passed and production deployment `22e74407-4a03-4614-a032-54d5c6765ce7` is live. The user has not yet visually re-confirmed the CTA after refresh. Read `118-current-execution-handover-first-real-teacher-2026-09-23.md` first; then continue with the real **Start teaching -> Ask Raahi to help** flow. Do not silently use self-service `enable_teaching` for this first assisted proof.
 
 **2026-09-23 V1.4H STARTMESSAGING PHONE TRUST PUBLIC LIVE:** Google remains primary sign-in; StartMessaging is now the production OTP delivery provider only for trust-sensitive actions. Exact frontend source `5d864733af9f32c6de6f604764e82d26f04856a6`, production deployment `33e55d0e-a346-46d4-a756-0c580a5b08f4`, CI #668 success. Runtime phone trust is `phone_trust_required`; Ajit's logout→Google-login continuity and fresh-trust protected-command proof passed, while an unverified rollback account was denied. Phone entry is normal 10-digit India format with +91 added automatically, and Phone check exposes Log out. Read `117-current-execution-handover-v14h-public-live-2026-09-23.md` first.
 
@@ -32,17 +34,18 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **canonical current execution handover; StartMessaging phone trust is PUBLIC LIVE**
-2. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
-3. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
-4. `111-current-execution-handover-v14e-public-live-2026-09-22.md` - historical V1.4E admin-management handover
-5. `106-v14d-scoped-market-activation-public-live-evidence-2026-09-21.md` - historical V1.4D city-manager scope evidence
-3. `105-scoped-market-activation-authority-contract-v1.4d.md` - **frozen global-vs-Location market activation authority contract**
-4. `104-city-admin-ownership-bootstrap-2026-09-21.md` - live Gomoh/Dhanbad city-admin ownership
-5. `103-current-execution-handover-v14c-public-live-2026-09-21.md` - historical V1.4C handover
-6. `102-v14c-founding-supply-public-live-evidence-2026-09-21.md` - historical V1.4C public-live evidence
-7. `101-founding-supply-assisted-teacher-onboarding-contract-v1.4c.md` - Founding Supply consent contract
-8. `100-current-execution-handover-v14b-public-live-2026-09-21.md` - historical V1.4B handover
+1. `118-current-execution-handover-first-real-teacher-2026-09-23.md` - **canonical current execution handover; first genuine Teacher proof is in progress and Start teaching Home entry is live**
+2. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **V1.4H StartMessaging phone trust public-live handover**
+3. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
+4. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
+5. `111-current-execution-handover-v14e-public-live-2026-09-22.md` - historical V1.4E admin-management handover
+6. `106-v14d-scoped-market-activation-public-live-evidence-2026-09-21.md` - historical V1.4D city-manager scope evidence
+7. `105-scoped-market-activation-authority-contract-v1.4d.md` - **frozen global-vs-Location market activation authority contract**
+8. `104-city-admin-ownership-bootstrap-2026-09-21.md` - live Gomoh/Dhanbad city-admin ownership
+9. `103-current-execution-handover-v14c-public-live-2026-09-21.md` - historical V1.4C handover
+10. `102-v14c-founding-supply-public-live-evidence-2026-09-21.md` - historical V1.4C public-live evidence
+11. `101-founding-supply-assisted-teacher-onboarding-contract-v1.4c.md` - Founding Supply consent contract
+12. `100-current-execution-handover-v14b-public-live-2026-09-21.md` - historical V1.4B handover
 9. `98-v14b-raahi-desk-public-live-evidence-2026-09-21.md` - historical V1.4B public-live evidence
 10. `92-market-activation-seeding-blueprint-v1.4.md` - **market-activation master blueprint**
 
