@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const migration=fs.readFileSync('supabase/migrations/20260920020500_1037_v13_controlled_pilot_google_only_trust.sql','utf8');
-const activation=fs.readFileSync('supabase/migrations/20260922213000_v14h_activate_startmessaging_phone_trust.sql','utf8');
+const activation=fs.readFileSync('supabase/migrations/20260922214214_v14h_activate_startmessaging_phone_trust.sql','utf8');
 const live=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
 const release=fs.readFileSync('scripts/prepare-learning-release.mjs','utf8');
 const polish=fs.readFileSync('apps/raahi-learning/launch-polish-v13.js','utf8');

@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `111-current-execution-handover-v14e-public-live-2026-09-22.md` first.**
+**For the current state, read `117-current-execution-handover-v14h-public-live-2026-09-23.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-23 V1.4H STARTMESSAGING PHONE TRUST PUBLIC LIVE:** Google remains primary sign-in; StartMessaging is now the production OTP delivery provider only for trust-sensitive actions. Exact frontend source `5d864733af9f32c6de6f604764e82d26f04856a6`, production deployment `33e55d0e-a346-46d4-a756-0c580a5b08f4`, CI #668 success. Runtime phone trust is `phone_trust_required`; Ajit's logout→Google-login continuity and fresh-trust protected-command proof passed, while an unverified rollback account was denied. Phone entry is normal 10-digit India format with +91 added automatically, and Phone check exposes Log out. Read `117-current-execution-handover-v14h-public-live-2026-09-23.md` first.
 
 **2026-09-22 V1.4E GLOBAL ADMIN LOCATION ADMIN MANAGEMENT PUBLIC LIVE:** exact app SHA `ca4890629e787a5d969edce691dbac6f756f318d`, production deployment `c0ab3d26-185e-45e1-a18b-9cff6504f405`, CI #658 success. Global Admin `choudhary.ajit2112@gmail.com` can now manage routine city-admin assignments from Raahi's new **Location Admins** screen using canonical audited commands. Gomoh remains `rajeev.backup1.2112@gmail.com`; Dhanbad remains `rajeev.backup2.2112@gmail.com`. Read `111-current-execution-handover-v14e-public-live-2026-09-22.md` first.
 
@@ -20,7 +22,7 @@ Canonical docs: `docs/raahi-learning/`
 
 **Historical controlled-pilot cutover record:** before public admission, the hash-verified release candidate was reachable at `https://learning.myraahi.co.in`, the pre-cleanup logical backup was checksum-verified, synthetic public data and harness Auth users were removed, synthetic writers and `dev-test-identities` were sealed, retired MessageCentral secrets were removed, Dhanbad + Gomoh were the only live Locations, and the genuine two-user Google/RLS canary was green. At that historical point Google OAuth was still in Testing and real users had not yet been admitted. This is superseded by the PUBLIC GO-LIVE state above; see `87-controlled-pilot-cutover-evidence-2026-09-20.md` only for cutover evidence.
 
-**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. Current migration ceiling is now `20260922113814_v14e_global_admin_location_admin_reads`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery, DB+Storage restore, real-provider smoke, production infrastructure and launch gates remain open. See docs 68–76.**
+**Foundation, R4, genuine-session testing, the 20-persona cohort, workspace convergence, SE-01 through SE-08, post-SE-08 combined regression, bounded Class race/recovery/shared-browser security, and a bounded release-reliability smoke are proven in DEV. The stable recovery/shared-browser product-code proof anchor is `d0232c4fdb9410d4902063740974b7110da59473`. Release Reliability run `35442347699` on `10111144a2d00fb28d02a4217c4225a5188673b6` passed 20 genuine personas, 800 authenticated reads, 20 cross-account denial checks and 20 browser sign-ins with no latency warnings. Current migration ceiling is now `20260922214728_v14h_remove_public_phone_trust_policy_projection`. `build-meta.json` may advance across source-compatible documentation/test commits, so always read it at execution time rather than pinning a non-app SHA as permanent current product state. Production-scale/soak, operational alert delivery and DB+Storage restore remain separate operational hardening items. Real StartMessaging provider smoke and public phone-trust activation are now closed in V1.4H. See docs 68–76.**
 
 Supabase DEV project: `iiwwmqokaeflaenhlyip`, region `ap-south-1`.
 
@@ -30,8 +32,11 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `107-current-execution-handover-v14d-public-live-2026-09-21.md` - **canonical current execution handover; V1.4D city-scoped market activation is PUBLIC LIVE; one manual global-admin bootstrap is pending**
-2. `106-v14d-scoped-market-activation-public-live-evidence-2026-09-21.md` - **exact V1.4D migration, real city-manager scope proof, preview, production and manual-admin gate evidence**
+1. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **canonical current execution handover; StartMessaging phone trust is PUBLIC LIVE**
+2. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
+3. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
+4. `111-current-execution-handover-v14e-public-live-2026-09-22.md` - historical V1.4E admin-management handover
+5. `106-v14d-scoped-market-activation-public-live-evidence-2026-09-21.md` - historical V1.4D city-manager scope evidence
 3. `105-scoped-market-activation-authority-contract-v1.4d.md` - **frozen global-vs-Location market activation authority contract**
 4. `104-city-admin-ownership-bootstrap-2026-09-21.md` - live Gomoh/Dhanbad city-admin ownership
 5. `103-current-execution-handover-v14c-public-live-2026-09-21.md` - historical V1.4C handover

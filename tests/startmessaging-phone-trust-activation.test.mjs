@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260922213000_v14h_activate_startmessaging_phone_trust.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260922214214_v14h_activate_startmessaging_phone_trust.sql','utf8');
+const securityFollowup=fs.readFileSync('supabase/migrations/20260922214728_v14h_remove_public_phone_trust_policy_projection.sql','utf8');
 const release=fs.readFileSync('scripts/prepare-learning-release.mjs','utf8');
 const live=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
 const edge=fs.readFileSync('supabase/functions/phone-trust-startmessaging/index.ts','utf8');
@@ -14,6 +15,7 @@ test('activation sets the server trust mode to required',()=>{
   assert.match(migration,/create or replace function public\.get_phone_trust_policy/);
   assert.match(migration,/PHONE_TRUST_ACTIVATION_FAILED/);
   assert.match(migration,/PHONE_TRUST_POLICY_PROJECTION_FAILED/);
+  assert.match(securityFollowup,/drop function if exists public\.get_phone_trust_policy\(\)/);
 });
 
 test('release UI and server provider are activated as one coherent contract',()=>{

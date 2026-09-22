@@ -1,6 +1,6 @@
 # Raahi Learning — StartMessaging Phone Trust Activation Contract V1.4H
 
-Status: **ACTIVATION CANDIDATE — ALL PRE-ACTIVATION PROOFS PASSED**
+Status: **PUBLIC LIVE — ACTIVATION COMPLETE; SEE DOC 116 FOR EVIDENCE**
 
 ## What changes
 
@@ -14,7 +14,7 @@ Release configuration:
 
 Database runtime setting:
 - `phone_trust_mode = phone_trust_required`
-- activation also recreates the public read-only `get_phone_trust_policy()` projection because the live database was found to be missing that historical convenience function
+- the activation migration briefly recreated the historical `get_phone_trust_policy()` convenience projection; live security review showed it was intentionally unnecessary, so follow-up migration `20260922214728_v14h_remove_public_phone_trust_policy_projection` removes it again and keeps enforcement private
 
 ## What does not change
 

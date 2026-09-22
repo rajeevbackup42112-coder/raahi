@@ -30,7 +30,7 @@ $function$;
 revoke all on function public.get_phone_trust_policy() from public, anon;
 grant execute on function public.get_phone_trust_policy() to authenticated;
 
-do $
+do $v14h$
 begin
   if not app_private.phone_trust_enforcement_enabled() then
     raise exception 'PHONE_TRUST_ACTIVATION_FAILED';
@@ -39,4 +39,4 @@ begin
     raise exception 'PHONE_TRUST_POLICY_PROJECTION_FAILED';
   end if;
 end
-$;
+$v14h$;
