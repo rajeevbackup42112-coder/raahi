@@ -86,14 +86,14 @@ test('Indian phone UX accepts national numbers and adds +91 automatically',()=>{
   assert.match(edge,/return '\+91'\+digits/);
 });
 
-test('Settings exposes a real local-device logout and clears transient phone flow',()=>{
-  assert.match(live,/Log out on this device/);
-  assert.match(live,/data-live-fix-logout/);
+test('phone-check exposes a real local-device logout and clears transient phone flow',()=>{
+  assert.match(live,/data-live-fix-logout>Log out</);
   assert.match(live,/auth\.signOut\(\{ scope:'local' \}\)/);
   assert.match(live,/sessionStorage\.removeItem\(PHONE_FLOW_KEY\)/);
   assert.match(live,/clearPendingAction\(\)/);
   assert.match(live,/location\.replace\(cleanUrl\)/);
-  assert.match(live,/route === 'settings' && live\.session/);
+  assert.match(live,/Phone confirmed[\s\S]*data-live-fix-logout>Log out/);
+  assert.match(live,/Verification code[\s\S]*data-live-fix-logout>Log out/);
 });
 
 test('production activation remains sealed until hosted Raahi provider proof completes',()=>{
