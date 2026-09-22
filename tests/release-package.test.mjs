@@ -37,7 +37,7 @@ test('Dedicated production packaging refuses DEV, secrets and overwrite; ships p
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/founding-supply-v14c\.js/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/admin-management-v14e\.js/);
     assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/\"phoneTrustMode\":\"phone_trust_required\"/);
-    assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/\"phoneTrustProvider\":\"disabled\"/);
+    assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/\"phoneTrustProvider\":\"startmessaging\"/);
     assert.equal(fs.readFileSync(path.join(output,'live.js'),'utf8').includes('iiwwmqokaeflaenhlyip'),false);
     const meta=JSON.parse(fs.readFileSync(path.join(output,'build-meta.json'),'utf8'));
     assert.equal(meta.release_mode,'NON_DEV');
@@ -64,8 +64,8 @@ test('Controlled pilot packaging explicitly permits Learning DEV backend but nev
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/market-activation-v14b\.js/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/founding-supply-v14c\.js/);
     assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/admin-management-v14e\.js/);
-    assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustMode\":\"controlled_pilot_google_only\"/);
-    assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustProvider\":\"disabled\"/);
+    assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustMode\":\"phone_trust_required\"/);
+    assert.match(fs.readFileSync(path.join(root,'ok','index.html'),'utf8'),/\"phoneTrustProvider\":\"startmessaging\"/);
     assert.notEqual(run('bad-origin',{RAAHI_RELEASE_ORIGIN:'https://dev.learning.myraahi.co.in'}).status,0);
     assert.notEqual(run('bad-ref',{RAAHI_RELEASE_PROJECT_REF:'hoshprxoyhjyyigxkang'}).status,0);
     assert.notEqual(run('bad-confirm',{RAAHI_RELEASE_CONFIRM_TARGET:'NON_DEV_LEARNING_TARGET'}).status,0);
