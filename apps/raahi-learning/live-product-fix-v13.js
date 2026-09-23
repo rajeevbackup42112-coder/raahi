@@ -14,6 +14,7 @@
     live.__productFixV13 = true;
 
     const originalRenderRoute = live.renderRoute.bind(live);
+    const originalCanOpenRoute = live.canOpenRoute.bind(live);
     const originalRightbarHtml = live.rightbarHtml.bind(live);
     const originalAfterRender = live.afterRender.bind(live);
     const h = api.escapeHtml;
@@ -177,6 +178,16 @@
       const hasPhone = !!trust.has_phone;
       return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Quick phone check</div><h1>${hasPhone ? 'Confirm you still have this phone' : 'Add a phone for trust-sensitive actions'}</h1><p class="muted">This is not a second login. It is a security check for sensitive actions. It does not change what you can do in Raahi.</p>${hasPhone ? `<div class="notice">Current phone: ${h(trust.masked_phone || '')}</div>` : '<div class="field"><label>Indian mobile number</label><div class="row" style="gap:8px;align-items:center"><span class="pill-btn" aria-hidden="true" style="pointer-events:none">+91</span><input id="live-fix-phone" inputmode="numeric" autocomplete="tel-national" maxlength="12" placeholder="9876543210" aria-describedby="live-fix-phone-help"></div><span class="field-note" id="live-fix-phone-help">Enter your 10-digit mobile number. Raahi adds +91 automatically. You can also paste a number starting with +91.</span></div>'}<button class="primary-btn wide" data-live-fix-send-phone-otp>${hasPhone ? 'Send confirmation code' : 'Send phone code'}</button><div class="divider"></div><div class="field"><label>Verification code</label><input id="live-fix-phone-otp" inputmode="numeric" autocomplete="one-time-code"></div><button class="pill-btn wide" data-live-fix-verify-phone>Verify & continue</button><button class="ghost-btn wide" data-route="settings">Cancel</button><button class="ghost-btn wide" data-live-fix-logout>Log out</button></div></div>`;
     }
+
+    live.canOpenRoute = function(route, required, state) {
+      if (live.session && live.context && !live.pendingInvite && (profileOnboardingPending() || firstUsePending())) {
+        // This does not authorize the requested route. It only lets renderRoute
+        // replace any deep link with the mandatory onboarding surface before
+        // privileged route data can render.
+        return true;
+      }
+      return originalCanOpenRoute(route, required, state);
+    };
 
     const originalRender = live.renderRoute;
     live.renderRoute = function(route, coreApi) {
