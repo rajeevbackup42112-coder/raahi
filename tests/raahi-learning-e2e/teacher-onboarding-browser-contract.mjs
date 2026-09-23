@@ -47,6 +47,7 @@ async function proveSelf(browser,viewport){
     await page.getByRole('button',{name:'Save profile'}).click();
 
     await page.waitForURL(u=>u.hash==='#/teaching-option-edit',{timeout:20000});
+    await page.getByRole('heading',{name:'New What I Teach'}).waitFor({timeout:10000});
     body=await page.locator('body').innerText();
     assert(/Add what you teach, how you teach, and where learners can find you/i.test(body),'WHAT_I_TEACH_COPY_NOT_HUMAN_'+viewport.name);
 
