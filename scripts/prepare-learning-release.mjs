@@ -50,8 +50,9 @@ files.set('index.html',`<!doctype html>
 <body><div id="app"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script>window.RAAHI_RELEASE_CONFIG=Object.freeze(${JSON.stringify(releasePhoneTrustConfig)});</script>
+<script src="./live-product-fix-v13.js"></script>
 <script src="./live.js"></script><script src="./app.live-core-v13.js"></script>
-<script src="./live-product-fix-v13.js"></script><script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script><script src="./delight-v14.js"></script><script src="./market-activation-v14b.js"></script><script src="./founding-supply-v14c.js"></script><script src="./admin-management-v14e.js"></script>
+<script src="./live-thread-deeplink-v13.js"></script><script src="./launch-polish-v13.js"></script><script src="./delight-v14.js"></script><script src="./market-activation-v14b.js"></script><script src="./founding-supply-v14c.js"></script><script src="./admin-management-v14e.js"></script>
 </body></html>\n`);
 for(const [name,content] of files){
   if(/dev\.learning\.myraahi|sb_secret_|dev-test-identities|dev-test-login/.test(content))throw new Error('DEV_OR_SECRET_REFERENCE: '+name);
