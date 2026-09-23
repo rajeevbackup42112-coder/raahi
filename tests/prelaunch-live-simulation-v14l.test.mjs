@@ -48,6 +48,18 @@ test('Teacher Activity review uses human UI and canonical review RPCs',()=>{
   assert.match(product,/get_activity_detail/);
 });
 
+test('Teacher Test review uses provider-safe projections and canonical evaluation/release RPCs',()=>{
+  assert.match(product,/data-live-fix-test-review-section/);
+  assert.match(product,/data-live-fix-open-test-attempt/);
+  assert.match(product,/get_test_definition/);
+  assert.match(product,/get_test_attempt/);
+  assert.match(product,/function pageTeacherTestReview\(\)/);
+  assert.match(product,/evaluate_test_attempt/);
+  assert.match(product,/set_test_results_visibility/);
+  assert.match(product,/Release result to learner/);
+  assert.match(product,/route === 'test-results'[\s\S]*pageTeacherTestReview\(\)/);
+});
+
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
   assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
   assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);

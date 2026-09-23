@@ -243,6 +243,29 @@
       return api.layout(`${api.pageHead('Submission feedback',detail?.activity?.title || 'Activity submission')}<div class="card"><div class="between"><div><h3>Latest submission</h3><p class="card-sub">Revision ${h(latest?.revision_number || revisions.length || 1)}</p></div>${badge(status,status === 'reviewed' ? 'success' : status === 'changes_requested' ? 'warning' : 'primary')}</div>${response}${file}${feedback}${actions}</div>`);
     }
 
+    function pageTeacherTestReview() {
+      const review = live.__teacherTestReviewV13 || null;
+      if (!review?.definition) return api.layout(api.pageHead('Test review','Review an authorized learner attempt from this Class.') + api.empty('No Test selected','Open a learner Test attempt from the Class first.'));
+      const d = review.definition;
+      const a = review.attempt || null;
+      const answers = arr(a?.answers);
+      const qs = arr(d.questions);
+      const questionHtml = qs.map(q => {
+        const choices = arr(q.choices);
+        const answer = answers.find(x => x.question_id === q.question_id) || null;
+        const selected = choices.find(c => c.choice_id === answer?.selected_choice_id) || null;
+        const correct = selected ? selected.is_correct === true : null;
+        return `<div class="notice"><strong>${h(q.position)}. ${h(q.prompt)}</strong><p>${selected ? `Learner answer: ${h(selected.choice_text)}${correct === true ? ' · Correct' : correct === false ? ' · Incorrect' : ''}` : 'No saved answer.'}</p></div>`;
+      }).join('');
+      const evaluated = a?.state === 'evaluated';
+      const canEvaluate = a?.state === 'submitted';
+      const score = a?.score == null ? '' : `<div class="kpi">${h(a.score)}</div><div class="kpi-label">Score</div>`;
+      const evaluation = canEvaluate ? `<div class="field"><label>Feedback</label><textarea id="live-fix-test-feedback" placeholder="Add a short note for the learner"></textarea></div><button class="primary-btn" data-live-fix-evaluate-test-attempt="${h(a.attempt_id)}">Evaluate Test</button>` : '';
+      const release = evaluated && !d.results_visible ? `<button class="pill-btn" data-live-fix-release-test-results="${h(d.test_id)}">Release result to learner</button>` : '';
+      const released = d.results_visible ? '<div class="notice success">Result is visible to the learner.</div>' : '';
+      return api.layout(`${api.pageHead(h(d.title),`Test review · ${h(review.learnerName || 'Learner')}`)}<div class="card"><div class="between"><div><h3>Attempt</h3><p class="card-sub">${h(a?.state || 'No attempt yet')}</p></div>${score}</div>${a ? questionHtml : '<p class="muted">This learner has not started this Test.</p>'}${a?.teacher_feedback ? `<div class="notice"><strong>Teacher feedback</strong><p>${h(a.teacher_feedback)}</p></div>` : ''}${evaluation}${release}${released}</div>`);
+    }
+
     function pageLearners() {
       const learners = currentLearners();
       return api.layout(`${api.pageHead('Learning profiles','Keep your own learning and the learners you manage in one place.','<button class="primary-btn" data-route="learner-add">Add learner</button>')}<div class="stack">${learners.map(l => `<div class="card"><div class="between"><div><h3>${h(l.display_name)}</h3><p class="card-sub">${h(l.access_type === 'self' ? 'My learning' : 'Managed by you')}</p></div><div class="row">${l.access_type === 'manage' ? `<button class="pill-btn small" data-live-enable-self="${l.learner_id}">Set up learner login</button>` : ''}<button class="pill-btn small" data-live-share-learner="${l.learner_id}">Private Class code</button>${l.access_type === 'manage' ? `<button class="danger-btn small" data-live-fix-end-management="${l.access_id}">End my management</button>` : ''}</div></div>${l.access_type === 'manage' ? '<p class="tiny muted">You can stop managing this learner only when they will still have another valid way to access or manage their learning.</p>' : ''}</div>`).join('') || api.empty('No learner profiles','Add your own learning profile or a learner you manage.')}</div>`);
@@ -323,6 +346,7 @@
         if (route === 'classes' && ['learner','student','parent'].includes(coreApi.state.role)) return pageClasses();
         if (route === 'invitation') return pageInvitation();
         if (route === 'submission-review') return pageSubmissionReviewHuman();
+        if (route === 'test-results' && ['teacher','institute'].includes(coreApi.state.role) && live.__teacherTestReviewV13) return pageTeacherTestReview();
         if (route === 'learners') return pageLearners();
         const roleSelect = document.querySelector('[data-live-role-select]');
       if (roleSelect) roleSelect.setAttribute('aria-label','Switch Raahi view');
@@ -634,7 +658,7 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-activity],[data-live-test],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -648,6 +672,44 @@
           live.selected.testId = t.dataset.liveTest || null;
           live.routeLoads.clear();
           api.go(t.dataset.route === 'test-upcoming' ? 'test-upcoming' : 'test');
+          return;
+        }
+        if (t.hasAttribute('data-live-fix-open-test-attempt')) {
+          const testId = t.dataset.liveFixOpenTestAttempt || null;
+          const learnerId = t.dataset.liveFixTestLearner || null;
+          const learnerName = t.dataset.liveFixTestLearnerName || 'Learner';
+          if (!testId || !learnerId) throw new Error('Choose a valid learner Test attempt.');
+          const [definition,attempt] = await Promise.all([
+            rpc('get_test_definition',{p_test_id:testId,p_learner_id:learnerId}),
+            rpc('get_test_attempt',{p_test_id:testId,p_learner_id:learnerId})
+          ]);
+          live.selected.testId = testId;
+          live.selected.learnerId = learnerId;
+          live.__teacherTestReviewV13 = {testId,learnerId,learnerName,definition,attempt};
+          live.routeLoads.clear();
+          api.go('test-results');
+          return;
+        }
+        if (t.hasAttribute('data-live-fix-evaluate-test-attempt')) {
+          const review = live.__teacherTestReviewV13 || null;
+          const attemptId = t.dataset.liveFixEvaluateTestAttempt || review?.attempt?.attempt_id || null;
+          if (!review?.testId || !review?.learnerId || !attemptId) throw new Error('No submitted Test attempt is selected.');
+          const feedback = document.querySelector('#live-fix-test-feedback')?.value?.trim() || null;
+          await rpc('evaluate_test_attempt',{p_attempt_id:attemptId,p_teacher_feedback:feedback,p_idempotency_key:idk('evaluate-test-attempt')});
+          review.attempt = await rpc('get_test_attempt',{p_test_id:review.testId,p_learner_id:review.learnerId});
+          api.toast('Test evaluated','success');
+          api.render();
+          return;
+        }
+        if (t.hasAttribute('data-live-fix-release-test-results')) {
+          const review = live.__teacherTestReviewV13 || null;
+          const testId = t.dataset.liveFixReleaseTestResults || review?.testId || null;
+          if (!review?.learnerId || !testId) throw new Error('No Test is selected.');
+          await rpc('set_test_results_visibility',{p_test_id:testId,p_visible:true,p_idempotency_key:idk('release-test-results')});
+          review.definition = await rpc('get_test_definition',{p_test_id:testId,p_learner_id:review.learnerId});
+          review.attempt = await rpc('get_test_attempt',{p_test_id:testId,p_learner_id:review.learnerId});
+          api.toast('Result released to learners','success');
+          api.render();
           return;
         }
         if (t.hasAttribute('data-live-fix-review-submission') || t.hasAttribute('data-live-fix-request-submission-changes')) {
@@ -949,6 +1011,19 @@
           button.dataset.liveFixActivateClass = 'true';
           button.textContent = 'Activate Class';
           actions.prepend(button);
+        }
+      }
+
+      if (route === 'teacher-class') {
+        const tests = arr(live.data.classOverview?.tests);
+        const members = arr(live.data.classManagement?.members).filter(x => x.state === 'active');
+        const main = document.querySelector('.main');
+        if (main && tests.length && members.length && !main.querySelector('[data-live-fix-test-review-section]')) {
+          const section = document.createElement('div');
+          section.className = 'section';
+          section.dataset.liveFixTestReviewSection = 'true';
+          section.innerHTML = `<div class="section-title"><h2>Test review</h2></div><div class="stack">${tests.map(test => `<div class="card"><div class="between"><div><h3>${h(test.title)}</h3><p class="card-sub">${h(test.display_state || test.state || '')}</p></div>${test.results_visible ? badge('Results released','success') : badge('Results private')}</div><div class="row" style="margin-top:10px;flex-wrap:wrap">${members.map(member => `<button class="pill-btn small" data-live-fix-open-test-attempt="${h(test.test_id)}" data-live-fix-test-learner="${h(member.learner_id)}" data-live-fix-test-learner-name="${h(member.learner_name)}">Review ${h(member.learner_name)}</button>`).join('')}</div></div>`).join('')}</div>`;
+          main.append(section);
         }
       }
 

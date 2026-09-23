@@ -123,3 +123,14 @@ Next gate: push/qualify/deploy the review UI repair, then exercise request-chang
 - Focused V1.4L regression is now 13/13 green.
 
 Next: qualify/deploy this small self-Learner UI repair, add Self Learner 03 to the controlled Test Class, and exercise the Test lifecycle with guardian oversight kept separate.
+## Round 3 — Test lifecycle entry
+
+- Self Learner 03 received and accepted a private invitation into `Raahi Test Science Class 05` using the newly exposed self-Learner private Class code. Relationship visibility remained independent of selected Location.
+- Teacher 05 created `PRE-LAUNCH TEST: Water quiz` with one controlled multiple-choice question.
+- Parent 04 opened the Test as guardian and correctly saw oversight only: status metadata was visible, while protected questions/answers and attempt-taking remained hidden.
+- Self Learner 03 opened the same Test, started it, saved an answer and submitted the attempt successfully.
+- New launch gap found: the Teacher Class UI had no way to open learner Test attempts for evaluation/release, even though provider-safe projections and canonical `evaluate_test_attempt` / `set_test_results_visibility` RPCs already exist.
+- Repair candidate adds a Teacher-only `Test review` section, fetches the selected learner attempt through safe projections, displays human review state, evaluates through the canonical RPC, and releases results explicitly through the canonical visibility RPC.
+- Local qualification: focused V1.4L regression 14/14 green; sealed browser contract 27/27 green.
+
+Next: push/qualify/deploy the Test review repair and complete submitted -> evaluated -> result released -> self Learner result proof.
