@@ -386,5 +386,10 @@
         if (submit) submit.disabled = false;
       }
     }, true);
+
+    // The overlay may install after the base app has already painted the current
+    // route. Re-render once so Teacher setup and Founding Supply never depend on
+    // script timing.
+    api.render();
   }, 30);
 })();
