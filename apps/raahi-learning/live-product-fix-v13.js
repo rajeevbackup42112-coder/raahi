@@ -228,6 +228,17 @@
       if (route === 'teacher-home') {
         return replaceFirstPageTitle(rendered, 'Teach locally, without chasing leads.');
       }
+      if (route === 'teacher-profile-edit') {
+        return String(rendered).replace(
+          'Public provider profile controlled by your teach capability.',
+          'Tell learners about your teaching experience and approach.'
+        );
+      }
+      if (route === 'teaching-option-edit') {
+        return String(rendered)
+          .replace('Use explicit live fields; Location choices are server-validated.','Add what you teach, how you teach, and where learners can find you.')
+          .replace('<label>Live Locations</label>','<label>Where can learners find this?</label>');
+      }
       if (route === 'manager-home') {
         return replaceFirstPageTitle(rendered, `${selectedLocationName()} Overview`);
       }
