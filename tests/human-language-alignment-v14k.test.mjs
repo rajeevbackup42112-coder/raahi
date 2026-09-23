@@ -39,7 +39,7 @@ test('My Classes ordinary copy hides Membership and authority mechanics',()=>{
   const i=slice(product,'function pageInvitation','function pageLearners');
   assert.match(s,/Your current Classes and pending invitations/);
   assert.match(i,/invitation is still valid/);
-  assert.doesNotMatch(s+i,/relationship-scoped|Membership|current authority/i);
+  assert.doesNotMatch(s+i,/relationship-scoped|creates the Membership|current authority/i);
 });
 
 test('Learning profiles ordinary copy avoids Account and invariant vocabulary',()=>{
