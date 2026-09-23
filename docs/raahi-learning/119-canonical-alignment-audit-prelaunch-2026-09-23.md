@@ -152,7 +152,25 @@ Correction now adopted:
 
 Genuine learner demand remains expressed through privacy-safe Learning Requests rather than a student directory.
 
-### E. Overlay integration fragility — P1
+### E. Acceptance-proof substitution — P0 process gap
+
+The V1.3 retrofit closure explicitly required the mandatory walking skeleton to include:
+
+**real Google sign-in → Account/bootstrap → first-use intent creates/selects Learner context → discovery → Enquiry → …**
+
+But the later walking-skeleton closure recorded its proven sequence as:
+
+**genuine sessions → Teacher setup uses canonical commands → Learner relationship / Enquiry / Class / Invitation uses canonical commands → browser UI for the later Class-message portion**
+
+In other words, the lower-level server path was proven while the first-use browser step named in the acceptance gate was not preserved as a required proof artifact.
+
+That allowed the backend to be genuinely correct while the exact first-use UX later regressed unnoticed.
+
+Process correction:
+
+**A lower-level RPC/database proof may support a journey acceptance criterion, but it may not substitute for an explicitly required browser/user action.** If a GWT says the user clicks or sees something, that interaction itself must be evidenced.
+
+### F. Overlay integration fragility — P1
 
 V1.4 presentation/activation layers intentionally avoided backend redesign, but several now:
 
