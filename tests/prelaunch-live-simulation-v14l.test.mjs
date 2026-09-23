@@ -29,6 +29,17 @@ test('Class learning cards select their server IDs before opening detail routes'
   assert.match(product,/live\.selected\.testId = t\.dataset\.liveTest[\s\S]*api\.go\(t\.dataset\.route === 'test-upcoming' \? 'test-upcoming' : 'test'\)/);
 });
 
+test('Teacher Activity review uses human UI and canonical review RPCs',()=>{
+  assert.match(product,/function pageSubmissionReviewHuman\(\)/);
+  assert.match(product,/route === 'submission-review'[\s\S]*pageSubmissionReviewHuman\(\)/);
+  assert.match(product,/data-live-fix-request-submission-changes/);
+  assert.match(product,/data-live-fix-review-submission/);
+  assert.match(product,/request_submission_changes/);
+  assert.match(product,/review_submission/);
+  assert.match(product,/Add feedback so the learner knows what to change\./);
+  assert.match(product,/get_activity_detail/);
+});
+
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
   assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
   assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);

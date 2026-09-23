@@ -102,3 +102,13 @@ Browser Contract #24 moved the slow-runner failure from Parent setup to Institut
 - Local qualification after this repair: focused V1.4L tests 11/11 green; sealed browser contract remains 15 + 4 + 8 = 27/27 green.
 
 Next: push/qualify this small navigation repair, publish one batch, then continue the same Class journey with Activity submission, Teacher review/feedback and Test lifecycle.
+## Round 2 continuation — Activity review
+
+- After the Activity-card routing repair went live, Parent 04 opened `PRE-LAUNCH TEST: Water basics` correctly and submitted a controlled text response for `Raahi Test Learner 04`.
+- Teacher 05 received the private `Activity submission received` notification and the notification deep link correctly selected the Class, Learner and Activity.
+- New launch defect found at the review destination: the Teacher saw raw submission JSON and no review actions, even though canonical server RPCs `review_submission` and `request_submission_changes` already exist.
+- Repair candidate replaces the raw JSON surface with a human submission-review page, shows the latest learner response, supports optional file opening, requires feedback when requesting changes, and calls only the canonical review RPCs.
+- After either review action, the browser refetches authoritative account state and `get_activity_detail`; no direct operational-table DML is added.
+- Focused V1.4L regression is now 12/12 green.
+
+Next gate: push/qualify/deploy the review UI repair, then exercise request-changes -> Learner revision -> Teacher reviewed end to end before moving into Tests.

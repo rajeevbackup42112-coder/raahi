@@ -228,6 +228,21 @@
       return api.layout(`${api.pageHead(h(inv.class_title),`${h(inv.provider_name)} · for ${h(inv.learner_name)}`)}<div class="card"><div class="between">${badge(inv.display_state || inv.state,'warning')}<span>Expires ${h(new Date(inv.expires_at).toLocaleString())}</span></div><p>Fee: ${h(inv.fee_display_text || 'Not specified')}</p><div class="notice">When you accept, Raahi checks that the invitation is still valid and then joins this learner to the Class.</div><div class="row" style="margin-top:14px"><button class="primary-btn" data-live-fix-accept-invite="${inv.invitation_id}">Accept & join</button><button class="pill-btn" data-live-decline-invite>Decline</button></div></div>`);
     }
 
+    function pageSubmissionReviewHuman() {
+      const detail = live.data.activity;
+      const submission = detail?.submission || null;
+      if (!submission) return api.layout(api.pageHead('Submission feedback','Review learner work from an authorized Class.') + api.empty('No submission available','This submission is no longer available in the current teaching context.'));
+      const revisions = arr(submission.revisions);
+      const latest = revisions[revisions.length - 1] || null;
+      const status = submission.current_status || 'submitted';
+      const canReview = status === 'submitted';
+      const response = latest?.text_response ? `<div class="notice"><strong>Learner response</strong><p>${h(latest.text_response)}</p></div>` : '<p class="muted">No text response was submitted.</p>';
+      const file = latest?.file_asset_id ? `<button class="pill-btn small" data-live-file="${h(latest.file_asset_id)}">Open submitted file</button>` : '';
+      const feedback = latest?.teacher_feedback ? `<div class="notice"><strong>Your feedback</strong><p>${h(latest.teacher_feedback)}</p></div>` : '';
+      const actions = canReview ? `<div class="field"><label>Feedback</label><textarea id="live-fix-submission-feedback" placeholder="Give clear, helpful feedback"></textarea></div><div class="row"><button class="pill-btn" data-live-fix-request-submission-changes="${submission.submission_id}">Request changes</button><button class="primary-btn" data-live-fix-review-submission="${submission.submission_id}">Mark reviewed</button></div>` : '';
+      return api.layout(`${api.pageHead('Submission feedback',detail?.activity?.title || 'Activity submission')}<div class="card"><div class="between"><div><h3>Latest submission</h3><p class="card-sub">Revision ${h(latest?.revision_number || revisions.length || 1)}</p></div>${badge(status,status === 'reviewed' ? 'success' : status === 'changes_requested' ? 'warning' : 'primary')}</div>${response}${file}${feedback}${actions}</div>`);
+    }
+
     function pageLearners() {
       const learners = currentLearners();
       return api.layout(`${api.pageHead('Learning profiles','Keep your own learning and the learners you manage in one place.','<button class="primary-btn" data-route="learner-add">Add learner</button>')}<div class="stack">${learners.map(l => `<div class="card"><div class="between"><div><h3>${h(l.display_name)}</h3><p class="card-sub">${h(l.access_type === 'self' ? 'My learning' : 'Managed by you')}</p></div><div class="row">${l.access_type === 'manage' ? `<button class="pill-btn small" data-live-enable-self="${l.learner_id}">Set up learner login</button><button class="pill-btn small" data-live-share-learner="${l.learner_id}">Private Class code</button><button class="danger-btn small" data-live-fix-end-management="${l.access_id}">End my management</button>` : ''}</div></div>${l.access_type === 'manage' ? '<p class="tiny muted">You can stop managing this learner only when they will still have another valid way to access or manage their learning.</p>' : ''}</div>`).join('') || api.empty('No learner profiles','Add your own learning profile or a learner you manage.')}</div>`);
@@ -307,6 +322,7 @@
         }
         if (route === 'classes' && ['learner','student','parent'].includes(coreApi.state.role)) return pageClasses();
         if (route === 'invitation') return pageInvitation();
+        if (route === 'submission-review') return pageSubmissionReviewHuman();
         if (route === 'learners') return pageLearners();
         const roleSelect = document.querySelector('[data-live-role-select]');
       if (roleSelect) roleSelect.setAttribute('aria-label','Switch Raahi view');
@@ -618,7 +634,7 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-activity],[data-live-test],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-activity],[data-live-test],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -632,6 +648,25 @@
           live.selected.testId = t.dataset.liveTest || null;
           live.routeLoads.clear();
           api.go(t.dataset.route === 'test-upcoming' ? 'test-upcoming' : 'test');
+          return;
+        }
+        if (t.hasAttribute('data-live-fix-review-submission') || t.hasAttribute('data-live-fix-request-submission-changes')) {
+          const submissionId = t.dataset.liveFixReviewSubmission || t.dataset.liveFixRequestSubmissionChanges || null;
+          if (!submissionId) throw new Error('No submission is selected.');
+          const feedback = document.querySelector('#live-fix-submission-feedback')?.value?.trim() || null;
+          const requestChanges = t.hasAttribute('data-live-fix-request-submission-changes');
+          if (requestChanges && !feedback) throw new Error('Add feedback so the learner knows what to change.');
+          await rpc(requestChanges ? 'request_submission_changes' : 'review_submission',{
+            p_submission_id:submissionId,
+            p_teacher_feedback:feedback,
+            p_idempotency_key:idk(requestChanges ? 'request-submission-changes' : 'review-submission')
+          });
+          const learnerId = live.data.activity?.submission?.learner_id || live.selected.learnerId || null;
+          live.routeLoads.clear();
+          await refreshCoreState();
+          live.data.activity = await rpc('get_activity_detail',{p_activity_id:live.selected.activityId,p_learner_id:learnerId});
+          api.toast(requestChanges ? 'Changes requested' : 'Submission reviewed','success');
+          api.render();
           return;
         }
         if (t.dataset.liveFirstUseIntent && firstUsePending()) {
