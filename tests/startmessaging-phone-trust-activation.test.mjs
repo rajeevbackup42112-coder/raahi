@@ -26,6 +26,12 @@ test('release UI and server provider are activated as one coherent contract',()=
   assert.match(edge,/auth\.admin\.updateUserById/);
 });
 
+test('active provider preserves Auth phone uniqueness and clear duplicate-phone failure',()=>{
+  assert.match(edge,/admin\.auth\.admin\.listUsers/);
+  assert.match(edge,/PHONE_ALREADY_IN_USE/);
+  assert.match(live,/This mobile number is already linked to another Raahi sign-in/);
+});
+
 test('activation does not turn phone OTP into a primary login or expose provider secrets',()=>{
   assert.match(live,/This is not a second login/);
   assert.doesNotMatch(release,/STARTMESSAGING_API_KEY/);
