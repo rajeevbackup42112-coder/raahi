@@ -82,7 +82,9 @@ test('browser roles get RPCs, not direct assisted-onboarding table writes',()=>{
 test('UI keeps self-service and adds explicit consented help without direct table mutation',()=>{
   assert.match(ui,/Set it up myself/);
   assert.match(ui,/Ask Raahi to help/);
-  assert.match(ui,/Nothing is published through assisted setup until you review and accept the exact draft/);
+  assert.match(ui,/private draft/);
+  assert.match(ui,/You stay in control/);
+  assert.match(ui,/Nothing is public until you choose Publish these details/);
   assert.match(ui,/request_assisted_teacher_onboarding/);
   assert.match(ui,/prepare_assisted_teacher_onboarding/);
   assert.match(ui,/accept_assisted_teacher_onboarding/);
