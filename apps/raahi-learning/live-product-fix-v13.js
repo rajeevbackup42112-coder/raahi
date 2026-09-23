@@ -38,6 +38,22 @@
         && account.first_use_completed_at === null;
     };
     const replaceFirstPageTitle = (html, title) => String(html || '').replace(/<h1>[\s\S]*?<\/h1>/, `<h1>${h(title)}</h1>`);
+    const viewAuthorized = role => {
+      const context = live.context || {};
+      const learners = arr(context.learners);
+      const capabilities = arr(context.capabilities);
+      const organizations = arr(context.organizations);
+      const scopes = arr(context.manager_scopes);
+      if (role === 'learner' || role === 'student') return learners.some(x => x.access_type === 'self');
+      if (role === 'parent') return learners.some(x => x.access_type === 'manage');
+      if (role === 'teacher') return capabilities.includes('teach');
+      if (role === 'institute') return organizations.some(o => arr(o.capabilities).some(code => String(code).startsWith('manage_')));
+      if (role === 'manager') return scopes.length > 0 || capabilities.includes('platform_admin');
+      if (role === 'platform') return capabilities.includes('platform_admin');
+      if (role === 'ads') return capabilities.includes('platform_admin') || organizations.some(o => arr(o.capabilities).includes('manage_ads'));
+      return false;
+    };
+
 
     async function rpc(name, params={}) {
       const { data, error } = await live.client.rpc(name, params);
@@ -215,7 +231,7 @@
 
     live.workspaceDenied = function(route, allowed, coreApi) {
       const choices = arr(allowed)
-        .filter(r => typeof coreApi.roleAuthorized !== 'function' || coreApi.roleAuthorized?.(r) !== false)
+        .filter(viewAuthorized)
         .map(r => `<button class="pill-btn" data-live-role="${h(r)}">Switch to ${h(coreApi.workspaceLabels?.[r] || r)}</button>`)
         .join('');
       return coreApi.layout(`${coreApi.pageHead('This page isn’t available here','Choose another Raahi view you already have access to.')}
