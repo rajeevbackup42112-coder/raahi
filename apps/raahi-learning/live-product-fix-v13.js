@@ -18,7 +18,7 @@
     'live-option-form'
   ]);
   const replayEarlySetupSubmit = (formId, fields, retries) => {
-    if (retries >= 20) return;
+    if (retries >= 200) return;
     setTimeout(() => {
       const current = document.getElementById(formId);
       if (!(current instanceof HTMLFormElement)) {
@@ -29,7 +29,10 @@
         const control = current.elements.namedItem(name);
         if (control && 'value' in control) control.value = value;
       }
-      current.dataset.raahiEarlySubmitRetries = String(retries + 1);
+      if (!window.RaahiLearningLive?.__productFixV13Ready) {
+        replayEarlySetupSubmit(formId, fields, retries + 1);
+        return;
+      }
       current.requestSubmit();
     }, 50);
   };
@@ -42,6 +45,7 @@
     const submit = e.target.closest?.('button[type="submit"],input[type="submit"]');
     const form = submit?.form;
     if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    if (window.RaahiLearningLive?.__productFixV13Ready) return;
     e.preventDefault();
     e.stopImmediatePropagation();
     queueSetupFormSubmit(form);
@@ -49,7 +53,7 @@
   document.addEventListener('submit', e => {
     const form = e.target;
     if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
-    if (window.RaahiLearningLive?.__productFixV13) return;
+    if (window.RaahiLearningLive?.__productFixV13Ready) return;
     e.preventDefault();
     e.stopImmediatePropagation();
     queueSetupFormSubmit(form);
@@ -1004,6 +1008,7 @@
       }
     };
 
+    live.__productFixV13Ready = true;
     api.render();
   }, 50);
 })();
