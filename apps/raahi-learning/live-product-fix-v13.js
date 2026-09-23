@@ -25,6 +25,12 @@
     const errorText = e => e?.message || e?.details || e?.hint || String(e || 'Unknown error');
     const isPhoneGate = e => /PHONE_TRUST_REQUIRED/i.test(errorText(e));
     const selectedLocationName = () => live.context?.selected_location?.name || arr(live.data.locations).find(x => x.state === 'live')?.name || 'Choose location';
+    const firstUsePending = () => {
+      const account = live.context?.account;
+      return !!account
+        && Object.prototype.hasOwnProperty.call(account,'first_use_completed_at')
+        && account.first_use_completed_at === null;
+    };
     const replaceFirstPageTitle = (html, title) => String(html || '').replace(/<h1>[\s\S]*?<\/h1>/, `<h1>${h(title)}</h1>`);
 
     async function rpc(name, params={}) {
@@ -138,6 +144,10 @@
     const originalRender = live.renderRoute;
     live.renderRoute = function(route, coreApi) {
       if (live.session && live.context) {
+        if (route === 'home' && firstUsePending()) {
+          if (location.hash !== '#/onboarding-intent') history.replaceState(null,'','#/onboarding-intent');
+          return originalRender('onboarding-intent', coreApi);
+        }
         if (route === 'classes' && ['learner','student','parent'].includes(coreApi.state.role)) return pageClasses();
         if (route === 'invitation') return pageInvitation();
         if (route === 'learners') return pageLearners();
@@ -276,10 +286,29 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-start-intent],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
+        if (t.dataset.startIntent && firstUsePending()) {
+          const destination = {
+            learner:'learner-setup',
+            parent:'learner-add',
+            teacher:'teacher-setup',
+            institute:'institute-setup',
+            explore:'home'
+          }[t.dataset.startIntent];
+          if (!destination) throw new Error('Choose a valid Raahi starting path.');
+          t.disabled = true;
+          try {
+            await rpc('complete_first_use_onboarding',{ p_idempotency_key:idk('first-use') });
+            live.context = await rpc('get_my_account_context');
+            api.go(destination);
+          } finally {
+            if (t.isConnected) t.disabled = false;
+          }
+          return;
+        }
         if (t.dataset.liveFixOpenInvite) {
           live.selected.invitationId = t.dataset.liveFixOpenInvite;
           api.go('invitation');
