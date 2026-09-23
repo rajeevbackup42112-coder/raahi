@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const teacher=fs.readFileSync('apps/raahi-learning/founding-supply-v14c.js','utf8');
 const product=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
+const delight=fs.readFileSync('apps/raahi-learning/delight-v14.js','utf8');
 
 function slice(source,start,end){
   const a=source.indexOf(start);
@@ -55,6 +56,12 @@ test('phone trust explains security without exposing role/authority terminology'
   assert.match(s,/security check for sensitive actions/);
   assert.match(s,/does not change what you can do in Raahi/);
   assert.doesNotMatch(s,/does not change your Raahi roles or learner authority/i);
+});
+
+
+test('public positioning does not imply a learner directory',()=>{
+  assert.match(delight,/Find teachers\. Share what you need\. Learn locally\./);
+  assert.doesNotMatch(delight,/Find students/i);
 });
 
 test('copy-only alignment does not add operational table writes',()=>{
