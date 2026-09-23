@@ -77,6 +77,22 @@
     const phoneTrustMode = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustMode || 'phone_trust_required');
     const phoneTrustProvider = () => String(window.RAAHI_RELEASE_CONFIG?.phoneTrustProvider || 'supabase');
 
+    function phoneTrustErrorMessage(code) {
+      const messages = {
+        PHONE_ALREADY_IN_USE:'This mobile number is already linked to another Raahi sign-in. Use a different mobile number or sign in with the account that already uses it.',
+        INVALID_OTP:'That verification code is not correct. Check the latest SMS and try again.',
+        CHALLENGE_EXPIRED:'This verification code has expired. Send a new phone code.',
+        CHALLENGE_NOT_ACTIVE:'This phone-check request is no longer active. Send a new phone code.',
+        VERIFY_ATTEMPTS_EXCEEDED:'Too many incorrect attempts. Send a new phone code.',
+        PHONE_OTP_RATE_LIMIT:'Too many phone-code requests. Please wait a little before trying again.',
+        PHONE_OTP_PROVIDER_LIMIT:'The SMS provider is temporarily limiting requests. Please try again shortly.',
+        PHONE_OTP_PROVIDER_BALANCE:'Phone verification is temporarily unavailable. Please try again later.',
+        PHONE_OTP_SEND_FAILED:'Raahi could not send the phone code. Please try again.',
+        PHONE_CONFIRM_FAILED:'Raahi could not attach this verified phone right now. Please try again later.'
+      };
+      return messages[code] || null;
+    }
+
     async function externalPhoneTrust(provider, body) {
       const functionName = provider === 'startmessaging'
         ? 'phone-trust-startmessaging'
@@ -85,8 +101,16 @@
           : null;
       if (!functionName) throw new Error('Phone verification provider is unavailable.');
       const { data, error } = await live.client.functions.invoke(functionName, { body });
-      if (error) throw error;
-      if (!data?.ok) throw new Error(data?.error || 'Phone verification failed.');
+      let providerCode = data?.error || null;
+      if (!providerCode && error?.context && typeof error.context.clone === 'function') {
+        try {
+          const payload = await error.context.clone().json();
+          providerCode = payload?.error || null;
+        } catch (_) {}
+      }
+      if (error || !data?.ok) {
+        throw new Error(phoneTrustErrorMessage(providerCode) || errorText(error || data?.error || 'Phone verification failed.'));
+      }
       return data;
     }
 
