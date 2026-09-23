@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const teacher=fs.readFileSync('apps/raahi-learning/founding-supply-v14c.js','utf8');
 const product=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
 const delight=fs.readFileSync('apps/raahi-learning/delight-v14.js','utf8');
+const polish=fs.readFileSync('apps/raahi-learning/launch-polish-v13.js','utf8');
 
 function slice(source,start,end){
   const a=source.indexOf(start);
@@ -61,6 +62,12 @@ test('phone trust explains security without exposing role/authority terminology'
 test('public positioning does not imply a learner directory',()=>{
   assert.match(delight,/Find teachers\. Share what you need\. Learn locally\./);
   assert.doesNotMatch(delight,/Find students/i);
+});
+
+
+test('workspace status labels hide server-authorization vocabulary',()=>{
+  assert.match(polish,/\['Server-authorized', 'Access confirmed'\]/);
+  assert.match(polish,/\['server-authorized', 'Access confirmed'\]/);
 });
 
 test('copy-only alignment does not add operational table writes',()=>{
