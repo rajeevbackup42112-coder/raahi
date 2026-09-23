@@ -291,13 +291,24 @@
         }
 
         if (target.matches('[data-founding-accept]')) {
-          await rpc('accept_assisted_teacher_onboarding',{
-            p_request_id:target.dataset.foundingAccept,
-            p_idempotency_key:idk('founding-accept')
-          });
-          api.toast('Your teaching details are now published','success');
-          window.location.hash = '#/teacher-home';
-          window.location.reload();
+          const action={
+            rpc:'accept_assisted_teacher_onboarding',
+            params:{
+              p_request_id:target.dataset.foundingAccept,
+              p_idempotency_key:idk('founding-accept')
+            },
+            successRoute:'teacher-home',
+            postRole:'teacher'
+          };
+          if (typeof live.runSensitiveActionV13 === 'function') {
+            state.my = null;
+            await live.runSensitiveActionV13(action,'teacher-home','Your teaching details are now published');
+          } else {
+            await rpc(action.rpc,action.params);
+            api.toast('Your teaching details are now published','success');
+            window.location.hash = '#/teacher-home';
+            window.location.reload();
+          }
           return;
         }
 
