@@ -44,7 +44,13 @@ async function parentJourney(browser,v){
   await page.getByRole('heading',{name:'Who are you managing?'}).waitFor({timeout:20000});
   const form=page.locator('#live-create-managed-learner-form');await form.locator('input[name="name"]').fill('Aru');
   await form.getByRole('button',{name:'Add learner'}).click();
-  await page.waitForURL(u=>u.hash==='#/home',{timeout:20000});
+  try {
+    await page.waitForURL(u=>u.hash==='#/home',{timeout:7000});
+  } catch (error) {
+    const body=(await page.locator('body').innerText().catch(()=>'' )).slice(0,1000);
+    const debug=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__).catch(()=>null);
+    throw new Error('PARENT_HOME_NOT_REACHED_'+v.name+' url='+page.url()+' body='+JSON.stringify(body)+' calls='+JSON.stringify(debug?.calls||[])+' cause='+String(error?.message||error));
+  }
   await page.getByRole('heading',{name:'Find. Learn. Grow.'}).waitFor({timeout:10000});
   const st=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__);
   assert(st.context.learners.length===1&&st.context.learners[0].access_type==='manage','MANAGED_RELATIONSHIP_MISSING_'+v.name);
