@@ -66,3 +66,23 @@ Reload persistence also worked across the test personas. Authorized context is a
 - Applied Supabase migration version is `20260923134900_v14l_realtime_invalidation_publication`; source file is aligned to that version.
 - No direct browser table mutation, service-role key, provider secret, or weakened phone-trust rule was introduced.
 - GitHub Browser Contract #21 exposed a genuine fast-load race: the async base bootstrap could paint and submit Institute setup before `live-product-fix-v13.js` had registered its early-submit guard. The reconstructed build and controlled-pilot release package now load the product-fix script before the live bootstrap can paint setup forms. The context browser contract then passed five consecutive local runs; both build and release ordering are regression-tested.
+
+## Round 2 cross-persona evidence
+
+- Raahi-04 Parent successfully discovers the controlled Dhanbad Teacher listing and opens the existing Enquiry for `Raahi Test Learner 04`.
+- Raahi-05 Teacher receives the relationship in Messages, opens the Enquiry thread, and can send a reply through the canonical message path.
+- Raahi-04 sees the Teacher reply after authoritative refresh. Realtime presentation is still treated as invalidation/refetch, not as authority.
+- Raahi-03 Self Learner discovers the genuine Gomoh Mathematics Teacher and existing active Enquiry. A second send on the currently deployed build surfaced raw `DUPLICATE_ACTIVE_ENQUIRY`; the repair candidate opens the existing Enquiry with human guidance instead.
+- Raahi-04 generated a one-time private Learner code. Raahi-05 attempted to invite that Learner to `Raahi Test Science Class 05`.
+- The invitation was correctly rejected because the Class is still `draft`, but the currently deployed UI has no activation action and surfaced raw `CLASS_NOT_ACTIVE`. This blocks the Class lifecycle in the live simulation.
+- Repair candidate adds a canonical `activate_class` action for a draft Teacher Class, then refetches authoritative Class management state.
+- Repair candidate also clears cached route loads after Learner creation, addresses Institute phone-trust continuation, fixes Local Manager operational Location labeling, and refreshes Enquiry/Class views after mutations.
+
+## Repair qualification before deployment
+
+- Backend-free model/property suite: 5,349,572 generated cases, 0 failures.
+- Focused and release regression suite: 129 Node tests, 129 passed.
+- Sealed browser contract: 15 profile/intent checks + 4 Teacher/phone-resume checks + 8 Learner/Parent/Institute/context checks = 27 passed.
+- No repair adds direct browser operational-table DML or privileged secrets.
+
+Next gate: commit/push the qualified repair candidate, let GitHub qualification run, deploy one batch, then repeat the exact cross-persona journey from draft Class activation through private invitation and Learner join.

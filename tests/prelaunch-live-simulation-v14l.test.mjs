@@ -7,6 +7,12 @@ const buildSource=fs.readFileSync('apps/raahi-learning/build-source-v13.mjs','ut
 const releaseSource=fs.readFileSync('scripts/prepare-learning-release.mjs','utf8');
 const migration=fs.readFileSync('supabase/migrations/20260923134900_v14l_realtime_invalidation_publication.sql','utf8');
 
+test('Learner creation clears cached route loads before returning home',()=>{
+  const start=product.indexOf("rpc('create_learner'");
+  const block=product.slice(start,start+1200);
+  assert.match(block,/live\.routeLoads\.clear\(\)[\s\S]*refreshCoreState\(\)[\s\S]*api\.go\('home'\)/);
+});
+
 test('Institute creation uses the same resumable phone-trust path as other sensitive actions',()=>{
   const start=product.indexOf("rpc:'create_organization'");
   const block=product.slice(Math.max(0,start-700),start+1200);
@@ -63,6 +69,12 @@ test('product-fix bootstrap is injected before the async live bootstrap can pain
   const releaseFix=releaseSource.indexOf('<script src="./live-product-fix-v13.js"></script>');
   const releaseLive=releaseSource.indexOf('<script src="./live.js"></script>');
   assert.ok(releaseFix>=0 && releaseLive>releaseFix,'release bootstrap must load product-fix before live.js');
+  assert.match(product,/replayEarlySetupSubmit/);
+  assert.match(product,/document\.getElementById\(formId\)/);
+  assert.match(product,/new FormData\(form\)\.entries\(\)/);
+  assert.match(product,/button\[type="submit"\],input\[type="submit"\]/);
+  assert.match(product,/queueSetupFormSubmit\(form\)/);
+  assert.match(product,/current\.requestSubmit\(\)/);
 });
 
 test('pre-launch repairs add no direct browser table mutation or privileged secrets',()=>{

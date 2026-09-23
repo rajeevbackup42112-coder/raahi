@@ -17,18 +17,42 @@
     'live-teacher-profile-form',
     'live-option-form'
   ]);
+  const replayEarlySetupSubmit = (formId, fields, retries) => {
+    if (retries >= 20) return;
+    setTimeout(() => {
+      const current = document.getElementById(formId);
+      if (!(current instanceof HTMLFormElement)) {
+        replayEarlySetupSubmit(formId, fields, retries + 1);
+        return;
+      }
+      for (const [name, value] of fields) {
+        const control = current.elements.namedItem(name);
+        if (control && 'value' in control) control.value = value;
+      }
+      current.dataset.raahiEarlySubmitRetries = String(retries + 1);
+      current.requestSubmit();
+    }, 50);
+  };
+  const queueSetupFormSubmit = form => {
+    const retries = Number(form.dataset.raahiEarlySubmitRetries || '0');
+    const fields = [...new FormData(form).entries()].map(([name, value]) => [name, String(value)]);
+    replayEarlySetupSubmit(form.id, fields, retries);
+  };
+  document.addEventListener('click', e => {
+    const submit = e.target.closest?.('button[type="submit"],input[type="submit"]');
+    const form = submit?.form;
+    if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    queueSetupFormSubmit(form);
+  }, true);
   document.addEventListener('submit', e => {
     const form = e.target;
     if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
     if (window.RaahiLearningLive?.__productFixV13) return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    const retries = Number(form.dataset.raahiEarlySubmitRetries || '0');
-    if (retries >= 20) return;
-    form.dataset.raahiEarlySubmitRetries = String(retries + 1);
-    setTimeout(() => {
-      if (form.isConnected) form.requestSubmit();
-    }, 50);
+    queueSetupFormSubmit(form);
   }, true);
 
   const wait = setInterval(() => {
@@ -502,6 +526,7 @@
             p_avatar_ref:null,
             p_idempotency_key:idk(accessType === 'self' ? 'learner-self' : 'learner-manage')
           });
+          live.routeLoads.clear();
           live.context = await rpc('get_my_account_context');
           live.selected.learnerId = result?.learner_id || null;
           api.state.role = accessType === 'self' ? 'learner' : 'parent';
