@@ -436,6 +436,57 @@
 
     document.addEventListener('submit', async e => {
       const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!['live-create-self-learner-form','live-create-managed-learner-form','live-create-org-form'].includes(form.id)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const submit = form.querySelector('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      try {
+        const fd = new FormData(form);
+
+        if (form.id === 'live-create-self-learner-form' || form.id === 'live-create-managed-learner-form') {
+          const accessType = form.id === 'live-create-self-learner-form' ? 'self' : 'manage';
+          const result = await rpc('create_learner',{
+            p_display_name:String(fd.get('name') || '').trim(),
+            p_access_type:accessType,
+            p_avatar_type:'none',
+            p_avatar_ref:null,
+            p_idempotency_key:idk(accessType === 'self' ? 'learner-self' : 'learner-manage')
+          });
+          live.context = await rpc('get_my_account_context');
+          live.selected.learnerId = result?.learner_id || null;
+          api.state.role = accessType === 'self' ? 'learner' : 'parent';
+          await refreshCoreState();
+          api.go('home');
+          return;
+        }
+
+        const result = await rpc('create_organization',{
+          p_organization_type:String(fd.get('type') || 'other_education'),
+          p_name:String(fd.get('name') || '').trim(),
+          p_description:String(fd.get('description') || '').trim() || null,
+          p_public_contact_text:null,
+          p_venue_text:null,
+          p_website_url:null,
+          p_logo_type:'none',
+          p_logo_ref:null,
+          p_idempotency_key:idk('organization')
+        });
+        live.selected.organizationId = result?.organization_id || null;
+        live.context = await rpc('get_my_account_context');
+        api.state.role = 'institute';
+        await refreshCoreState();
+        api.go('org-home');
+      } catch (err) {
+        api.toast(errorText(err),'danger');
+      } finally {
+        if (submit?.isConnected) submit.disabled = false;
+      }
+    }, true);
+
+    document.addEventListener('submit', async e => {
+      const form = e.target;
       if (!(form instanceof HTMLFormElement) || api.state.role !== 'teacher') return;
       const options = arr(live.data.teacherWorkspace?.teaching_options);
 
