@@ -74,7 +74,7 @@ async function proveSelf(browser,viewport){
 async function proveAssisted(browser,viewport){
   const {context,page,real}=await open(browser,viewport,'assisted','founding-supply-help');
   try{
-    await page.getByRole('heading',{name:'Review the private draft'}).waitFor({timeout:20000});
+    await page.getByRole('heading',{name:'Review your teaching draft'}).waitFor({timeout:20000});
     await page.getByRole('button',{name:'Publish these details'}).click();
     await phoneCheck(page);
     await page.waitForURL(u=>u.hash==='#/teacher-home',{timeout:20000});
