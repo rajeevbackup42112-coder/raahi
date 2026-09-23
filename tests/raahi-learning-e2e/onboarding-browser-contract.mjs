@@ -63,6 +63,7 @@ async function proveOne(browser,viewport,intent){
     await page.getByRole('heading',{name:'What brings you here today?'}).waitFor({timeout:15000});
     assert(page.url().endsWith('#/onboarding-intent'),'INTENT_ROUTE_NOT_REACHED_'+viewport.name+'_'+intent.key);
 
+    await page.waitForFunction(()=>window.__RAAHI_ONBOARDING_FAKE__?.context?.account?.display_name==='My Raahi Name',null,{timeout:5000});
     const fakeAfterProfile=await page.evaluate(()=>window.__RAAHI_ONBOARDING_FAKE__);
     assert(fakeAfterProfile.context.account.display_name==='My Raahi Name','PROFILE_NAME_NOT_SAVED_'+viewport.name+'_'+intent.key);
     assert(fakeAfterProfile.context.account.profile_onboarding_completed_at,'PROFILE_MARKER_NOT_COMPLETED_'+viewport.name+'_'+intent.key);
