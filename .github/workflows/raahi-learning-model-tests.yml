@@ -58,8 +58,14 @@ jobs:
       - name: Verify V1.4K human-language alignment
         run: node --test tests/human-language-alignment-v14k.test.mjs
 
-      - name: Verify production packaging and operational guards
-        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs tests/messagecentral-phone-trust.test.mjs tests/controlled-pilot-google-only-trust.test.mjs tests/pilot-messagecentral-seal.test.mjs tests/delight-v14.test.mjs tests/market-activation-v14b.test.mjs tests/founding-supply-v14c.test.mjs tests/scoped-market-activation-v14d.test.mjs tests/admin-management-v14e.test.mjs tests/startmessaging-phone-trust.test.mjs tests/startmessaging-phone-trust-activation.test.mjs
+      - name: Verify release packaging and operational guards
+        run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs
+
+      - name: Verify phone-trust regressions
+        run: node --test tests/messagecentral-phone-trust.test.mjs tests/controlled-pilot-google-only-trust.test.mjs tests/pilot-messagecentral-seal.test.mjs tests/startmessaging-phone-trust.test.mjs tests/startmessaging-phone-trust-activation.test.mjs
+
+      - name: Verify V1.4 product-layer regressions
+        run: node --test tests/delight-v14.test.mjs tests/market-activation-v14b.test.mjs tests/founding-supply-v14c.test.mjs tests/scoped-market-activation-v14d.test.mjs tests/admin-management-v14e.test.mjs
 
       - name: Verify operations script syntax
         run: |
