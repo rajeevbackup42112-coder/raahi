@@ -90,3 +90,15 @@ Next gate: commit/push the qualified repair candidate, let GitHub qualification 
 
 GitHub Browser Contract #23 exposed a slower-runner-only Parent setup race: the early-submit replay expired after ~1 second before the canonical product-fix handlers were fully ready. The repair now waits on an explicit `__productFixV13Ready` signal and retains the captured form values for up to 10 seconds. Local sealed browser qualification remains 27/27 green after the change.
 Browser Contract #24 moved the slow-runner failure from Parent setup to Institute setup, confirming the issue was the generic early-submit replay rather than a Parent-specific flow. The replay now waits for the fully rendered canonical handler set and replays through the live submit button (with requestSubmit fallback), preserving captured values.
+## Round 2 continuation — Class learning surface
+
+- The repaired build was exercised live through Class activation, private Learner invitation, learner join, Class update and session scheduling.
+- `Raahi Test Learner 04` is now an active member of `Raahi Test Science Class 05`.
+- Teacher 05 published the controlled Class update `PRE-LAUNCH TEST: Welcome to the Science class.` and scheduled the controlled in-person session for 24 Sept 2026, 18:00–19:00.
+- Teacher 05 created and published the controlled Activity `PRE-LAUNCH TEST: Water basics`.
+- Parent/Learner Class view received the session, Class update and Activity after authoritative refresh.
+- New defect found: clicking the Activity card navigated to `#/activity` before copying `activity_id` into live selected state, so the detail page said `No Activity selected`. The same ordering defect also applied to Test cards.
+- Repair candidate now captures Activity/Test cards first, stores the server-projected identifier, clears route-load cache and only then opens the detail route.
+- Local qualification after this repair: focused V1.4L tests 11/11 green; sealed browser contract remains 15 + 4 + 8 = 27/27 green.
+
+Next: push/qualify this small navigation repair, publish one batch, then continue the same Class journey with Activity submission, Teacher review/feedback and Test lifecycle.

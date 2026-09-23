@@ -22,6 +22,13 @@ test('Institute creation uses the same resumable phone-trust path as other sensi
   assert.match(product,/action\.postRole === 'institute'[\s\S]*get_organization_workspace/);
 });
 
+test('Class learning cards select their server IDs before opening detail routes',()=>{
+  assert.match(product,/\[data-live-activity\]/);
+  assert.match(product,/live\.selected\.activityId = t\.dataset\.liveActivity[\s\S]*api\.go\('activity'\)/);
+  assert.match(product,/\[data-live-test\]/);
+  assert.match(product,/live\.selected\.testId = t\.dataset\.liveTest[\s\S]*api\.go\(t\.dataset\.route === 'test-upcoming' \? 'test-upcoming' : 'test'\)/);
+});
+
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
   assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
   assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
