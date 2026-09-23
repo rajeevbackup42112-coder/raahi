@@ -19,6 +19,18 @@
     const originalAfterRender = live.afterRender.bind(live);
     const h = api.escapeHtml;
     const badge = api.badge;
+
+    // Human context labels. Internal route/authority values remain unchanged.
+    Object.assign(api.workspaceLabels,{
+      learner:'My learning',
+      student:'My learning',
+      parent:'Learners I manage',
+      teacher:'Teaching',
+      institute:'Institute',
+      manager:'Local operations',
+      platform:'Platform operations',
+      ads:'Raahi Ads'
+    });
     const arr = v => Array.isArray(v) ? v : (v == null ? [] : [v]);
     const idk = prefix => `${prefix}-${crypto.randomUUID()}`;
     const currentLearners = () => arr(live.context?.learners);
