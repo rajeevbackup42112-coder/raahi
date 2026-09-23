@@ -326,3 +326,81 @@ Proceed with:
 4. audit Google profile confirmation, workspace/context switching and institute first-use;
 5. deploy aligned frontend only after preview gates pass;
 6. then resume the genuine Teacher proof.
+
+
+## 12. Qualification update — 2026-09-23 11:10 IST
+
+The P0 alignment repair is now qualified beyond source assertions.
+
+### Backend / state
+
+Applied on the current Learning Supabase project:
+
+- `v14k_first_use_intent_alignment`;
+- `v14k_google_profile_confirmation_alignment`.
+
+Existing Accounts were grandfathered for profile confirmation. Read-only verification after migration:
+
+- Accounts: **7**;
+- profile-confirmation complete: **7 / 7 existing Accounts**;
+- first-use complete: **4 / 7**;
+- genuine assisted Teacher request: **1 requested**;
+- that Teacher still has **0 Teacher Profiles**, **0 Teaching Options**, **0 active teach capability**.
+
+The genuine request therefore remains private and untouched.
+
+### Exact automated browser qualification
+
+GitHub Actions **Raahi Learning Onboarding Browser Contract #14** is green on the implementation branch.
+
+It runs the reconstructed real frontend in Chromium while sealing real Supabase network access.
+
+Green browser evidence now covers:
+
+- **15** Google-profile + five first-use intent interactions across desktop, iPhone-size and Android-size viewports;
+- **4** Teacher onboarding interactions: self-service + assisted, desktop + iPhone-size, including phone-trust interruption and exact-action resume;
+- **8** first-use context interactions: self Learner, Parent-managed Learner, Institute owner and authorized context switching, desktop + iPhone-size.
+
+Important defects found and repaired by this gate before public deployment:
+
+1. first-use handler attribute mismatch / missing Explore choice;
+2. Google profile-confirmation bypass;
+3. onboarding vs workspace-deep-link ordering;
+4. late Founding Supply overlay render race;
+5. Teacher sensitive actions losing intended action at phone trust;
+6. self-service Teacher flow stopping before first What I Teach;
+7. visible context labels exposing implementation-role language.
+
+### Model / regression qualification
+
+GitHub Actions **Raahi Learning Model Tests #730** is green.
+
+The suite includes:
+
+- first-use alignment;
+- Google profile-confirmation alignment;
+- human-language alignment;
+- Teacher onboarding continuity;
+- release packaging and operational guards;
+- phone-trust regressions;
+- V1.4 product-layer regressions;
+- operations syntax;
+- production-like load-target guards.
+
+### DEV / PUBLIC state
+
+DEV auto-deployment currently reports implementation commit:
+
+`cf0b805a42303f3be46479ad03b1b7eb4a49b9a5`
+
+The public origin remains on the earlier release and has **not** been updated with the alignment repair.
+
+### Remaining release gate
+
+The next gate is no longer another source patch.
+
+It is:
+
+**genuine authenticated DEV canary → confirm intended screens/actions in the real browser/session → then package/deploy the aligned public frontend.**
+
+Do not process the genuine assisted Teacher request as part of the canary. Inspect it read-only until the aligned public frontend has passed genuine qualification.
