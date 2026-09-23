@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `118-current-execution-handover-first-real-teacher-2026-09-23.md` first.**
+**For the current state, read `125-current-execution-handover-v14k-alignment-qualified-2026-09-23.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-23 V1.4K ALIGNMENT QUALIFIED — GENUINE DEV CANARY NEXT:** first-use/profile onboarding, Teacher onboarding continuity, Learner/Parent/Institute continuations and human context switching are repaired and qualified. Applied migrations: `v14k_first_use_intent_alignment` and `v14k_google_profile_confirmation_alignment`. Model Tests #730 passed. Sealed real-browser Contract #14 passed **27 interactions**: 15 profile/intent, 4 Teacher/phone-resume, 8 Learner/Parent/Institute/context-switch. DEV carries the aligned source; PUBLIC remains on the older pre-alignment frontend. The genuine assisted Teacher request remains `requested` with **0 profile, 0 teaching options, 0 active teach capability**. Do not process it yet. Next: one genuine Google-authenticated DEV browser canary, then guarded public release. Read `125-current-execution-handover-v14k-alignment-qualified-2026-09-23.md` first.
 
 **2026-09-23 FIRST REAL TEACHER PROOF IN PROGRESS:** the first genuine Teacher test Account is active but has no teacher capability/profile/request yet. A discoverability defect was found: returning ordinary Accounts could not see a path to Teacher setup from Home. Source `b48fd7387e97f6df7c8324c73ad951c883b8c96b` adds **Are you a teacher? Start teaching** to Home for non-teacher Accounts; CI #670 passed and production deployment `22e74407-4a03-4614-a032-54d5c6765ce7` is live. The user has not yet visually re-confirmed the CTA after refresh. Read `118-current-execution-handover-first-real-teacher-2026-09-23.md` first; then continue with the real **Start teaching -> Ask Raahi to help** flow. Do not silently use self-service `enable_teaching` for this first assisted proof.
 
@@ -34,7 +36,7 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `118-current-execution-handover-first-real-teacher-2026-09-23.md` - **canonical current execution handover; first genuine Teacher proof is in progress and Start teaching Home entry is live**
+1. `125-current-execution-handover-v14k-alignment-qualified-2026-09-23.md` - **canonical current execution handover; V1.4K alignment is automated-qualified and genuine DEV canary is next**
 2. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **V1.4H StartMessaging phone trust public-live handover**
 3. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
 4. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
