@@ -13,7 +13,7 @@ test('V1.4 delight layer is presentation-only',()=>{
   }
   assert.match(js,/Presentation-only V1\.4 delight layer/);
   assert.match(js,/Your local learning network/);
-  assert.match(js,/Find teachers\. Find students\. Learn locally\./);
+  assert.match(js,/Find teachers\. Share what you need\. Learn locally\./);
   assert.match(js,/suppressMeaninglessEmptySponsored/);
   assert.match(js,/Find\. Learn\. Grow\./);
   assert.match(js,/Find a teacher/);
