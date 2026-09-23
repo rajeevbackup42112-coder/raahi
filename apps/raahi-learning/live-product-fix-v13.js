@@ -25,6 +25,12 @@
     const errorText = e => e?.message || e?.details || e?.hint || String(e || 'Unknown error');
     const isPhoneGate = e => /PHONE_TRUST_REQUIRED/i.test(errorText(e));
     const selectedLocationName = () => live.context?.selected_location?.name || arr(live.data.locations).find(x => x.state === 'live')?.name || 'Choose location';
+    const profileOnboardingPending = () => {
+      const account = live.context?.account;
+      return !!account
+        && Object.prototype.hasOwnProperty.call(account,'profile_onboarding_completed_at')
+        && account.profile_onboarding_completed_at === null;
+    };
     const firstUsePending = () => {
       const account = live.context?.account;
       return !!account
@@ -130,6 +136,21 @@
       location.replace(cleanUrl);
     }
 
+    function pageFirstUseIntent() {
+      return `<div class="auth-shell"><div class="auth-card wide-card">
+        <div class="eyebrow">WELCOME TO RAAHI</div>
+        <h1>What brings you here today?</h1>
+        <p class="muted">Choose what you want to do first. You can always use Raahi in other ways later.</p>
+        <div class="intent-grid">
+          <button class="intent-card" data-live-first-use-intent="learner"><strong>I want to learn</strong><span>Set up my own learning profile</span></button>
+          <button class="intent-card" data-live-first-use-intent="parent"><strong>I’m helping someone learn</strong><span>Add a learner I manage</span></button>
+          <button class="intent-card" data-live-first-use-intent="teacher"><strong>I teach</strong><span>Set up my teaching presence</span></button>
+          <button class="intent-card" data-live-first-use-intent="institute"><strong>I represent an institute</strong><span>Set up an education institute</span></button>
+          <button class="intent-card" data-live-first-use-intent="explore"><strong>I’m just exploring</strong><span>See teachers and learning around me</span></button>
+        </div>
+      </div></div>`;
+    }
+
     function pagePhoneCheck() {
       if (phoneTrustMode() === 'controlled_pilot_google_only') {
         return `<div class="auth-shell"><div class="auth-card"><div class="eyebrow">Pilot access</div><h1>Google sign-in is enough for this pilot</h1><p class="muted">Phone verification is not required during the controlled Gomoh + Dhanbad pilot.</p><button class="primary-btn wide" data-live-fix-resume-action>Continue</button><button class="ghost-btn wide" data-live-fix-logout>Log out</button></div></div>`;
@@ -144,14 +165,21 @@
     const originalRender = live.renderRoute;
     live.renderRoute = function(route, coreApi) {
       if (live.session && live.context) {
-        if (route === 'home' && firstUsePending()) {
-          if (location.hash !== '#/onboarding-intent') history.replaceState(null,'','#/onboarding-intent');
-          return originalRender('onboarding-intent', coreApi);
+        if (!live.pendingInvite && profileOnboardingPending()) {
+          if (route !== 'google-profile' && location.hash !== '#/google-profile') history.replaceState(null,'','#/google-profile');
+          return originalRender('google-profile', coreApi);
+        }
+        if (!live.pendingInvite && firstUsePending()) {
+          if (route !== 'onboarding-intent' && location.hash !== '#/onboarding-intent') history.replaceState(null,'','#/onboarding-intent');
+          return pageFirstUseIntent();
         }
         if (route === 'classes' && ['learner','student','parent'].includes(coreApi.state.role)) return pageClasses();
         if (route === 'invitation') return pageInvitation();
         if (route === 'learners') return pageLearners();
-        if (route === 'phone-check' || route === 'otp') {
+        const roleSelect = document.querySelector('[data-live-role-select]');
+      if (roleSelect) roleSelect.setAttribute('aria-label','Switch Raahi view');
+
+      if (route === 'phone-check' || route === 'otp') {
           if (!live.__phoneTrustLoadingV13 && !live.__phoneTrustV13) {
             live.__phoneTrustLoadingV13 = true;
             setTimeout(async () => {
@@ -183,6 +211,17 @@
         return replaceFirstPageTitle(rendered, 'Ads Inventory');
       }
       return rendered;
+    };
+
+    live.workspaceDenied = function(route, allowed, coreApi) {
+      const choices = arr(allowed)
+        .filter(r => typeof coreApi.roleAuthorized !== 'function' || coreApi.roleAuthorized?.(r) !== false)
+        .map(r => `<button class="pill-btn" data-live-role="${h(r)}">Switch to ${h(coreApi.workspaceLabels?.[r] || r)}</button>`)
+        .join('');
+      return coreApi.layout(`${coreApi.pageHead('This page isn’t available here','Choose another Raahi view you already have access to.')}
+        <div class="card empty"><div class="empty-icon">↪</div><h3>You don’t have access to this page yet</h3>
+        <p>If you use Raahi in more than one way, choose another view below.</p>
+        <div class="wrap" style="justify-content:center">${choices}</div></div>`);
     };
 
     live.rightbarHtml = function(coreApi) {
@@ -285,19 +324,47 @@
       if (e.target?.id === 'live-fix-phone') formatIndianMobileField(e.target);
     }, true);
 
+    document.addEventListener('submit', async e => {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement) || form.id !== 'live-google-profile-form' || !profileOnboardingPending()) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const submit = form.querySelector('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      try {
+        const fd = new FormData(form);
+        const display = String(fd.get('display') || '').trim();
+        if (!display) throw new Error('Enter the name you want to show on Raahi.');
+        await rpc('update_account_profile',{
+          p_display_name:display,
+          p_avatar_type:live.context.account.avatar_type || 'none',
+          p_avatar_ref:live.context.account.avatar_ref || null,
+          p_idempotency_key:idk('google-profile')
+        });
+        await rpc('complete_profile_onboarding',{p_idempotency_key:idk('profile-onboarding')});
+        live.context = await rpc('get_my_account_context');
+        api.toast('Raahi profile saved','success');
+        api.go('onboarding-intent');
+      } catch (err) {
+        api.toast(errorText(err),'danger');
+      } finally {
+        if (submit?.isConnected) submit.disabled = false;
+      }
+    }, true);
+
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-start-intent],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
-        if (t.dataset.startIntent && firstUsePending()) {
+        if (t.dataset.liveFirstUseIntent && firstUsePending()) {
           const destination = {
             learner:'learner-setup',
             parent:'learner-add',
             teacher:'teacher-setup',
             institute:'institute-setup',
             explore:'home'
-          }[t.dataset.startIntent];
+          }[t.dataset.liveFirstUseIntent];
           if (!destination) throw new Error('Choose a valid Raahi starting path.');
           t.disabled = true;
           try {
