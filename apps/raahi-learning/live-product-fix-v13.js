@@ -251,22 +251,30 @@
       const result = await rpc(action.rpc, action.params);
       clearPendingAction();
       await refreshCoreState();
+      if (action.postRole) api.state.role = action.postRole;
+      if (action.clearTeachingOption) live.selected.teachingOptionId = null;
+      if (action.postRole === 'teacher') {
+        try { live.data.teacherWorkspace = await rpc('get_my_teacher_workspace'); }
+        catch (_) { live.data.teacherWorkspace = null; }
+      }
       return result;
     }
 
     async function runSensitiveAction(action, successRoute, successText) {
+      const pendingAction = { ...action, successRoute: action.successRoute || successRoute || null };
       try {
-        await executePendingAction(action);
+        await executePendingAction(pendingAction);
         api.toast(successText,'success');
         if (successRoute) api.go(successRoute); else api.render();
       } catch (e) {
         if (isPhoneGate(e)) {
-          savePendingAction(action);
+          savePendingAction(pendingAction);
           live.__phoneTrustV13 = null;
           api.go('phone-check');
         } else api.toast(errorText(e),'danger');
       }
     }
+    live.runSensitiveActionV13 = runSensitiveAction;
 
     async function sendPhoneOtp() {
       if (phoneTrustMode() === 'controlled_pilot_google_only') throw new Error('Phone verification is not required during this pilot.');
@@ -368,8 +376,61 @@
       }
     }, true);
 
+    document.addEventListener('submit', async e => {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement) || api.state.role !== 'teacher') return;
+      const options = arr(live.data.teacherWorkspace?.teaching_options);
+
+      if (form.id === 'live-teacher-profile-form' && options.length === 0) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const fd = new FormData(form);
+        await runSensitiveAction({
+          rpc:'upsert_teacher_profile',
+          params:{
+            p_headline:String(fd.get('headline') || '').trim() || null,
+            p_bio:String(fd.get('bio') || '').trim() || null,
+            p_experience_summary:String(fd.get('experience') || '').trim() || null,
+            p_visibility_status:String(fd.get('visibility') || 'visible'),
+            p_idempotency_key:idk('teacher-profile')
+          },
+          successRoute:'teaching-option-edit',
+          postRole:'teacher',
+          clearTeachingOption:true
+        },'teaching-option-edit','Profile saved — now add what you teach');
+        return;
+      }
+
+      if (form.id === 'live-option-form' && options.length === 0 && !live.selected.teachingOptionId) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const fd = new FormData(form);
+        const locationIds = [...form.querySelectorAll('input[name="locations"]:checked')].map(x=>x.value);
+        if (!locationIds.length) {
+          api.toast('Choose at least one Location','danger');
+          return;
+        }
+        await runSensitiveAction({
+          rpc:'publish_teaching_option',
+          params:{
+            p_organization_id:null,
+            p_title:String(fd.get('title') || '').trim(),
+            p_category:String(fd.get('category') || '').trim() || null,
+            p_description:String(fd.get('description') || '').trim() || null,
+            p_teaching_mode:String(fd.get('mode') || ''),
+            p_area_or_venue_text:String(fd.get('area') || '').trim() || null,
+            p_fee_display_text:String(fd.get('fee') || '').trim() || null,
+            p_location_ids:locationIds,
+            p_idempotency_key:idk('first-teaching-option')
+          },
+          successRoute:'teacher-home',
+          postRole:'teacher'
+        },'teacher-home','Your teaching setup is ready');
+      }
+    }, true);
+
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -390,6 +451,15 @@
           } finally {
             if (t.isConnected) t.disabled = false;
           }
+          return;
+        }
+        if (t.hasAttribute('data-live-enable-teaching')) {
+          await runSensitiveAction({
+            rpc:'enable_teaching',
+            params:{p_idempotency_key:idk('enable-teaching')},
+            successRoute:'teacher-profile-edit',
+            postRole:'teacher'
+          },'teacher-profile-edit','Teaching setup started');
           return;
         }
         if (t.dataset.liveFixOpenInvite) {
