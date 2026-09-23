@@ -70,7 +70,7 @@ async function instituteJourney(browser,v){
   const form=page.locator('#live-create-org-form');await form.locator('input[name="name"]').fill('Dhanbad Learning Centre');
   await form.locator('select[name="type"]').selectOption('coaching');await form.locator('textarea[name="description"]').fill('Local coaching for school learners.');
   await form.getByRole('button',{name:'Create institute'}).click();
-  await page.waitForURL(u=>u.hash==='#/org-home',{timeout:20000});
+  await page.waitForFunction(()=>location.hash==='#/org-home',null,{timeout:20000});
   await page.getByText('Dhanbad Learning Centre',{exact:true}).first().waitFor({timeout:10000});
   const st=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__);
   assert(st.context.organizations.length===1,'ORG_NOT_CREATED_'+v.name);
