@@ -55,6 +55,22 @@ test('StartMessaging bridge remains authenticated, origin-bounded and rate limit
   assert.match(edge,/VERIFY_ATTEMPTS_EXCEEDED/);
 });
 
+test('duplicate confirmed phone is rejected before provider send and rechecked before Auth attachment',()=>{
+  assert.match(edge,/admin\.auth\.admin\.listUsers/);
+  assert.match(edge,/requirePhoneAvailableToUser\(phone,user\.id\)/);
+  assert.match(edge,/requirePhoneAvailableToUser\(c\.phone_e164,user\.id\)/);
+  assert.match(edge,/PHONE_ALREADY_IN_USE/);
+  const sendPos=edge.indexOf('await requirePhoneAvailableToUser(phone,user.id)');
+  const providerPos=edge.indexOf('const messageId=await sendProvider(phone,otp)');
+  assert(sendPos>=0&&providerPos>sendPos);
+});
+
+test('browser surfaces safe duplicate-phone guidance instead of generic Edge errors',()=>{
+  assert.match(live,/This mobile number is already linked to another Raahi sign-in/);
+  assert.match(live,/PHONE_ALREADY_IN_USE/);
+  assert.match(live,/error\.context\.clone\(\)\.json\(\)/);
+});
+
 test('Provider errors are reduced to safe public codes',()=>{
   assert.match(edge,/STARTMESSAGING_AUTH_FAILED/);
   assert.match(edge,/PHONE_OTP_PROVIDER_BALANCE/);
