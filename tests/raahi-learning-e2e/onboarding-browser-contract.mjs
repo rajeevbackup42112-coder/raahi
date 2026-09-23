@@ -29,7 +29,7 @@ async function installNetworkSeal(page){
     const url=request.url();
     if(url.includes(SUPABASE_HOST)) realRequests.push(url);
   });
-  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js',async route=>{
+  await page.route('**/supabase.min.js',async route=>{
     await route.fulfill({status:200,contentType:'application/javascript',body:fakeSupabaseScript});
   });
   await page.route('https://'+SUPABASE_HOST+'/**',async route=>{
@@ -43,7 +43,12 @@ async function openFresh(browser,viewport){
   const page=await context.newPage();
   const realRequests=await installNetworkSeal(page);
   await page.goto(ORIGIN+'/#/teacher-home',{waitUntil:'domcontentloaded'});
-  await page.getByRole('heading',{name:'Make this profile yours'}).waitFor({timeout:30000});
+  try {
+    await page.getByRole('heading',{name:'Make this profile yours'}).waitFor({timeout:30000});
+  } catch (error) {
+    const body=(await page.locator('body').innerText().catch(()=>'' )).slice(0,1200);
+    throw new Error('PROFILE_CONFIRMATION_SCREEN_NOT_REACHED url='+page.url()+' body='+JSON.stringify(body)+' cause='+String(error?.message||error));
+  }
   return {context,page,realRequests};
 }
 
