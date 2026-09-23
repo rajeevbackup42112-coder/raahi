@@ -29,6 +29,14 @@ test('Class learning cards select their server IDs before opening detail routes'
   assert.match(product,/live\.selected\.testId = t\.dataset\.liveTest[\s\S]*api\.go\(t\.dataset\.route === 'test-upcoming' \? 'test-upcoming' : 'test'\)/);
 });
 
+test('Self Learners can create the same private Class code as other learning decision makers',()=>{
+  const start=product.indexOf('function pageLearners()');
+  const block=product.slice(start,start+2400);
+  assert.match(block,/access_type === 'self' \? 'My learning' : 'Managed by you'/);
+  assert.match(block,/data-live-share-learner/);
+  assert.match(block,/access_type === 'manage'[\s\S]*Set up learner login[\s\S]*: ''}<button class="pill-btn small" data-live-share-learner/);
+});
+
 test('Teacher Activity review uses human UI and canonical review RPCs',()=>{
   assert.match(product,/function pageSubmissionReviewHuman\(\)/);
   assert.match(product,/route === 'submission-review'[\s\S]*pageSubmissionReviewHuman\(\)/);

@@ -112,3 +112,14 @@ Next: push/qualify this small navigation repair, publish one batch, then continu
 - Focused V1.4L regression is now 12/12 green.
 
 Next gate: push/qualify/deploy the review UI repair, then exercise request-changes -> Learner revision -> Teacher reviewed end to end before moving into Tests.
+## Round 2 continuation — revision loop closed
+
+- Teacher 05 requested changes on the controlled Activity submission with specific feedback.
+- Parent 04 received `Activity changes requested`, opened the Activity, saw the Teacher feedback, revised the response and submitted Revision 2.
+- Teacher 05 opened the latest authorized submission, saw Revision 2, added feedback and marked it reviewed.
+- This proves the Activity loop end to end: publish -> learner submit -> teacher changes requested -> learner revision -> teacher reviewed.
+- While preparing the next Test proof, a role-surface gap was found: the backend permits any account that can make the learning decision (including a self Learner) to create the private Class code, but the current Learning profiles UI only exposes that button for managed Learners.
+- Repair candidate exposes `Private Class code` for self Learners as well, without changing authorization; the canonical RPC remains the authority.
+- Focused V1.4L regression is now 13/13 green.
+
+Next: qualify/deploy this small self-Learner UI repair, add Self Learner 03 to the controlled Test Class, and exercise the Test lifecycle with guardian oversight kept separate.
