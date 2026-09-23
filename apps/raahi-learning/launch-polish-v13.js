@@ -7,6 +7,7 @@
     ['taking_new_learners', 'Taking new learners'],
     ['not_taking_new_learners', 'Not taking new learners'],
     ['server-authorized', 'Access confirmed'],
+    ['Server-authorized', 'Access confirmed'],
     ['visible', 'Public'],
     ['Google is the primary Raahi sign-in. Your learning roles and permissions still come from Raahi’s server-authorized relationships—not from Google profile data.',
      'Sign in securely with Google. Your Raahi learning profile and access stay separate from your Google profile.'],
