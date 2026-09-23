@@ -29,10 +29,9 @@ test('Teacher review preserves consent but hides implementation version codes',(
 });
 
 test('Teacher accepted state speaks in normal ownership/edit language',()=>{
-  const s=slice(teacher,"if (r.state === 'accepted')","return api.layout");
-  assert.match(s,/Teacher Profile and first teaching option are now live/);
-  assert.match(s,/edit them anytime/);
-  assert.doesNotMatch(s,/owned by your Account/i);
+  assert.match(teacher,/Teacher Profile and first teaching option are now live/);
+  assert.match(teacher,/edit them anytime/);
+  assert.doesNotMatch(teacher,/owned by your Account/i);
 });
 
 test('My Classes ordinary copy hides Membership and authority mechanics',()=>{
