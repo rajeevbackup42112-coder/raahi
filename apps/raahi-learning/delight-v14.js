@@ -52,7 +52,7 @@
     card.classList.add('v14-welcome-card'); card.closest('.auth-shell')?.classList.add('v14-auth-shell');
     const copy=card.querySelector('.auth-copy'); if(copy){
       const eyebrow=copy.querySelector('.eyebrow'); if(eyebrow) eyebrow.textContent='YOUR LOCAL LEARNING NETWORK';
-      const h1=copy.querySelector('h1'); if(h1) h1.textContent='Find teachers. Find students. Learn locally.';
+      const h1=copy.querySelector('h1'); if(h1) h1.textContent='Find teachers. Share what you need. Learn locally.';
       const p=copy.querySelector('p'); if(p) p.textContent='Explore learning in Dhanbad and Gomoh. Switch Locations anytime with one Raahi account.';
     }
     if(!card.querySelector('.v14-welcome-values')){
