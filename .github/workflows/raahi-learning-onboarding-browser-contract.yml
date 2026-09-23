@@ -1,0 +1,81 @@
+name: Raahi Learning Onboarding Browser Contract
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'apps/raahi-learning/live-product-fix-v13.js'
+      - 'apps/raahi-learning/founding-supply-v14c.js'
+      - 'apps/raahi-learning/delight-v14.js'
+      - 'apps/raahi-learning/build-source-v13.mjs'
+      - 'tests/raahi-learning-e2e/onboarding-browser-contract.mjs'
+      - '.github/workflows/raahi-learning-onboarding-browser-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raahi-learning-onboarding-browser-contract
+  cancel-in-progress: true
+
+jobs:
+  onboarding-browser-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard implementation branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install deterministic browser dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit browser dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Reconstruct exact frontend source
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: raahi-learning-implementation-v1
+        run: node apps/raahi-learning/build-source-v13.mjs
+
+      - name: Start exact local frontend
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory apps/raahi-learning/reconstructed-v13 >/tmp/raahi-onboarding-http.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/build-meta.json >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/raahi-onboarding-http.log || true
+          exit 1
+
+      - name: Run sealed profile + intent browser proof
+        working-directory: tests/raahi-learning-e2e
+        run: node onboarding-browser-contract.mjs
+
+      - name: Upload onboarding browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raahi-learning-onboarding-browser-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-onboarding-browser-contract/
+          if-no-files-found: warn
+          retention-days: 30
