@@ -42,6 +42,13 @@ const PERSONA_SETS: Record<string, PersonaSet> = {
     parent: { email: 'e2e.ui.parent@dev.learning.myraahi.co.in', phone: '+919100000303', display_name: 'UI E2E Parent', scenario: 'UI convergence parent' },
     unrelated: { email: 'e2e.ui.unrelated@dev.learning.myraahi.co.in', phone: '+919100000304', display_name: 'UI E2E Unrelated', scenario: 'UI convergence privacy actor' },
   },
+  alignment: {
+    learn: { email: 'e2e.align.learn@dev.learning.myraahi.co.in', phone: '+919100000321', display_name: 'Alignment Learn', scenario: 'clean-account learn intent' },
+    parent: { email: 'e2e.align.parent@dev.learning.myraahi.co.in', phone: '+919100000322', display_name: 'Alignment Parent', scenario: 'clean-account parent intent' },
+    teacher: { email: 'e2e.align.teacher@dev.learning.myraahi.co.in', phone: '+919100000323', display_name: 'Alignment Teacher', scenario: 'clean-account teacher intent' },
+    institute: { email: 'e2e.align.institute@dev.learning.myraahi.co.in', phone: '+919100000324', display_name: 'Alignment Institute', scenario: 'clean-account institute intent' },
+    explore: { email: 'e2e.align.explore@dev.learning.myraahi.co.in', phone: '+919100000325', display_name: 'Alignment Explore', scenario: 'clean-account explore intent' },
+  },
   ui2: {
     parent: { email: 'e2e.ui2.parent@dev.learning.myraahi.co.in', phone: '+919100000401', display_name: 'UI2 E2E Parent', scenario: 'managed-parent UI convergence' },
     org_owner: { email: 'e2e.ui2.org_owner@dev.learning.myraahi.co.in', phone: '+919100000402', display_name: 'UI2 E2E Organization Owner', scenario: 'organization owner UI convergence' },
@@ -323,6 +330,57 @@ Deno.serve(async (req: Request) => {
         personas: results.map((x) => x.key),
       });
       return response(200, { ok: true, run_id: runId, suite, personas: results });
+    }
+
+    if (action === 'reset_first_use_alignment') {
+      if (suite !== 'alignment') throw new Error('FIRST_USE_RESET_SUITE_NOT_ALLOWED');
+
+      const users = await listAuthUsers(admin);
+      const byEmail = new Map(users.map((user) => [String(user.email || '').toLowerCase(), user]));
+      const reset:any[] = [];
+
+      for (const [key, spec] of Object.entries(PERSONA_SETS.alignment)) {
+        const authUser = byEmail.get(spec.email.toLowerCase());
+        if (!authUser) continue;
+
+        const { data: account, error: accountError } = await admin
+          .from('accounts')
+          .select('id,first_use_completed_at')
+          .eq('auth_user_id', authUser.id)
+          .maybeSingle();
+        if (accountError) throw accountError;
+        if (!account) continue;
+
+        const checks = await Promise.all([
+          admin.from('account_learner_access').select('id',{count:'exact',head:true}).eq('account_id',account.id).eq('status','active'),
+          admin.from('account_capabilities').select('id',{count:'exact',head:true}).eq('account_id',account.id).eq('status','active'),
+          admin.from('organization_members').select('id',{count:'exact',head:true}).eq('account_id',account.id).eq('status','active'),
+          admin.from('location_staff_assignments').select('id',{count:'exact',head:true}).eq('account_id',account.id).eq('status','active'),
+          admin.from('assisted_teacher_onboarding_requests').select('id',{count:'exact',head:true}).eq('teacher_account_id',account.id),
+          admin.from('teacher_profiles').select('id',{count:'exact',head:true}).eq('account_id',account.id),
+          admin.from('teaching_options').select('id',{count:'exact',head:true}).eq('teacher_account_id',account.id),
+        ]);
+        for (const q of checks) if (q.error) throw q.error;
+        if (checks.some((q) => (q.count || 0) > 0)) {
+          throw new Error('ALIGNMENT_PERSONA_NOT_CLEAN_' + key);
+        }
+
+        const { error: resetError } = await admin
+          .from('accounts')
+          .update({ first_use_completed_at:null })
+          .eq('id',account.id);
+        if (resetError) throw resetError;
+        reset.push({ key, account_id:account.id });
+      }
+
+      console.log('[dev-test-identities] reset first-use alignment personas', {
+        run_id:runId,
+        suite,
+        repository:claims.repository,
+        ref:claims.ref,
+        count:reset.length,
+      });
+      return response(200,{ok:true,run_id:runId,suite,reset});
     }
 
     if (action === 'ensure_admin_capability') {
