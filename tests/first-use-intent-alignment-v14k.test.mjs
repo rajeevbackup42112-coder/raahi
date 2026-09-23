@@ -52,16 +52,23 @@ test('account context exposes server-owned first-use completion',()=>{
   assert.match(migration,/grant execute on function public\.complete_first_use_onboarding\(text\)[\s\S]*to authenticated/);
 });
 
-test('frontend fails safe when backend field is absent and routes pending Accounts to intent',()=>{
+test('frontend fails safe when backend field is absent and keeps pending Accounts inside intent',()=>{
   assert.match(ui,/Object\.prototype\.hasOwnProperty\.call\(account,'first_use_completed_at'\)/);
   assert.match(ui,/account\.first_use_completed_at === null/);
-  assert.match(ui,/route === 'home' && firstUsePending\(\)/);
+  assert.match(ui,/!live\.pendingInvite && firstUsePending\(\)/);
   assert.match(ui,/history\.replaceState\(null,'','#\/onboarding-intent'\)/);
-  assert.match(ui,/originalRender\('onboarding-intent', coreApi\)/);
+  assert.match(ui,/return pageFirstUseIntent\(\)/);
 });
 
 test('first-use choice records guidance completion before existing setup route',()=>{
-  assert.match(ui,/\[data-start-intent\]/);
+  assert.match(ui,/data-live-first-use-intent="learner"/);
+  assert.match(ui,/data-live-first-use-intent="parent"/);
+  assert.match(ui,/data-live-first-use-intent="teacher"/);
+  assert.match(ui,/data-live-first-use-intent="institute"/);
+  assert.match(ui,/data-live-first-use-intent="explore"/);
+  assert.match(ui,/What brings you here today\?/);
+  assert.match(ui,/I’m helping someone learn/);
+  assert.match(ui,/I’m just exploring/);
   assert.match(ui,/complete_first_use_onboarding/);
   assert.match(ui,/live\.context = await rpc\('get_my_account_context'\)/);
   for(const [intent,route] of [
