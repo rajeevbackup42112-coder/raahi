@@ -114,6 +114,25 @@ async function countChallenges(filters:{authUserId?:string;phone?:string;since:s
   return count||0;
 }
 
+async function phoneOwner(phone:string){
+  let page=1;
+  const perPage=1000;
+  for(;;){
+    const {data,error}=await admin.auth.admin.listUsers({page,perPage});
+    if(error)throw error;
+    const owner=(data.users||[]).find((candidate:any)=>candidate?.phone&&samePhone(candidate.phone,phone));
+    if(owner)return owner;
+    if((data.users||[]).length<perPage)return null;
+    page+=1;
+    if(page>100)throw new Error('PHONE_OWNER_LOOKUP_FAILED');
+  }
+}
+async function requirePhoneAvailableToUser(phone:string,userId:string){
+  const owner=await phoneOwner(phone);
+  if(owner&&owner.id!==userId)throw new Error('PHONE_ALREADY_IN_USE');
+}
+
+
 async function sendProvider(phone:string,otp:string){
   const apiKey=requiredEnv('STARTMESSAGING_API_KEY');
   const templateId=Deno.env.get('STARTMESSAGING_TEMPLATE_ID')?.trim()||'';
@@ -152,6 +171,10 @@ async function sendChallenge(req:Request,user:any,body:any){
 
   const existing=user.phone?normalizeIndiaPhone(user.phone):null;
   const phone=user.phone_confirmed_at?existing!:normalizeIndiaPhone(body?.phone||existing);
+
+  // Supabase Auth confirmed phone numbers are unique. Fail before provider send
+  // instead of delivering an OTP that can never be attached to this Auth user.
+  await requirePhoneAvailableToUser(phone,user.id);
 
   const now=Date.now();
   const tenMinAgo=new Date(now-10*60*1000).toISOString();
@@ -301,6 +324,10 @@ async function verifyChallenge(req:Request,user:any,body:any){
     throw new Error('INVALID_OTP');
   }
 
+  // Race-proof the attachment: another Account may have claimed the phone
+  // after this challenge was sent but before the OTP was submitted.
+  await requirePhoneAvailableToUser(c.phone_e164,user.id);
+
   const {data:updated,error:updateError}=await admin.auth.admin.updateUserById(user.id,{
     phone:c.phone_e164,
     phone_confirm:true,
@@ -310,7 +337,7 @@ async function verifyChallenge(req:Request,user:any,body:any){
       code:updateError.code??null,
       status:updateError.status??null,
     });
-    if(/already|exists|registered/i.test(updateError.message||''))throw new Error('PHONE_ALREADY_IN_USE');
+    if(/already|exists|registered|unique|duplicate/i.test(updateError.message||''))throw new Error('PHONE_ALREADY_IN_USE');
     throw new Error('PHONE_CONFIRM_FAILED');
   }
   if(updated.user?.id!==user.id||!samePhone(updated.user?.phone,c.phone_e164)||!updated.user?.phone_confirmed_at){
@@ -344,6 +371,7 @@ function publicError(error:unknown){
     INVALID_OTP:400,
     PHONE_ALREADY_IN_USE:409,
     PHONE_CONFIRM_FAILED:502,
+    PHONE_OWNER_LOOKUP_FAILED:503,
     IDENTITY_CONTINUITY_FAILED:409,
   };
   return {code,status:map[code]||500};
