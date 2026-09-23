@@ -29,7 +29,8 @@ Recommended structure:
 
 - RAAHI wordmark + “Your local learning network”;
 - warm hero with student/teacher learning illustration or authentic local-learning visual treatment;
-- headline: **Find teachers. Find students. Learn locally.**;
+- headline: **Find teachers. Share what you need. Learn locally.**;
+- do not imply a public student/learner directory; genuine demand is expressed through privacy-safe Learning Requests.
 - supporting line: **Explore learning in Dhanbad and Gomoh. Switch Locations anytime with one Raahi account.**;
 - primary CTA: `Continue with Google`;
 - three visual value cards: `Find the right teacher`, `Share what you need`, `Learn with your local community`;
