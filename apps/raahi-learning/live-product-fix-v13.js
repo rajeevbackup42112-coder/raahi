@@ -678,10 +678,27 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-send-class-message],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
+        if (t.hasAttribute('data-live-send-class-message')) {
+          const body = document.querySelector('#live-class-message')?.value?.trim() || '';
+          if (!body) throw new Error('Write a message.');
+          const learnerId = live.selected.learnerId || selectedLearner()?.learner_id || null;
+          if (!live.selected.classId || !learnerId) throw new Error('Open a current Class conversation first.');
+          await rpc('send_class_learner_message',{
+            p_class_id:live.selected.classId,
+            p_learner_id:learnerId,
+            p_body:body,
+            p_idempotency_key:idk('class-message')
+          });
+          live.routeLoads.clear();
+          live.data.classThread = await rpc('get_class_learner_thread',{p_class_id:live.selected.classId,p_learner_id:learnerId});
+          api.toast('Message sent','success');
+          api.render();
+          return;
+        }
         if (t.hasAttribute('data-live-activity')) {
           live.selected.activityId = t.dataset.liveActivity || null;
           live.routeLoads.clear();

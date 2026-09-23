@@ -146,3 +146,13 @@ Next: push/qualify/deploy the Test review repair and complete submitted -> evalu
 - Focused V1.4L regression is now 15/15 green; local sealed browser contracts complete successfully.
 
 Next gate: push/qualify/deploy the Class materials visibility repair, prove the material from both Teacher and Learner browsers, then continue with contextual Class messaging and remaining actor workspaces.
+## Round 4 — Class materials proven; contextual messaging defect
+
+- The Class material visibility repair was qualified in GitHub (Model Tests #761 and Browser Contract #30) and deployed to the controlled public site at source `bbb93b3d3a60c214547c4b3f5f371976cc4b16f8`.
+- Teacher 05 and Parent 04 both opened `Raahi Test Science Class 05` and saw `PRE-LAUNCH TEST: Water reference`, its description and the authorized `Open link` action. The material is now reachable from ordinary Class use.
+- Teacher 05 then sent a controlled private Class message to `Raahi Test Learner 04`; Parent 04 received it and replied. Reloading the Teacher thread showed both messages, proving the canonical relationship/message write path.
+- New UX defect found: after either participant sends a Class message, the current thread remains stale until a later navigation/reload even though the write succeeds.
+- Repair candidate captures the existing Class-message action, calls only canonical `send_class_learner_message`, immediately refetches `get_class_learner_thread`, and renders authoritative state. No message payload table is exposed to Realtime or directly mutated by the browser.
+- Focused V1.4L regression is now 16/16 green; sealed browser contracts complete successfully.
+
+Next gate: qualify/deploy the immediate Class-thread refresh repair, re-run both directions, then move to learning requests/opportunities and the Institute/Manager/Admin actor workspaces.

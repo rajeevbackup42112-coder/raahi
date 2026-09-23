@@ -70,6 +70,13 @@ test('Teacher Test review uses provider-safe projections and canonical evaluatio
   assert.match(product,/route === 'test-results'[\s\S]*pageTeacherTestReview\(\)/);
 });
 
+test('Class thread messages refetch the authoritative conversation immediately after send',()=>{
+  assert.match(product,/\[data-live-send-class-message\]/);
+  assert.match(product,/send_class_learner_message/);
+  assert.match(product,/get_class_learner_thread/);
+  assert.match(product,/data-live-send-class-message[\s\S]*send_class_learner_message[\s\S]*get_class_learner_thread[\s\S]*api\.render\(\)/);
+});
+
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
   assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
   assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
