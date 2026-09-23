@@ -26,7 +26,7 @@ async function selfJourney(browser,v){
   const form=page.locator('#live-create-self-learner-form'); await form.locator('input[name="name"]').fill('Raj Learner');
   await form.getByRole('button',{name:'Create my learning profile'}).click();
   await page.waitForURL(u=>u.hash==='#/home',{timeout:20000});
-  await page.getByRole('heading',{name:'Learn locally. Keep learning together.'}).waitFor({timeout:10000});
+  await page.getByRole('heading',{name:'Find. Learn. Grow.'}).waitFor({timeout:10000});
   const st=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__);
   assert(st.context.learners.length===1&&st.context.learners[0].access_type==='self','SELF_RELATIONSHIP_MISSING_'+v.name);
   assert(st.context.capabilities.length===0&&st.context.organizations.length===0,'SELF_AUTHORITY_OVERGRANT_'+v.name);
@@ -45,7 +45,7 @@ async function parentJourney(browser,v){
   const form=page.locator('#live-create-managed-learner-form');await form.locator('input[name="name"]').fill('Aru');
   await form.getByRole('button',{name:'Add learner'}).click();
   await page.waitForURL(u=>u.hash==='#/home',{timeout:20000});
-  await page.getByRole('heading',{name:'Learn locally. Keep learning together.'}).waitFor({timeout:10000});
+  await page.getByRole('heading',{name:'Find. Learn. Grow.'}).waitFor({timeout:10000});
   const st=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__);
   assert(st.context.learners.length===1&&st.context.learners[0].access_type==='manage','MANAGED_RELATIONSHIP_MISSING_'+v.name);
   assert(st.context.capabilities.length===0&&st.context.organizations.length===0,'PARENT_AUTHORITY_OVERGRANT_'+v.name);
@@ -81,7 +81,7 @@ async function instituteJourney(browser,v){
 async function switchJourney(browser,v){
  const {context,page,real}=await open(browser,v,'multi','home');
  try{
-  await page.getByRole('heading',{name:'Learn locally. Keep learning together.'}).waitFor({timeout:20000});
+  await page.getByRole('heading',{name:'Find. Learn. Grow.'}).waitFor({timeout:20000});
   const select=page.locator('[data-live-role-select]').first();await select.waitFor({state:'visible',timeout:10000});
   const values=await select.locator('option').evaluateAll(xs=>xs.map(x=>({value:x.value,text:x.textContent.trim()})));
   assert(values.some(x=>x.value==='parent'&&x.text==='Learners I manage'),'MULTI_PARENT_OPTION_BAD_'+v.name);
