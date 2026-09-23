@@ -26,6 +26,7 @@ on:
       - 'tests/startmessaging-phone-trust.test.mjs'
       - 'tests/startmessaging-phone-trust-activation.test.mjs'
       - 'tests/first-use-intent-alignment-v14k.test.mjs'
+      - 'tests/google-profile-confirmation-alignment-v14k.test.mjs'
       - 'tests/human-language-alignment-v14k.test.mjs'
       - 'supabase/migrations/**'
       - 'docs/raahi-learning/**'
@@ -54,6 +55,9 @@ jobs:
 
       - name: Verify V1.4K first-use alignment
         run: node --test tests/first-use-intent-alignment-v14k.test.mjs
+
+      - name: Verify V1.4K Google profile confirmation alignment
+        run: node --test tests/google-profile-confirmation-alignment-v14k.test.mjs
 
       - name: Verify V1.4K human-language alignment
         run: node --test tests/human-language-alignment-v14k.test.mjs
