@@ -64,6 +64,7 @@
     const errorText = e => e?.message || e?.details || e?.hint || String(e || 'Unknown error');
     const isPhoneGate = e => /PHONE_TRUST_REQUIRED/i.test(errorText(e));
     const selectedLocationName = () => live.context?.selected_location?.name || arr(live.data.locations).find(x => x.state === 'live')?.name || 'Choose location';
+    const managerOperationalLocationName = () => arr(live.context?.manager_scopes)[0]?.location_name || selectedLocationName();
     const profileOnboardingPending = () => {
       const account = live.context?.account;
       return !!account
@@ -160,6 +161,18 @@
       live.data.notifications = arr(notifications);
       live.data.enquiries = arr(enquiries);
       live.data.conversations = arr(conversations);
+    }
+
+    async function refreshCurrentEnquiryThread() {
+      if (!live.selected.enquiryId) return;
+      try { live.data.enquiryThread = await rpc('get_enquiry_thread',{p_enquiry_id:live.selected.enquiryId}); }
+      catch (_) { live.data.enquiryThread = null; }
+    }
+
+    async function refreshCurrentClassManagement() {
+      if (!live.selected.classId) return;
+      try { live.data.classManagement = await rpc('get_teacher_class_management',{p_class_id:live.selected.classId}); }
+      catch (_) { live.data.classManagement = null; }
     }
 
     function currentPendingInvitation() {
@@ -302,7 +315,7 @@
           .replace('<label>Live Locations</label>','<label>Where can learners find this?</label>');
       }
       if (route === 'manager-home') {
-        return replaceFirstPageTitle(rendered, `${selectedLocationName()} Overview`);
+        return replaceFirstPageTitle(rendered, `${managerOperationalLocationName()} Overview`);
       }
       if (route === 'ads-eligibility') {
         return replaceFirstPageTitle(rendered, 'Advertising eligibility');
@@ -333,6 +346,7 @@
     async function executePendingAction(action) {
       if (!action) return false;
       const result = await rpc(action.rpc, action.params);
+      if (result?.organization_id) live.selected.organizationId = result.organization_id;
       clearPendingAction();
       await refreshCoreState();
       if (action.postRole) api.state.role = action.postRole;
@@ -340,6 +354,14 @@
       if (action.postRole === 'teacher') {
         try { live.data.teacherWorkspace = await rpc('get_my_teacher_workspace'); }
         catch (_) { live.data.teacherWorkspace = null; }
+      }
+      if (action.postRole === 'institute') {
+        const orgId = live.selected.organizationId || arr(live.context?.organizations)[0]?.organization_id || null;
+        if (orgId) {
+          live.selected.organizationId = orgId;
+          try { live.data.orgWorkspace = await rpc('get_organization_workspace',{p_organization_id:orgId}); }
+          catch (_) { live.data.orgWorkspace = null; }
+        }
       }
       return result;
     }
@@ -488,22 +510,22 @@
           return;
         }
 
-        const result = await rpc('create_organization',{
-          p_organization_type:String(fd.get('type') || 'other_education'),
-          p_name:String(fd.get('name') || '').trim(),
-          p_description:String(fd.get('description') || '').trim() || null,
-          p_public_contact_text:null,
-          p_venue_text:null,
-          p_website_url:null,
-          p_logo_type:'none',
-          p_logo_ref:null,
-          p_idempotency_key:idk('organization')
-        });
-        live.selected.organizationId = result?.organization_id || null;
-        live.context = await rpc('get_my_account_context');
-        api.state.role = 'institute';
-        await refreshCoreState();
-        api.go('org-home');
+        await runSensitiveAction({
+          rpc:'create_organization',
+          params:{
+            p_organization_type:String(fd.get('type') || 'other_education'),
+            p_name:String(fd.get('name') || '').trim(),
+            p_description:String(fd.get('description') || '').trim() || null,
+            p_public_contact_text:null,
+            p_venue_text:null,
+            p_website_url:null,
+            p_logo_type:'none',
+            p_logo_ref:null,
+            p_idempotency_key:idk('organization')
+          },
+          successRoute:'org-home',
+          postRole:'institute'
+        },'org-home','Institute created');
       } catch (err) {
         api.toast(errorText(err),'danger');
       } finally {
@@ -565,7 +587,7 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -595,6 +617,73 @@
             successRoute:'teacher-profile-edit',
             postRole:'teacher'
           },'teacher-profile-edit','Teaching setup started');
+          return;
+        }
+        if (t.hasAttribute('data-live-confirm-enquiry')) {
+          const teachingOptionId = t.dataset.liveConfirmEnquiry;
+          const learner = selectedLearner();
+          const message = document.querySelector('#live-enquiry-opening')?.value || null;
+          document.querySelector('.modal-backdrop')?.remove();
+          if (!learner) throw new Error('Select an authorized learner.');
+          try {
+            const result = await rpc('send_enquiry',{
+              p_learner_id:learner.learner_id,
+              p_teaching_option_id:teachingOptionId,
+              p_location_id:selectedLocationId(),
+              p_opening_message:message,
+              p_idempotency_key:idk('enquiry')
+            });
+            live.selected.enquiryId = result?.enquiry_id || null;
+            live.routeLoads.clear();
+            await refreshCoreState();
+            await refreshCurrentEnquiryThread();
+            api.toast('Enquiry sent','success');
+            api.go('enquiry');
+            return;
+          } catch (err) {
+            if (!/DUPLICATE_ACTIVE_ENQUIRY/i.test(errorText(err))) throw err;
+            await refreshCoreState();
+            const existing = arr(live.data.enquiries).find(x => x.state === 'active' && x.learner_id === learner.learner_id && x.teaching_option_id === teachingOptionId);
+            if (!existing) throw err;
+            live.selected.enquiryId = existing.enquiry_id;
+            live.routeLoads.clear();
+            await refreshCurrentEnquiryThread();
+            api.toast('You already have an active enquiry here. Opening it.','info');
+            api.go('enquiry');
+            return;
+          }
+        }
+        if (t.hasAttribute('data-live-engage-enquiry')) {
+          if (!live.selected.enquiryId) throw new Error('No Enquiry is selected.');
+          await rpc('engage_enquiry',{p_enquiry_id:live.selected.enquiryId,p_idempotency_key:idk('engage')});
+          live.routeLoads.clear();
+          await refreshCoreState();
+          await refreshCurrentEnquiryThread();
+          api.toast('Enquiry engaged','success');
+          api.render();
+          return;
+        }
+        if (t.hasAttribute('data-live-send-enquiry-message')) {
+          if (!live.selected.enquiryId) throw new Error('No Enquiry is selected.');
+          const body = document.querySelector('#live-enquiry-message')?.value?.trim();
+          if (!body) throw new Error('Write a message.');
+          await rpc('send_enquiry_message',{p_enquiry_id:live.selected.enquiryId,p_body:body,p_idempotency_key:idk('enquiry-message')});
+          live.routeLoads.clear();
+          await refreshCoreState();
+          await refreshCurrentEnquiryThread();
+          api.toast('Message sent','success');
+          api.render();
+          return;
+        }
+        if (t.hasAttribute('data-live-fix-activate-class')) {
+          const classId = live.selected.classId || live.data.classManagement?.class?.class_id || null;
+          if (!classId) throw new Error('No Class is selected.');
+          await rpc('activate_class',{p_class_id:classId,p_idempotency_key:idk('activate-class')});
+          live.routeLoads.clear();
+          await refreshCoreState();
+          await refreshCurrentClassManagement();
+          api.toast('Class activated','success');
+          api.render();
           return;
         }
         if (t.dataset.liveFixOpenInvite) {
@@ -759,6 +848,44 @@
 
     live.afterRender = function(route, coreApi) {
       originalAfterRender(route, coreApi);
+
+      if (live.session && live.context) {
+        const unread = arr(live.data.notifications).filter(n => !n.read_at).length;
+        const top = document.querySelector('.top-actions');
+        if (top && !top.querySelector('[data-live-fix-notifications-link]')) {
+          const link = document.createElement('a');
+          link.className = 'pill-btn';
+          link.href = '#/notifications';
+          link.dataset.liveFixNotificationsLink = 'true';
+          link.setAttribute('aria-label', unread ? `Notifications, ${unread} unread` : 'Notifications');
+          link.textContent = unread ? `Notifications ${unread}` : 'Notifications';
+          top.prepend(link);
+        }
+      }
+
+      if (route === 'teacher-class' && live.data.classManagement?.class?.state === 'draft') {
+        const actions = document.querySelector('.main .page-actions');
+        if (actions && !actions.querySelector('[data-live-fix-activate-class]')) {
+          const button = document.createElement('button');
+          button.className = 'primary-btn';
+          button.dataset.liveFixActivateClass = 'true';
+          button.textContent = 'Activate Class';
+          actions.prepend(button);
+        }
+      }
+
+      const localManagerScope = arr(live.context?.manager_scopes)[0] || null;
+      if (localManagerScope && coreApi.state.role === 'manager') {
+        const locationButton = document.querySelector('.top-actions [data-route="location-picker"]');
+        if (locationButton) {
+          const label = locationButton.querySelector('.label');
+          if (label) label.textContent = localManagerScope.location_name;
+          locationButton.removeAttribute('data-route');
+          locationButton.disabled = true;
+          locationButton.setAttribute('aria-label', `Local operations are scoped to ${localManagerScope.location_name}`);
+          locationButton.title = `Local operations are scoped to ${localManagerScope.location_name}`;
+        }
+      }
 
       if (route === 'phone-check' || route === 'otp') {
         if (live.__phoneTrustV13?.state === 'fresh' && loadPendingAction()) setTimeout(() => {}, 0);

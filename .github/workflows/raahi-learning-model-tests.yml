@@ -29,6 +29,7 @@ on:
       - 'tests/google-profile-confirmation-alignment-v14k.test.mjs'
       - 'tests/human-language-alignment-v14k.test.mjs'
       - 'tests/teacher-onboarding-continuity-v14k.test.mjs'
+      - 'tests/prelaunch-live-simulation-v14l.test.mjs'
       - 'supabase/migrations/**'
       - 'docs/raahi-learning/**'
 
@@ -65,6 +66,9 @@ jobs:
 
       - name: Verify V1.4K Teacher onboarding continuity
         run: node --test tests/teacher-onboarding-continuity-v14k.test.mjs
+
+      - name: Verify pre-launch live simulation repairs
+        run: node --test tests/prelaunch-live-simulation-v14l.test.mjs
 
       - name: Verify release packaging and operational guards
         run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs

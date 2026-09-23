@@ -1,0 +1,64 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const product=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260923134900_v14l_realtime_invalidation_publication.sql','utf8');
+
+test('Institute creation uses the same resumable phone-trust path as other sensitive actions',()=>{
+  const start=product.indexOf("rpc:'create_organization'");
+  const block=product.slice(Math.max(0,start-700),start+1200);
+  assert.match(block,/runSensitiveAction/);
+  assert.match(block,/successRoute:'org-home'/);
+  assert.match(block,/postRole:'institute'/);
+  assert.match(product,/action\.postRole === 'institute'[\s\S]*get_organization_workspace/);
+});
+
+test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
+  assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
+  assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
+});
+
+test('Duplicate active enquiry opens the existing relationship with human guidance',()=>{
+  assert.match(product,/data-live-confirm-enquiry/);
+  assert.match(product,/DUPLICATE_ACTIVE_ENQUIRY/);
+  assert.match(product,/You already have an active enquiry here\. Opening it\./);
+  assert.match(product,/teaching_option_id === teachingOptionId/);
+  assert.match(product,/learner_id === learner\.learner_id/);
+});
+
+test('Draft Class management exposes a canonical activation path',()=>{
+  assert.match(product,/data-live-fix-activate-class/);
+  assert.match(product,/rpc\('activate_class'/);
+  assert.match(product,/route === 'teacher-class'[\s\S]*state === 'draft'[\s\S]*Activate Class/);
+  assert.match(product,/refreshCurrentClassManagement\(\)/);
+});
+
+test('Local Manager overview uses operational scope rather than a general browsing Location',()=>{
+  assert.match(product,/managerOperationalLocationName/);
+  assert.match(product,/manager_scopes/);
+  assert.match(product,/manager-home'[\s\S]*managerOperationalLocationName\(\)/);
+});
+
+test('Authenticated shell exposes notifications without changing authority',()=>{
+  assert.match(product,/data-live-fix-notifications-link/);
+  assert.match(product,/href = '#\/notifications'/);
+  assert.match(product,/get_my_notifications/);
+});
+
+test('Realtime publication is invalidation-only and excludes sensitive message payload tables',()=>{
+  for(const table of [
+    'notifications','teacher_profiles','teaching_options','teaching_option_locations',
+    'organizations','learning_requests','community_posts','community_comments'
+  ]) assert.match(migration,new RegExp("'"+table+"'"));
+  assert.doesNotMatch(migration,/'enquiry_messages'|'class_learner_messages'|'test_attempt_answers'/);
+  assert.match(migration,/PostgreSQL\/RPC projections remain authoritative/i);
+});
+
+test('pre-launch repairs add no direct browser table mutation or privileged secrets',()=>{
+  assert.doesNotMatch(product,/\.from\s*\(/);
+  assert.doesNotMatch(product,/\.insert\s*\(/);
+  assert.doesNotMatch(product,/\.update\s*\(/);
+  assert.doesNotMatch(product,/\.delete\s*\(/);
+  assert.doesNotMatch(product,/service_role|sb_secret_|STARTMESSAGING_API_KEY/i);
+});
