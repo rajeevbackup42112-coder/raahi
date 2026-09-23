@@ -5,6 +5,32 @@
   const PENDING_ACTION_KEY = 'raahi.learning.pending-trust-action.v13';
   const PHONE_FLOW_KEY = 'raahi.learning.phone-flow.v13';
 
+  // The base app can paint first-use forms a few milliseconds before this
+  // overlay has finished attaching its canonical capture handlers. If a very
+  // fast user submits during that window, defer the submit instead of dropping
+  // the action. This listener is registered before live.js finishes loading.
+  const EARLY_SETUP_FORMS = new Set([
+    'live-google-profile-form',
+    'live-create-self-learner-form',
+    'live-create-managed-learner-form',
+    'live-create-org-form',
+    'live-teacher-profile-form',
+    'live-option-form'
+  ]);
+  document.addEventListener('submit', e => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    if (window.RaahiLearningLive?.__productFixV13) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const retries = Number(form.dataset.raahiEarlySubmitRetries || '0');
+    if (retries >= 20) return;
+    form.dataset.raahiEarlySubmitRetries = String(retries + 1);
+    setTimeout(() => {
+      if (form.isConnected) form.requestSubmit();
+    }, 50);
+  }, true);
+
   const wait = setInterval(() => {
     const live = window.RaahiLearningLive;
     const api = window.RaahiLearningCore;
