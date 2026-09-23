@@ -89,3 +89,4 @@ Next gate: commit/push the qualified repair candidate, let GitHub qualification 
 ### CI bootstrap race hardening
 
 GitHub Browser Contract #23 exposed a slower-runner-only Parent setup race: the early-submit replay expired after ~1 second before the canonical product-fix handlers were fully ready. The repair now waits on an explicit `__productFixV13Ready` signal and retains the captured form values for up to 10 seconds. Local sealed browser qualification remains 27/27 green after the change.
+Browser Contract #24 moved the slow-runner failure from Parent setup to Institute setup, confirming the issue was the generic early-submit replay rather than a Parent-specific flow. The replay now waits for the fully rendered canonical handler set and replays through the live submit button (with requestSubmit fallback), preserving captured values.

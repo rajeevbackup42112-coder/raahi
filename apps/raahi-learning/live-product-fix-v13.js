@@ -33,7 +33,9 @@
         replayEarlySetupSubmit(formId, fields, retries + 1);
         return;
       }
-      current.requestSubmit();
+      const submitter = current.querySelector('button[type="submit"],input[type="submit"]');
+      if (submitter instanceof HTMLElement) submitter.click();
+      else current.requestSubmit();
     }, 50);
   };
   const queueSetupFormSubmit = form => {
@@ -1008,7 +1010,7 @@
       }
     };
 
-    live.__productFixV13Ready = true;
     api.render();
+    live.__productFixV13Ready = true;
   }, 50);
 })();
