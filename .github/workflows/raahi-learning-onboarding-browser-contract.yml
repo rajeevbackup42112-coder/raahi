@@ -11,6 +11,7 @@ on:
       - 'apps/raahi-learning/build-source-v13.mjs'
       - 'tests/raahi-learning-e2e/onboarding-browser-contract.mjs'
       - 'tests/raahi-learning-e2e/teacher-onboarding-browser-contract.mjs'
+      - 'tests/raahi-learning-e2e/context-browser-contract.mjs'
       - '.github/workflows/raahi-learning-onboarding-browser-contract.yml'
   workflow_dispatch:
 
@@ -76,6 +77,10 @@ jobs:
         working-directory: tests/raahi-learning-e2e
         run: node teacher-onboarding-browser-contract.mjs
 
+      - name: Run Learner Parent Institute + context-switch browser proof
+        working-directory: tests/raahi-learning-e2e
+        run: node context-browser-contract.mjs
+
       - name: Upload onboarding browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -84,5 +89,6 @@ jobs:
           path: |
             tests/raahi-learning-e2e/artifacts-onboarding-browser-contract/
             tests/raahi-learning-e2e/artifacts-teacher-onboarding-browser-contract/
+            tests/raahi-learning-e2e/artifacts-context-browser-contract/
           if-no-files-found: warn
           retention-days: 30
