@@ -134,3 +134,15 @@ Next: qualify/deploy this small self-Learner UI repair, add Self Learner 03 to t
 - Local qualification: focused V1.4L regression 14/14 green; sealed browser contract 27/27 green.
 
 Next: push/qualify/deploy the Test review repair and complete submitted -> evaluated -> result released -> self Learner result proof.
+## Round 3 — Test lifecycle closed; Class materials gap found
+
+- Teacher 05 evaluated Self Learner 03's submitted `PRE-LAUNCH TEST: Water quiz` attempt, recorded controlled feedback, and explicitly released results.
+- Backend state confirms the attempt is `evaluated`, score `1.00`, with results visible.
+- Self Learner 03 reopened the Test and saw only the released result: evaluated, score 1, and Teacher feedback.
+- Parent 04 opened the same Test for its managed Learner and saw guardian oversight only; protected questions, answers and attempt-taking were not exposed.
+- This closes the Test proof: publish -> self learner start/save/submit -> teacher evaluate -> explicit result release -> self learner result visibility, while guardian permissions remain separate.
+- Teacher 05 then created and linked `PRE-LAUNCH TEST: Water reference` as Class material. The authoritative `get_class_learning_overview` projection returned Class materials, but neither Teacher nor Learner Class detail rendered them. This made a successfully linked resource unreachable in normal Class use.
+- Repair candidate renders authorized Class materials on Teacher and Learner Class detail, supports governed files through the existing file action, and external links with `noopener noreferrer`. No new authority is introduced.
+- Focused V1.4L regression is now 15/15 green; local sealed browser contracts complete successfully.
+
+Next gate: push/qualify/deploy the Class materials visibility repair, prove the material from both Teacher and Learner browsers, then continue with contextual Class messaging and remaining actor workspaces.

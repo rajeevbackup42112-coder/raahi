@@ -228,6 +228,23 @@
       return api.layout(`${api.pageHead(h(inv.class_title),`${h(inv.provider_name)} · for ${h(inv.learner_name)}`)}<div class="card"><div class="between">${badge(inv.display_state || inv.state,'warning')}<span>Expires ${h(new Date(inv.expires_at).toLocaleString())}</span></div><p>Fee: ${h(inv.fee_display_text || 'Not specified')}</p><div class="notice">When you accept, Raahi checks that the invitation is still valid and then joins this learner to the Class.</div><div class="row" style="margin-top:14px"><button class="primary-btn" data-live-fix-accept-invite="${inv.invitation_id}">Accept & join</button><button class="pill-btn" data-live-decline-invite>Decline</button></div></div>`);
     }
 
+    function classMaterialsSection() {
+      const materials = arr(live.data.classOverview?.materials);
+      if (!materials.length) return '';
+      const rows = materials.map(m => `<div class="notice"><div class="between"><div><strong>${h(m.title || 'Class material')}</strong>${m.description ? `<p>${h(m.description)}</p>` : ''}</div><div class="row">${m.file_asset_id ? `<button class="pill-btn small" data-live-file="${h(m.file_asset_id)}">Open file</button>` : ''}${m.external_url ? `<a class="pill-btn small" href="${h(m.external_url)}" target="_blank" rel="noopener noreferrer">Open link</a>` : ''}</div></div></div>`).join('');
+      return `<div class="section"><div class="section-title"><h2>Materials</h2></div><div class="stack">${rows}</div></div>`;
+    }
+
+    function withClassMaterials(rendered) {
+      const section = classMaterialsSection();
+      if (!section) return rendered;
+      const learningMarker = '<div class="section"><div class="section-title"><h2>Learning</h2>';
+      if (String(rendered).includes(learningMarker)) return String(rendered).replace(learningMarker, section + learningMarker);
+      const learnersMarker = '<div class="section"><div class="section-title"><h2>Learners</h2>';
+      if (String(rendered).includes(learnersMarker)) return String(rendered).replace(learnersMarker, section + learnersMarker);
+      return String(rendered) + section;
+    }
+
     function pageSubmissionReviewHuman() {
       const detail = live.data.activity;
       const submission = detail?.submission || null;
@@ -364,6 +381,9 @@
         }
       }
       const rendered = originalRender(route, coreApi);
+      if (route === 'class-detail' || route === 'teacher-class' || route === 'materials') {
+        return withClassMaterials(rendered);
+      }
       if (route === 'home' && ['learner','student','parent'].includes(coreApi.state.role)) {
         return replaceFirstPageTitle(rendered, 'Learn locally. Keep learning together.');
       }

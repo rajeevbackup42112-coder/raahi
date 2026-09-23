@@ -29,6 +29,16 @@ test('Class learning cards select their server IDs before opening detail routes'
   assert.match(product,/live\.selected\.testId = t\.dataset\.liveTest[\s\S]*api\.go\(t\.dataset\.route === 'test-upcoming' \? 'test-upcoming' : 'test'\)/);
 });
 
+test('Class materials returned by the authorized overview are visible to providers and learners',()=>{
+  assert.match(product,/function classMaterialsSection\(\)/);
+  assert.match(product,/live\.data\.classOverview\?\.materials/);
+  assert.match(product,/Open file/);
+  assert.match(product,/Open link/);
+  assert.match(product,/rel="noopener noreferrer"/);
+  assert.match(product,/route === 'class-detail' \|\| route === 'teacher-class' \|\| route === 'materials'/);
+  assert.match(product,/withClassMaterials\(rendered\)/);
+});
+
 test('Self Learners can create the same private Class code as other learning decision makers',()=>{
   const start=product.indexOf('function pageLearners()');
   const block=product.slice(start,start+2400);
