@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const product=fs.readFileSync('apps/raahi-learning/live-product-fix-v13.js','utf8');
+const buildSource=fs.readFileSync('apps/raahi-learning/build-source-v13.mjs','utf8');
 const migration=fs.readFileSync('supabase/migrations/20260923134900_v14l_realtime_invalidation_publication.sql','utf8');
 
 test('Institute creation uses the same resumable phone-trust path as other sensitive actions',()=>{
@@ -53,6 +54,11 @@ test('Realtime publication is invalidation-only and excludes sensitive message p
   ]) assert.match(migration,new RegExp("'"+table+"'"));
   assert.doesNotMatch(migration,/'enquiry_messages'|'class_learner_messages'|'test_attempt_answers'/);
   assert.match(migration,/PostgreSQL\/RPC projections remain authoritative/i);
+});
+
+test('product-fix bootstrap is injected before the async live bootstrap can paint setup forms',()=>{
+  assert.match(buildSource,/const appAnchor='<div id="app"><\/div>'/);
+  assert.match(buildSource,/indexHtml\.replace\(appAnchor,`\$\{appAnchor\}\\\\n<script src="\.\/live-product-fix-v13\.js"><\/script>`\)/);
 });
 
 test('pre-launch repairs add no direct browser table mutation or privileged secrets',()=>{
