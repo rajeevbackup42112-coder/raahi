@@ -136,7 +136,23 @@ is broken.
 
 That is exactly the gap exposed by the real Teacher run.
 
-### D. Overlay integration fragility — P1
+### D. Public positioning contradiction — P0
+
+The frozen V1 product language explicitly removed **Find Students** and prohibits a public Learner directory.
+
+The later V1.4 delight plan and implementation nevertheless introduced:
+
+**Find teachers. Find students. Learn locally.**
+
+That wording implies a discovery surface the product deliberately does not provide and weakens the privacy model.
+
+Correction now adopted:
+
+**Find teachers. Share what you need. Learn locally.**
+
+Genuine learner demand remains expressed through privacy-safe Learning Requests rather than a student directory.
+
+### E. Overlay integration fragility — P1
 
 V1.4 presentation/activation layers intentionally avoided backend redesign, but several now:
 
@@ -250,14 +266,45 @@ Its safe state is useful evidence:
 
 Resume it only after the pre-teacher journey and assisted-flow routing are aligned and covered by the new E2E gate.
 
-## 10. Immediate execution decision
+## 10. Execution status — 2026-09-23
+
+Completed in source / backend:
+
+- Slice 1 first-use alignment contract: `120-first-use-intent-alignment-contract-v1.4k.md`;
+- additive `accounts.first_use_completed_at` migration applied;
+- established Accounts backfilled without changing authority;
+- canonical `complete_first_use_onboarding` command added;
+- frontend first-use routing prepared;
+- Slice 2 human-language contract: `121-human-language-alignment-contract-v1.4k.md`;
+- Teacher setup / Classes / Learning profiles / phone-check copy humanized in source;
+- V1.4 **Find Students** contradiction corrected in both plan and implementation.
+
+The current genuine assisted Teacher request remains private and untouched:
+- state = `requested`;
+- public Teacher Profiles = 0;
+- Teaching Options = 0.
+
+Not yet complete:
+
+- browser qualification of the new first-use flow;
+- mobile tap qualification;
+- production frontend deployment of these alignment changes;
+- clean-account launch journey suite;
+- Google profile-confirmation alignment proof;
+- workspace/context-switching UX audit;
+- institute clean-account onboarding proof.
+
+The Remote Desktop Commander device is currently offline, so frontend deployment is intentionally held rather than bypassing the browser qualification gate.
+
+## 11. Immediate execution decision
 
 **Do not restart product design. Do not add more features.**
 
 Proceed with:
 
-1. implement Slice 1 first-use orchestration;
-2. add its clean-account desktop/mobile E2E;
-3. rerun existing model/security/persona regressions;
-4. then repair Teacher onboarding humanization;
-5. only after both are green resume the genuine Teacher proof.
+1. get the alignment CI fully green;
+2. qualify first-use + Teacher onboarding on a Cloudflare preview with real browser interaction when the authorized remote device returns;
+3. add clean-account desktop/mobile E2E;
+4. audit Google profile confirmation, workspace/context switching and institute first-use;
+5. deploy aligned frontend only after preview gates pass;
+6. then resume the genuine Teacher proof.
