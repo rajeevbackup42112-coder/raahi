@@ -51,12 +51,12 @@
       return `<div class="auth-shell"><div class="auth-card wide-card">
         <div class="eyebrow">Start teaching</div>
         <h1>Set up your teaching presence</h1>
-        <p class="muted">Choose self-service or ask Raahi to help prepare your first profile and teaching option. Nothing is published through assisted setup until you review and accept the exact draft.</p>
+        <p class="muted">Set it up yourself, or ask Raahi to prepare a private draft for you. You stay in control of what becomes public.</p>
         <div class="state-grid">
-          <div class="state-card"><strong>1 · Teacher capability</strong><span>Server-authorized on this Account</span></div>
-          <div class="state-card"><strong>2 · About you</strong><span>Headline, bio and experience</span></div>
-          <div class="state-card"><strong>3 · What you teach</strong><span>Subject, mode, fee and Location</span></div>
-          <div class="state-card"><strong>4 · You approve</strong><span>Assisted setup stays private until you publish it</span></div>
+          <div class="state-card"><strong>1 · About you</strong><span>Add a short introduction and your teaching experience</span></div>
+          <div class="state-card"><strong>2 · What you teach</strong><span>Subject, level and your first learning option</span></div>
+          <div class="state-card"><strong>3 · Where and how</strong><span>Location, online or in person, and fee information</span></div>
+          <div class="state-card"><strong>4 · Review and publish</strong><span>Check the details before anything becomes public</span></div>
         </div>
         <div class="section stack">
           <button class="primary-btn wide" data-live-enable-teaching>Set it up myself</button>
@@ -117,7 +117,7 @@
           <div class="card">
             ${proposalSummary(r)}
             <div class="notice" style="margin-top:16px">
-              By choosing <strong>Publish these details</strong>, you confirm that the information above is accurate enough for Raahi to publish as your Teacher Profile and first Teaching Option. Consent version: <code>${h(r.consent_text_version || 'founding-supply-v1')}</code>.
+              By choosing <strong>Publish these details</strong>, you confirm that the information above is accurate and can be shown publicly as your Teacher Profile and first teaching option.
             </div>
             <div class="section row">
               <button class="primary-btn" data-founding-accept="${h(r.request_id)}">Publish these details</button>
@@ -129,7 +129,7 @@
 
       if (r.state === 'accepted') {
         return api.layout(`${api.pageHead('Teacher setup published','You approved this assisted setup.')}
-          <div class="card"><div class="notice success">Your Teacher Profile and first Teaching Option are now owned by your Account. Future edits use normal Teacher controls.</div>
+          <div class="card"><div class="notice success">Your Teacher Profile and first teaching option are now live. You can edit them anytime from your Teacher workspace.</div>
           <button class="primary-btn" data-founding-open-teacher>Open Teacher workspace</button></div>`);
       }
 
