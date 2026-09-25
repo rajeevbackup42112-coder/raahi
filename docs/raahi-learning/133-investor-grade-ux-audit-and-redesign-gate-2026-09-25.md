@@ -14,9 +14,11 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`0e40946da2e9d08da1a3cfceeecc1e3e9576db43`
+`751548f4cc0e1250a1f727d01e336c51050b62a6` — **Stabilize setup forms during overlay bootstrap**
 
-Current public product remains the last qualified source before this UX gate.
+This source includes the product-wide human-language work plus the bounded setup-submit reliability repair. GitHub Model Tests #774 and Browser Contract #37 are green. It is intentionally **not deployed** while this UX redesign gate is open.
+
+Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
 ## Audit evidence
 
