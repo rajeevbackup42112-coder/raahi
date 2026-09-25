@@ -33,7 +33,7 @@ The latest **implementation/code** commit is:
 
 `dfbc89a445418a4a2115e194d7035b60bddbe671` — **Polish Platform audit and Ads context**
 
-Two docs-only handover commits were added after it, so the branch tip after handover preparation is expected to be `aedfff48bb4e3cdbe874f59ffb123c2e38813bcb`. Do not mistake those documentation commits for a new product build.
+Docs-only handover commits were added after it, so the branch tip may be newer than `dfbc89a`. Treat `dfbc89a` as the latest product-code commit until a newer code commit is explicitly verified; do not mistake documentation-only commits for a new product build.
 
 Parent of the implementation commit:
 
