@@ -29,7 +29,7 @@ test('Global Admin UI uses exact lookup and existing canonical audited assignmen
   assert.match(ui,/assign_local_manager/);
   assert.match(ui,/end_location_staff_assignment/);
   assert.match(ui,/Enter the exact Google email/);
-  assert.match(ui,/This screen never grants Global Platform Admin/);
+  assert.match(ui,/This page cannot make someone a Global Platform Admin/);
   assert.doesNotMatch(ui,/grant_account_capability/);
   assert.doesNotMatch(ui,/revoke_account_capability/);
 });
