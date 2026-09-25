@@ -27,13 +27,15 @@ Use AI Builder Cheat Code discipline already established for this project: prese
 
 # 1. Exact source/deployment state at handover
 
-## GitHub branch HEAD
+## GitHub branch / implementation HEAD
 
-Current branch HEAD is:
+The latest **implementation/code** commit is:
 
 `dfbc89a445418a4a2115e194d7035b60bddbe671` — **Polish Platform audit and Ads context**
 
-Parent:
+Two docs-only handover commits were added after it, so the branch tip after handover preparation is expected to be `aedfff48bb4e3cdbe874f59ffb123c2e38813bcb`. Do not mistake those documentation commits for a new product build.
+
+Parent of the implementation commit:
 
 `2f96efcd984b80ded0f65bc45434d24f49d12a9b` — **Avoid redundant Class thread refetch**
 
@@ -461,7 +463,7 @@ StartMessaging duplicate-owner protection and human guidance are part of the cur
 
 Use:
 
-> Continue Raahi Learning from `docs/raahi-learning/131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md`. Repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase `iiwwmqokaeflaenhlyip`. First verify GitHub HEAD and public build-meta read-only. Public should currently be `2f96efcd984b80ded0f65bc45434d24f49d12a9b`; branch HEAD should be `dfbc89a445418a4a2115e194d7035b60bddbe671`. Do not deploy `dfbc89a` until Browser Contract #33 is repaired/re-run green. The current failure is `PARENT_HOME_NOT_REACHED_iphone` in `context-browser-contract.mjs`. Remote Desktop device may need reconnecting; when available, inspect local git status before changing anything. Continue autonomously until genuine human credentials/OTP or a product decision is required.
+> Continue Raahi Learning from `docs/raahi-learning/131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md`. Repo `rajeevbackup42112-coder/raahi`, branch `raahi-learning-implementation-v1`, Supabase `iiwwmqokaeflaenhlyip`. First verify GitHub and public build-meta read-only. Public should currently be `2f96efcd984b80ded0f65bc45434d24f49d12a9b`. The latest product-code commit is `dfbc89a445418a4a2115e194d7035b60bddbe671`; docs-only handover commits follow it. Do not deploy `dfbc89a` until Browser Contract #33 is repaired/re-run green. The current failure is `PARENT_HOME_NOT_REACHED_iphone` in `context-browser-contract.mjs`. Remote Desktop device may need reconnecting; when available, inspect local git status before changing anything. Continue autonomously until genuine human credentials/OTP or a product decision is required.
 
 ---
 
