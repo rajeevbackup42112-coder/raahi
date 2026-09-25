@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` first.**
+**For the current state, read `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-25 INVESTOR-GRADE UX REDESIGN GATE:** deployment of the current human-language candidate is frozen pending a full visual/system redesign. Read `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` first. The live audit covered Raahi-02 through Raahi-09 across 13 role contexts, 461 screens and 5,947 controls on desktop + iPhone, with 227 screens showing at least one measurable UX/layout issue. Supplemental deterministic coverage added 32 record-dependent/first-use routes. Root causes are systemic: mobile shell overflow/collisions, undersized touch targets, weak post-login visual identity, repeated generic CTAs, and dense first-screen content. Raahi-01's unauthenticated Welcome experience is audited; its signed-in Gomoh Manager session currently requires Google login before account-specific review. Do not deploy `0e40946da2e9d08da1a3cfceeecc1e3e9576db43` until this UX gate is closed.
 
 **2026-09-25 PRE-LAUNCH LIVE SIMULATION ROUND 6:** public is verified on exact product source `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`. Browser Contract #33 was rerun unchanged on `dfbc89a` and passed 27/27; the admin Audit/Ads polish was previewed, hash-verified and deployed. Round 6 then exposed a real Class-message double-submit race: two immediate clicks created two messages because each click generated a fresh idempotency key. The narrow UI in-flight lock repair `5d8ea74` passed 5,349,572 model cases, focused 18/18, sealed browser 27/27, GitHub Model Tests #770 and Browser Contract #34. Preview and production hashes match with zero mismatches. Live Teacher and Parent double-click proofs now each produce one send, one authoritative thread refetch and one visible message. Reload/deep-link and Explorer logout→Google-login recovery are green. Safety has 0 open reports and Gomoh Community has no existing posts, so exact-target report/block/community mutations were intentionally not fabricated. Read `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` first.
 
@@ -42,10 +44,11 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` - **canonical current execution handover; admin polish and Class-message double-submit recovery are public-live and proven**
-2. `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` - Round-5 predecessor and Browser Contract #33 failure context
-3. `130-prelaunch-live-simulation-registry-2026-09-23.md` - persistent isolated browser personas and accumulated live-simulation state
-4. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - first genuine Teacher closure and controlled Gomoh pilot baseline
+1. `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` - **canonical current UX gate; deployment frozen until product-wide visual redesign and mobile/desktop regression are closed**
+2. `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` - Round-6 functional baseline; admin polish and Class-message double-submit recovery are public-live and proven
+3. `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` - Round-5 predecessor and Browser Contract #33 failure context
+4. `130-prelaunch-live-simulation-registry-2026-09-23.md` - persistent isolated browser personas and accumulated live-simulation state
+5. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - first genuine Teacher closure and controlled Gomoh pilot baseline
 2. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **V1.4H StartMessaging phone trust public-live handover**
 3. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
 4. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
