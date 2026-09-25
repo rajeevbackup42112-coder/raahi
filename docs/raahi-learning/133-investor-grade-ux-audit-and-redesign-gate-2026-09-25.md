@@ -14,11 +14,47 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`751548f4cc0e1250a1f727d01e336c51050b62a6` — **Stabilize setup forms during overlay bootstrap**
+`b32372b03d62afaee7b0cd97c02fa3035afef5a8` — **Redesign Notifications for mobile scanning**
 
-This source includes the product-wide human-language work plus the bounded setup-submit reliability repair. GitHub Model Tests #774 and Browser Contract #37 are green. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–2**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #779 and Browser Contract #39 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
+
+## Implementation progress
+
+### Slice 1 — Shared responsive shell + Welcome + Profile photo — CLOSED / UNDEPLOYED
+
+Delivered:
+- mobile header redesigned from compressed desktop row to intentional responsive shell
+- single-role context selector hidden; multi-context accounts use a dedicated second row
+- Notifications converted to compact bell + unread badge in the header
+- signed-in private header may use the Google profile image as a non-persisted fallback when Raahi has no chosen avatar
+- public profile photo behavior remains explicit/user-controlled; Google photos are not auto-published
+- bottom-nav labels are complete and protected against the earlier `My Classes -> My` truncation
+- consistent SVG navigation icon system replaces raw Unicode glyphs
+- Welcome/login simplified to one promise + one supporting sentence + one Google action
+- Avatar metadata form replaced by a human `Profile photo` chooser with `Use my Google photo` / `Use initials`
+- new permanent `ux-shell-browser-contract.mjs` wired into Browser Contract CI
+
+Fresh-cache Parent and multi-context real-session checks show zero mobile horizontal overflow in the redesigned shell.
+
+### Slice 2 — Notifications mobile inbox — CLOSED / UNDEPLOYED
+
+Delivered:
+- replaced implementation-facing `Recipient-private derived notifications` copy with a human activity summary
+- compact unread summary shows what still needs attention without changing server state
+- category cues distinguish Message, Activity, Test, Class, Trial, Enquiry and Institute events
+- unread/read styling is visually distinct while preserving every authoritative notification row
+- actions remain canonical; no notification destination, permission or RPC contract changed
+- mobile action targets are at least 44 px in the sealed browser proof
+- permanent `notification-ux-browser-contract.mjs` verifies row preservation, responsive overflow, category treatment, specialized destination actions and canonical `mark_notification_read`
+
+Real-session evidence:
+- Parent04: 19/19 notifications preserved; page height 3944 -> 3342 px; mobile overflow removed; undersized notification action buttons 19 -> 0
+- Teacher05: 14/14 notifications preserved; page height 2970 -> 2503 px; mobile overflow removed; undersized notification action buttons 14 -> 0
+- GitHub Model Tests #779 and Browser Contract #39 both passed on first attempt for exact product SHA `b32372b03d62afaee7b0cd97c02fa3035afef5a8`
+
+Production was rechecked after qualification and remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`. No Slice 1 or Slice 2 UX code has been deployed.
 
 ## Audit evidence
 
