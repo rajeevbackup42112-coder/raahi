@@ -28,6 +28,8 @@ on:
       - 'tests/first-use-intent-alignment-v14k.test.mjs'
       - 'tests/google-profile-confirmation-alignment-v14k.test.mjs'
       - 'tests/human-language-alignment-v14k.test.mjs'
+      - 'tests/human-language-all-screens-v14m.test.mjs'
+      - 'apps/raahi-learning/launch-polish-v13.js'
       - 'tests/teacher-onboarding-continuity-v14k.test.mjs'
       - 'tests/prelaunch-live-simulation-v14l.test.mjs'
       - 'supabase/migrations/**'
@@ -63,6 +65,9 @@ jobs:
 
       - name: Verify V1.4K human-language alignment
         run: node --test tests/human-language-alignment-v14k.test.mjs
+
+      - name: Verify product-wide human-language alignment
+        run: node --test tests/human-language-all-screens-v14m.test.mjs
 
       - name: Verify V1.4K Teacher onboarding continuity
         run: node --test tests/teacher-onboarding-continuity-v14k.test.mjs

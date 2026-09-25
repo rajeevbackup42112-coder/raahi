@@ -29,7 +29,7 @@
     function denied() {
       return api.layout(`${api.pageHead('Location Admins','Manage city-scoped Local Managers.')}
         <div class="card empty"><h3>Platform Admin required</h3>
-        <p>This page changes administrative authority and is available only in the authorized Global Platform Admin workspace.</p></div>`);
+        <p>Only a Global Platform Admin can manage Local Admin access.</p></div>`);
     }
 
     function managerCard(manager, locationName) {
@@ -61,12 +61,12 @@
     function page() {
       if (!live.session || !live.context || !isPlatform()) return denied();
       if (state.rows === null) {
-        return api.layout(`${api.pageHead('Location Admins','Manage city-scoped administrative authority.')}
+        return api.layout(`${api.pageHead('Location Admins','Manage Local Admin access for each Location.')}
           <div class="card empty"><h3>Loading Location admins…</h3></div>`);
       }
-      return api.layout(`${api.pageHead('Location Admins','Assign or remove city-scoped Local Managers without Supabase SQL.')}
-        <div class="card"><div class="notice"><strong>Global vs local authority</strong><br>
-          Local Managers operate only their assigned Location. This screen never grants Global Platform Admin.
+      return api.layout(`${api.pageHead('Location Admins','Assign or remove Local Managers for each Location.')}
+        <div class="card"><div class="notice"><strong>Global and local access</strong><br>
+          Local Managers can manage only their assigned Location. This page cannot make someone a Global Platform Admin.
         </div></div>
         <div class="section stack">
           ${state.rows.length ? state.rows.map(locationCard).join('')
@@ -111,13 +111,13 @@
       const scopes = arr(result.manager_locations);
       const alreadyHere = scopes.some(x => x.location_id === state.targetLocation?.locationId);
       const globalCopy = result.is_platform_admin
-        ? '<div class="notice">This Account is already a Global Platform Admin and does not need Local Manager authority.</div>'
+        ? '<div class="notice">This person is already a Global Platform Admin, so Local Manager access is not needed.</div>'
         : '';
       el.innerHTML = `<div class="notice"><strong>${h(result.display_name || 'Raahi Account')}</strong><br>
           <span class="tiny">${h(result.email || '')}</span>
           ${scopes.length
-            ? `<div class="tiny muted" style="margin-top:8px">Current Local Manager scope: ${scopes.map(x => h(x.location_name)).join(', ')}</div>`
-            : '<div class="tiny muted" style="margin-top:8px">No current Local Manager scope.</div>'}
+            ? `<div class="tiny muted" style="margin-top:8px">Currently manages: ${scopes.map(x => h(x.location_name)).join(', ')}</div>`
+            : '<div class="tiny muted" style="margin-top:8px">Not currently a Local Manager.</div>'}
         </div>${globalCopy}
         ${result.is_platform_admin ? ''
           : alreadyHere ? '<div class="notice success">Already an active Local Manager for this Location.</div>'
@@ -161,8 +161,8 @@
           return;
         }
         if (target.matches('[data-admin-confirm-assign]')) {
-          if (!state.resolved?.found || !state.targetLocation?.locationId) throw new Error('Resolve an Account first.');
-          if (state.resolved.is_platform_admin) throw new Error('Global Platform Admin does not need Local Manager authority.');
+          if (!state.resolved?.found || !state.targetLocation?.locationId) throw new Error('Find a Raahi account first.');
+          if (state.resolved.is_platform_admin) throw new Error('This person is already a Global Platform Admin and does not need Local Manager access.');
           await rpc('assign_local_manager',{
             p_location_id: state.targetLocation.locationId,
             p_target_account_id: state.resolved.account_id,
