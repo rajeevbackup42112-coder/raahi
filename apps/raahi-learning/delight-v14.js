@@ -9,6 +9,18 @@
     community:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.5 12.5a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm9.2-1.3a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2.8 19c.4-3 2.2-4.7 4.7-4.7s4.4 1.7 4.8 4.7m1.2-5.2c1-.8 2-1 3.2-1 2.2 0 3.8 1.4 4.1 3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
     messages:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5h16v11.3H9l-5 3.4V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9.4h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
     location:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s6-5.9 6-11a6 6 0 1 0-12 0c0 5.1 6 11 6 11Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.8"/></svg>',
+    bell:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 9.8a5.5 5.5 0 0 1 11 0v3.1l1.7 2.6H4.8l1.7-2.6V9.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.6 18.2c.5 1.2 1.3 1.8 2.4 1.8s1.9-.6 2.4-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    teaching:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 4v3M20 12h-3M12 20v-3M4 12h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    people:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 19c.5-3.4 2.5-5.3 5.5-5.3s5 1.9 5.5 5.3M14.3 14.1c.8-.6 1.7-.9 2.7-.9 2.3 0 3.8 1.5 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    sparkle:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c.6 4.7 2.3 6.4 7 7-4.7.6-6.4 2.3-7 7-.6-4.7-2.3-6.4-7-7 4.7-.6 6.4-2.3 7-7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    flag:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 21V4m0 1h10l-1.8 3L16 11H6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    diamond:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 8 9-8 9-8-9 8-9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    settings:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 3.8v2.1M12 18.1v2.1M20.2 12h-2.1M5.9 12H3.8M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5M17.8 17.8l-1.5-1.5M7.7 7.7 6.2 6.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    shield:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 19 6v5.3c0 4.4-2.7 7.5-7 9.7-4.3-2.2-7-5.3-7-9.7V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    plus:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    grid:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>',
+    chart:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19V11M12 19V5M19 19v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    audit:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h7M5 5h.1M5 10h.1M5 15h.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
   };
 
   const route=()=>location.hash.replace(/^#\//,'').split('?')[0]||'home';
@@ -24,7 +36,15 @@
   }
 
   function polishIcons(){
-    const routeIcons={home:'home',explore:'explore',classes:'classes','teacher-classes':'classes',community:'community',messages:'messages'};
+    const routeIcons={
+      home:'home',explore:'explore',classes:'classes',community:'community',messages:'messages',
+      'teacher-home':'home',opportunities:'teaching','teacher-classes':'classes',
+      'org-home':'home','org-teaching':'classes','ads-home':'diamond',
+      'manager-home':'home','manager-people':'people','manager-learning':'classes','raahi-desk':'sparkle',
+      'founding-supply':'people','manager-reports':'flag','manager-ads':'diamond','manager-location':'settings',
+      'platform-home':'home','platform-safety':'shield','platform-ads':'diamond','location-admins':'people','platform-audit':'audit',
+      'ads-create':'plus','ads-inventory':'grid','ads-analytics':'chart'
+    };
     for(const link of document.querySelectorAll('.nav-item[href^="#/"],.mobile-nav a[href^="#/"]')){
       const key=(link.getAttribute('href')||'').replace('#/','').split('?')[0];
       const svg=icons[routeIcons[key]]; if(!svg) continue;
@@ -46,20 +66,119 @@
     }
   }
 
+  const mobileNavLabels={
+    home:'Home',explore:'Explore',classes:'Classes',community:'Community',messages:'Messages',
+    'teacher-home':'Home',opportunities:'Opportunities','teacher-classes':'Classes',
+    'org-home':'Overview','org-teaching':'Learning','ads-home':'Ads',
+    'manager-home':'Overview','manager-people':'People','manager-learning':'Learning','raahi-desk':'Raahi',
+    'founding-supply':'Founding','manager-reports':'Reports','manager-ads':'Ads','manager-location':'Settings',
+    'platform-home':'Overview','platform-safety':'Safety','platform-ads':'Ads','location-admins':'Admins','platform-audit':'Audit',
+    'ads-create':'Create','ads-inventory':'Inventory','ads-analytics':'Analytics'
+  };
+
+  function polishShell(){
+    const top=document.querySelector('.topbar');
+    if(!top) return;
+    top.classList.add('v15-shell');
+    const brand=top.querySelector('.brand');
+    if(brand){
+      brand.classList.add('v15-shell-brand');
+      brand.setAttribute('aria-label','Raahi Learning home');
+    }
+    const actions=top.querySelector('.top-actions');
+    if(!actions) return;
+    actions.classList.add('v15-shell-actions');
+
+    const notification=actions.querySelector('[data-live-fix-notifications-link]');
+    if(notification){
+      notification.classList.add('v15-notification-button');
+      const aria=notification.getAttribute('aria-label')||'Notifications';
+      const match=aria.match(/(\d+)\s+unread/i);
+      const unread=match?Number(match[1]):0;
+      notification.innerHTML=icons.bell;
+      if(unread>0){
+        const badge=document.createElement('span');
+        badge.className='v15-notification-badge';
+        badge.textContent=unread>99?'99+':String(unread);
+        notification.appendChild(badge);
+      }
+      notification.title=unread?(String(unread)+' unread notifications'):'Notifications';
+    }
+
+    const locationButton=actions.querySelector('.v14-location-pill,[data-route="location-picker"],button[aria-label^="Local operations are scoped to"]');
+    if(locationButton){
+      locationButton.classList.add('v14-location-pill','v15-location-button');
+      const label=locationButton.querySelector('.label');
+      if(label && !locationButton.querySelector('svg')){
+        locationButton.innerHTML=icons.location+'<span class="label">'+label.textContent+'</span>';
+      }
+    }
+
+    const roleSelect=actions.querySelector('[data-live-role-select]');
+    const roleCount=roleSelect?.options?.length||0;
+    top.classList.toggle('v15-multi-context',roleCount>1);
+    top.classList.toggle('v15-single-context',roleCount<=1);
+    if(roleSelect){
+      roleSelect.classList.add('v15-context-select');
+      roleSelect.setAttribute('aria-label','Switch Raahi view');
+      roleSelect.title=roleCount>1?'Switch Raahi view':'Current Raahi view';
+    }
+
+    const settings=actions.querySelector('[data-route="settings"]');
+    if(settings){
+      settings.classList.add('v15-account-button');
+      settings.title='Account and settings';
+      const live=window.RaahiLearningLive;
+      const account=live?.context?.account||{};
+      const meta=live?.session?.user?.user_metadata||{};
+      const googlePhoto=meta.avatar_url||meta.picture||'';
+      if((!account.avatar_ref||account.avatar_type==='none')&&googlePhoto&&settings.dataset.v15PrivateAvatar!==googlePhoto){
+        settings.textContent='';
+        const wrap=document.createElement('span');
+        wrap.className='avatar v15-account-avatar';
+        const img=document.createElement('img');
+        img.src=googlePhoto;
+        img.alt='';
+        img.referrerPolicy='no-referrer';
+        wrap.appendChild(img);
+        settings.appendChild(wrap);
+        settings.dataset.v15PrivateAvatar=googlePhoto;
+      }
+    }
+
+    for(const link of document.querySelectorAll('.mobile-nav a[href^="#/"]')){
+      const key=(link.getAttribute('href')||'').replace('#/','').split('?')[0];
+      const icon=link.querySelector('b');
+      if(!icon) continue;
+      for(const node of [...link.childNodes]){
+        if(node!==icon && node.nodeType===Node.TEXT_NODE) node.remove();
+      }
+      let label=link.querySelector('.v15-mobile-label');
+      if(!label){
+        label=document.createElement('span');
+        label.className='v15-mobile-label';
+        link.appendChild(label);
+      }
+      label.textContent=mobileNavLabels[key]||key.replace(/-/g,' ');
+      link.classList.add('v15-mobile-item');
+      link.setAttribute('aria-label',label.textContent);
+    }
+  }
+
   function polishWelcome(){
     const card=[...document.querySelectorAll('.auth-card')].find(x=>/Continue with Google/i.test(x.textContent||''));
     if(!card) return;
     card.classList.add('v14-welcome-card'); card.closest('.auth-shell')?.classList.add('v14-auth-shell');
     const copy=card.querySelector('.auth-copy'); if(copy){
-      const eyebrow=copy.querySelector('.eyebrow'); if(eyebrow) eyebrow.textContent='YOUR LOCAL LEARNING NETWORK';
-      const h1=copy.querySelector('h1'); if(h1) h1.textContent='Find teachers. Share what you need. Learn locally.';
-      const p=copy.querySelector('p'); if(p) p.textContent='Explore learning in Dhanbad and Gomoh. Switch Locations anytime with one Raahi account.';
+      const eyebrow=copy.querySelector('.eyebrow'); if(eyebrow) eyebrow.textContent='RAAHI · YOUR LOCAL LEARNING NETWORK';
+      const h1=copy.querySelector('h1'); if(h1) h1.textContent='Learning, closer to home.';
+      const p=copy.querySelector('p'); if(p) p.textContent='Find teachers, Classes and local learning around Dhanbad and Gomoh.';
     }
     if(!card.querySelector('.v14-welcome-values')){
       const values=document.createElement('div'); values.className='v14-welcome-values';
       values.innerHTML=`<div class="v14-value"><div class="v14-value-icon">${icons.explore}</div><strong>Find the right teacher</strong><span>Discover learning options in the Location you choose.</span></div><div class="v14-value"><div class="v14-value-icon">${icons.messages}</div><strong>Share what you need</strong><span>Post a genuine learning need and connect through Raahi.</span></div><div class="v14-value"><div class="v14-value-icon">${icons.community}</div><strong>Learn with your community</strong><span>Useful local questions, opportunities and conversations.</span></div>`;
       const button=[...card.querySelectorAll('button')].find(x=>/Continue with Google/i.test(x.textContent||''));
-      if(button) button.insertAdjacentElement('beforebegin',values);
+      if(button) button.insertAdjacentElement('afterend',values);
     }
     if(!card.querySelector('.v14-trust-strip')){
       const strip=document.createElement('div'); strip.className='v14-trust-strip';
@@ -68,7 +187,10 @@
       if(button) button.insertAdjacentElement('afterend',strip);
     }
     const intro=card.querySelector('[data-raahi-public-intro]');
-    if(intro) intro.textContent='Teachers, learning opportunities and local conversations - connected around the places you choose.';
+    if(intro) intro.textContent='One Raahi account for learning, teaching and the people you support.';
+    for(const p of card.querySelectorAll('p.tiny,p.muted')){
+      if(/sensitive actions|phone number|phone confirmation/i.test(p.textContent||'')) p.textContent='Raahi may ask you to confirm your phone before sensitive changes.';
+    }
   }
 
   function polishHome(){
@@ -264,6 +386,67 @@
     const enquire=document.querySelector('[data-live-enquire-option]'); if(enquire) enquire.textContent='Ask about this';
   }
 
+  function polishAvatarPicker(){
+    if(route()!=='avatar-picker') return;
+    const main=document.querySelector('.main');
+    const live=window.RaahiLearningLive;
+    if(!main||!live?.context?.account) return;
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const sub=head?.querySelector('p');
+    if(title) title.textContent='Profile photo';
+    if(sub) sub.textContent='Choose how you appear on Raahi. Learner profiles stay separate.';
+
+    const card=main.querySelector('.form-card,.card');
+    const form=card?.querySelector('#live-avatar-form');
+    if(!card||!form||card.dataset.v15AvatarPicker==='true') return;
+    card.dataset.v15AvatarPicker='true';
+    card.classList.add('v15-avatar-card');
+
+    const account=live.context.account||{};
+    const meta=live.session?.user?.user_metadata||{};
+    const googlePhoto=meta.avatar_url||meta.picture||'';
+    const name=account.display_name||meta.full_name||meta.name||'Raahi member';
+
+    const preview=document.createElement('div');
+    preview.className='v15-avatar-preview';
+    const visual=document.createElement('div');
+    visual.className='v15-avatar-preview-visual';
+    if(googlePhoto){
+      const img=document.createElement('img');
+      img.src=googlePhoto; img.alt=''; img.referrerPolicy='no-referrer';
+      visual.appendChild(img);
+    } else {
+      visual.textContent=initials(name);
+    }
+    const copy=document.createElement('div');
+    copy.className='v15-avatar-preview-copy';
+    copy.innerHTML='<strong></strong><span></span>';
+    copy.querySelector('strong').textContent=name;
+    copy.querySelector('span').textContent=googlePhoto?'Your Google photo is available to import.':'Use a clean initials avatar for now.';
+    preview.append(visual,copy);
+    form.insertAdjacentElement('beforebegin',preview);
+
+    if(googlePhoto){
+      const google=document.createElement('button');
+      google.type='button';
+      google.className='primary-btn';
+      google.dataset.liveImportGoogleAvatar='true';
+      google.textContent='Use my Google photo';
+      form.insertAdjacentElement('beforebegin',google);
+    }
+
+    form.innerHTML='<input type="hidden" name="type" value="initials"><input type="hidden" name="ref" value=""><button class="pill-btn" type="submit">Use initials</button>';
+    const back=document.createElement('button');
+    back.type='button'; back.className='ghost-btn'; back.dataset.route='settings'; back.textContent='Back to settings';
+    form.insertAdjacentElement('afterend',back);
+
+    const note=document.createElement('p');
+    note.className='tiny muted v15-avatar-note';
+    note.textContent='Your Google photo is copied into Raahi only when you choose it. Raahi never publishes a Google photo automatically.';
+    card.appendChild(note);
+  }
+
   function polishCardsAndContext(){
     for(const card of document.querySelectorAll('[data-live-option].card')) card.classList.add('v14-market-card');
     for(const tiny of document.querySelectorAll('.rightbar .tiny')) if(tiny.textContent.trim()==='Selected Location') tiny.textContent='Exploring';
@@ -278,6 +461,7 @@
     try{
       polishBrand();
       polishIcons();
+      polishShell();
       polishWelcome();
       polishHome();
       polishPageHead();
@@ -291,6 +475,7 @@
       polishMessagePeople();
       polishLearningRequest();
       polishProviderDetail();
+      polishAvatarPicker();
       polishCardsAndContext();
     } finally {
       observer.takeRecords();

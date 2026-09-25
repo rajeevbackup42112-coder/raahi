@@ -13,7 +13,7 @@ test('V1.4 delight layer is presentation-only',()=>{
   }
   assert.match(js,/Presentation-only V1\.4 delight layer/);
   assert.match(js,/Your local learning network/);
-  assert.match(js,/Find teachers\. Share what you need\. Learn locally\./);
+  assert.match(js,/Learning, closer to home\./);
   assert.match(js,/suppressMeaninglessEmptySponsored/);
   assert.match(js,/Find\. Learn\. Grow\./);
   assert.match(js,/Find a teacher/);
@@ -29,7 +29,11 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.doesNotMatch(js,/\b(fake|fabricat(?:e|ed)|dummy user|fake review|fake rating)\b/i);
   assert.match(js,/Google sign-in/);
   assert.match(js,/Privacy-first/);
-  assert.match(js,/Switch Locations anytime/);
+  assert.match(js,/Find teachers, Classes and local learning around Dhanbad and Gomoh\./);
+  assert.match(js,/v15-notification-button/);
+  assert.match(js,/v15-context-select/);
+  assert.match(js,/v15-account-avatar/);
+  assert.match(js,/Use my Google photo/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

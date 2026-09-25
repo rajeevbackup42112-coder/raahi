@@ -60,7 +60,7 @@ test('phone trust explains security without exposing role/authority terminology'
 
 
 test('public positioning does not imply a learner directory',()=>{
-  assert.match(delight,/Find teachers\. Share what you need\. Learn locally\./);
+  assert.match(delight,/Learning, closer to home\./);
   assert.doesNotMatch(delight,/Find students/i);
 });
 
