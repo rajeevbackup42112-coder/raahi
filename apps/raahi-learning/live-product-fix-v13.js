@@ -245,6 +245,33 @@
       return String(rendered) + section;
     }
 
+    function auditLabel(value) {
+      return String(value || 'Action')
+        .replace(/[._]+/g,' ')
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function pagePlatformAuditHuman() {
+      const rows = arr(live.data.platformAudit);
+      const cards = rows.map(row => {
+        const when = row.created_at ? new Date(row.created_at).toLocaleString() : 'Time unavailable';
+        const target = auditLabel(row.target_type || 'record');
+        const learnerContext = row.learner_id ? badge('Learner context','primary') : '';
+        const details = h(JSON.stringify({
+          audit_id:row.audit_id || null,
+          actor_kind:row.actor_kind || null,
+          actor_account_id:row.actor_account_id || null,
+          target_type:row.target_type || null,
+          target_id:row.target_id || null,
+          learner_id:row.learner_id || null,
+          reason:row.reason || null,
+          metadata:row.metadata || {}
+        }));
+        return `<div class="card"><div class="between"><div><h3>${h(auditLabel(row.action_type))}</h3><p class="card-sub">${h(target)} · ${h(when)}</p></div>${learnerContext}</div><details><summary class="tiny muted">Technical details</summary><code style="display:block;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px">${details}</code></details></div>`;
+      }).join('');
+      return api.layout(`${api.pageHead('Audit Log','Governed action history. Human summary first; technical identifiers remain available when needed.')}<div class="stack">${cards || api.empty('No audit rows','No audit entries are visible to this projection.')}</div>`);
+    }
+
     function pageSubmissionReviewHuman() {
       const detail = live.data.activity;
       const submission = detail?.submission || null;
@@ -352,6 +379,16 @@
     const originalRender = live.renderRoute;
     live.renderRoute = function(route, coreApi) {
       if (live.session && live.context) {
+        if (coreApi.state.role === 'ads') {
+          const adsNav = [
+            ['ads-home','⌂','Campaigns'],
+            ['ads-create','＋','Create'],
+            ['ads-inventory','▦','Inventory'],
+            ['ads-analytics','⌁','Analytics']
+          ];
+          if (arr(live.context?.organizations).length) adsNav.push(['org-home','◫','Organization']);
+          coreApi.roleNav.ads = adsNav;
+        }
         if (!live.pendingInvite && profileOnboardingPending()) {
           if (route !== 'google-profile' && location.hash !== '#/google-profile') history.replaceState(null,'','#/google-profile');
           return originalRender('google-profile', coreApi);
@@ -381,6 +418,7 @@
         }
       }
       const rendered = originalRender(route, coreApi);
+      if (route === 'platform-audit') return pagePlatformAuditHuman();
       if (route === 'class-detail' || route === 'teacher-class' || route === 'materials') {
         return withClassMaterials(rendered);
       }

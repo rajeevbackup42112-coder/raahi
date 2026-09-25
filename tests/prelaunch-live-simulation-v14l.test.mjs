@@ -103,6 +103,20 @@ test('Draft Class management exposes a canonical activation path',()=>{
   assert.match(product,/refreshCurrentClassManagement\(\)/);
 });
 
+test('Platform audit is human-readable while retaining technical details',()=>{
+  assert.match(product,/function pagePlatformAuditHuman\(\)/);
+  assert.match(product,/Human summary first; technical identifiers remain available when needed\./);
+  assert.match(product,/Technical details/);
+  assert.match(product,/route === 'platform-audit'[\s\S]*pagePlatformAuditHuman\(\)/);
+});
+
+test('Raahi Ads hides the Organization dead-end when the Account has no Organization',()=>{
+  assert.match(product,/coreApi\.state\.role === 'ads'/);
+  assert.match(product,/const adsNav = \[/);
+  assert.match(product,/arr\(live\.context\?\.organizations\)\.length[\s\S]*adsNav\.push\(\['org-home'/);
+  assert.match(product,/coreApi\.roleNav\.ads = adsNav/);
+});
+
 test('Local Manager overview uses operational scope rather than a general browsing Location',()=>{
   assert.match(product,/managerOperationalLocationName/);
   assert.match(product,/manager_scopes/);
