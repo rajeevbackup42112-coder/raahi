@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `129-current-execution-handover-first-teacher-closed-2026-09-23.md` first.**
+**For the current state, read `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-25 PRE-LAUNCH LIVE SIMULATION ROUND 5:** public is verified on source `2f96efcd984b80ded0f65bc45434d24f49d12a9b`; the implementation branch is ahead on `dfbc89a445418a4a2115e194d7035b60bddbe671` with Platform Audit / Ads presentation polish. Model Tests #765 passed, but Browser Contract #33 failed the iPhone Parent journey with `PARENT_HOME_NOT_REACHED_iphone` at `#/learner-add`. Do not deploy `dfbc89a` until that browser contract is green. The live simulation has already closed the Class, Activity revision/review, Test evaluation/result-release, Class materials and contextual Class-message vertical slices. Read `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` first, then `130-prelaunch-live-simulation-registry-2026-09-23.md`.
 
 **2026-09-23 FIRST GENUINE TEACHER CLOSED:** V1.4K public source `e4010e3` is live. The first genuine assisted Teacher supplied real facts, reviewed the private draft, passed phone trust with an alternate number after a duplicate-phone conflict was correctly diagnosed, and explicitly published. Canonical state is **1 active teach capability / 1 visible Teacher Profile / 1 Teaching Option / request accepted**. The option is visible in Explore Gomoh and Teacher edit ownership is proven. Duplicate-phone trust now fails early with clear guidance, and Teacher workspace shows **Access confirmed** instead of internal authorization language. Read `129-current-execution-handover-first-teacher-closed-2026-09-23.md` first, then `128-first-genuine-founding-supply-closure-2026-09-23.md`.
 
