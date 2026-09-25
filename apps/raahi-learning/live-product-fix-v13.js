@@ -721,23 +721,33 @@
       e.preventDefault(); e.stopImmediatePropagation();
       try {
         if (t.hasAttribute('data-live-send-class-message')) {
-          const body = document.querySelector('#live-class-message')?.value?.trim() || '';
-          if (!body) throw new Error('Write a message.');
-          const learnerId = live.selected.learnerId || selectedLearner()?.learner_id || null;
-          if (!live.selected.classId || !learnerId) throw new Error('Open a current Class conversation first.');
-          await rpc('send_class_learner_message',{
-            p_class_id:live.selected.classId,
-            p_learner_id:learnerId,
-            p_body:body,
-            p_idempotency_key:idk('class-message')
-          });
-          live.routeLoads.clear();
-          const thread = await rpc('get_class_learner_thread',{p_class_id:live.selected.classId,p_learner_id:learnerId});
-          if (typeof live.__setClassThreadDataV13 === 'function') live.__setClassThreadDataV13(live.selected.classId,learnerId,thread);
-          else live.data.classThread = thread;
-          api.toast('Message sent','success');
-          api.render();
-          return;
+          if (t.dataset.raahiBusy === '1') return;
+          t.dataset.raahiBusy = '1';
+          t.disabled = true;
+          try {
+            const body = document.querySelector('#live-class-message')?.value?.trim() || '';
+            if (!body) throw new Error('Write a message.');
+            const learnerId = live.selected.learnerId || selectedLearner()?.learner_id || null;
+            if (!live.selected.classId || !learnerId) throw new Error('Open a current Class conversation first.');
+            await rpc('send_class_learner_message',{
+              p_class_id:live.selected.classId,
+              p_learner_id:learnerId,
+              p_body:body,
+              p_idempotency_key:idk('class-message')
+            });
+            live.routeLoads.clear();
+            const thread = await rpc('get_class_learner_thread',{p_class_id:live.selected.classId,p_learner_id:learnerId});
+            if (typeof live.__setClassThreadDataV13 === 'function') live.__setClassThreadDataV13(live.selected.classId,learnerId,thread);
+            else live.data.classThread = thread;
+            api.toast('Message sent','success');
+            api.render();
+            return;
+          } finally {
+            if (t.isConnected) {
+              delete t.dataset.raahiBusy;
+              t.disabled = false;
+            }
+          }
         }
         if (t.hasAttribute('data-live-activity')) {
           live.selected.activityId = t.dataset.liveActivity || null;

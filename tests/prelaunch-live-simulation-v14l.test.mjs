@@ -71,12 +71,15 @@ test('Teacher Test review uses provider-safe projections and canonical evaluatio
   assert.match(product,/route === 'test-results'[\s\S]*pageTeacherTestReview\(\)/);
 });
 
-test('Class thread messages refetch the authoritative conversation immediately after send',()=>{
+test('Class thread messages refetch once and reject duplicate in-flight submits',()=>{
   assert.match(product,/\[data-live-send-class-message\]/);
   assert.match(product,/send_class_learner_message/);
   assert.match(product,/get_class_learner_thread/);
   assert.match(product,/__setClassThreadDataV13/);
-  assert.match(product,/data-live-send-class-message[\s\S]*send_class_learner_message[\s\S]*get_class_learner_thread[\s\S]*__setClassThreadDataV13[\s\S]*api\.render\(\)/);
+  assert.match(product,/t\.dataset\.raahiBusy === '1'/);
+  assert.match(product,/t\.dataset\.raahiBusy = '1'[\s\S]*t\.disabled = true/);
+  assert.match(product,/finally \{[\s\S]*delete t\.dataset\.raahiBusy[\s\S]*t\.disabled = false/);
+  assert.match(product,/data-live-send-class-message[\s\S]*raahiBusy[\s\S]*send_class_learner_message[\s\S]*get_class_learner_thread[\s\S]*__setClassThreadDataV13[\s\S]*api\.render\(\)/);
   assert.match(threadDeeplink,/live\.__setClassThreadDataV13 = \(classId, learnerId, data\) =>/);
   assert.match(threadDeeplink,/threadLoad = \{ key, status: 'done', data, error: null \}/);
   assert.match(threadDeeplink,/const generation = threadGeneration/);
