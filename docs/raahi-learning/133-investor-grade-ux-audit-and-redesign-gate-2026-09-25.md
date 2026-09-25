@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`b32372b03d62afaee7b0cd97c02fa3035afef5a8` — **Redesign Notifications for mobile scanning**
+`998b92b42bdd7173eae5f114d9741fdae07dac85` — **Enforce mobile action touch targets**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–2**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #779 and Browser Contract #39 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–3**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #781 and Browser Contract #40 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -55,6 +55,24 @@ Real-session evidence:
 - GitHub Model Tests #779 and Browser Contract #39 both passed on first attempt for exact product SHA `b32372b03d62afaee7b0cd97c02fa3035afef5a8`
 
 Production was rechecked after qualification and remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`. No Slice 1 or Slice 2 UX code has been deployed.
+
+### Slice 3 — Mobile action ergonomics — CLOSED / UNDEPLOYED
+
+Delivered:
+- all small mobile action buttons now have at least a 44 px touch target
+- mobile chips use the same minimum touch height
+- section actions such as `See all` / `View My Classes` expose a full 44 x 44 minimum target rather than only the text line
+- new permanent `mobile-action-browser-contract.mjs` checks 32 difficult routes at iPhone width and fails on any sub-44px content action or horizontal overflow
+- the contract deliberately excludes QA-only chrome so fixture tooling cannot create false product failures
+
+Measured effect on the 32-route difficult-screen audit:
+- content-level small-tap-target routes: 14 -> 0
+- horizontal-overflow routes remain 0
+- remaining overlap evidence is either fixture-only nested-card behavior or separate density/hierarchy work, not a touch-target defect
+
+Exact product SHA `998b92b42bdd7173eae5f114d9741fdae07dac85` passed 5,349,572 model cases / 0 failures plus shell 5/5, Notifications 9/9, mobile actions 32/32, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #781 and Browser Contract #40 passed first attempt.
+
+Production remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–3 remain intentionally undeployed.
 
 ## Audit evidence
 
