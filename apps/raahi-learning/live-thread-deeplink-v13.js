@@ -126,9 +126,14 @@
     document.addEventListener('click', e => {
       if (!e.target.closest?.('[data-live-send-class-message]')) return;
       const key = threadLoad.key;
+      const generation = threadGeneration;
       setTimeout(() => {
-        if (threadLoad.key === key) invalidateThread();
-        api.render();
+        // Compatibility fallback for the base handler: only invalidate if no
+        // authoritative post-send synchronization updated this thread meanwhile.
+        if (threadLoad.key === key && threadGeneration === generation) {
+          invalidateThread();
+          api.render();
+        }
       }, 900);
     }, true);
   }, 25);

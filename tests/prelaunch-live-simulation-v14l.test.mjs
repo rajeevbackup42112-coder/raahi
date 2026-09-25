@@ -79,6 +79,8 @@ test('Class thread messages refetch the authoritative conversation immediately a
   assert.match(product,/data-live-send-class-message[\s\S]*send_class_learner_message[\s\S]*get_class_learner_thread[\s\S]*__setClassThreadDataV13[\s\S]*api\.render\(\)/);
   assert.match(threadDeeplink,/live\.__setClassThreadDataV13 = \(classId, learnerId, data\) =>/);
   assert.match(threadDeeplink,/threadLoad = \{ key, status: 'done', data, error: null \}/);
+  assert.match(threadDeeplink,/const generation = threadGeneration/);
+  assert.match(threadDeeplink,/threadLoad\.key === key && threadGeneration === generation/);
 });
 
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
