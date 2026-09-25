@@ -388,8 +388,9 @@
     }, true);
 
     // The overlay may install after the base app has already painted the current
-    // route. Re-render once so Teacher setup and Founding Supply never depend on
-    // script timing.
-    api.render();
+    // route. Re-render only routes owned by this overlay; unrelated setup forms
+    // must never be replaced while a person is entering their details.
+    const currentRoute = api.currentRoute?.();
+    if (['teacher-setup','founding-supply-help','founding-supply'].includes(currentRoute)) api.render();
   }, 30);
 })();

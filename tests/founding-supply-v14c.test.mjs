@@ -93,6 +93,8 @@ test('UI keeps self-service and adds explicit consented help without direct tabl
   assert.match(ui,/private draft only/);
   assert.match(ui,/route === 'founding-supply-help' && live\.session && live\.context/);
   assert.match(ui,/route === 'founding-supply' && live\.session && live\.context/);
+  assert.match(ui,/const currentRoute = api\.currentRoute\?\.\(\)/);
+  assert.match(ui,/\['teacher-setup','founding-supply-help','founding-supply'\]\.includes\(currentRoute\)/);
   assert.doesNotMatch(ui,/\.from\s*\(/);
   assert.doesNotMatch(ui,/\.insert\s*\(/);
   assert.doesNotMatch(ui,/\.update\s*\(/);

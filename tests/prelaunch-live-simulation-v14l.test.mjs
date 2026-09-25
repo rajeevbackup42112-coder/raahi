@@ -152,9 +152,14 @@ test('product-fix bootstrap is injected before the async live bootstrap can pain
   assert.match(product,/new FormData\(form\)\.entries\(\)/);
   assert.match(product,/button\[type="submit"\],input\[type="submit"\]/);
   assert.match(product,/queueSetupFormSubmit\(form\)/);
+  assert.match(product,/SETUP_FORM_DRAFTS/);
+  assert.match(product,/snapshotSetupDraft/);
+  assert.match(product,/restoreSetupDraft/);
+  assert.match(product,/MutationObserver\(restoreVisibleSetupDrafts\)/);
+  assert.match(product,/window\.addEventListener\('hashchange'/);
   assert.match(product,/retries >= 200/);
   assert.match(product,/__productFixV13Ready/);
-  assert.match(product,/api\.render\(\);[\s\S]*live\.__productFixV13Ready = true/);
+  assert.match(product,/live\.__productFixV13Ready = true;[\s\S]*api\.render\(\);/);
   assert.match(product,/querySelector\('button\[type="submit"\],input\[type="submit"\]'\)/);
   assert.match(product,/submitter\.click\(\)/);
   assert.match(product,/current\.requestSubmit\(\)/);

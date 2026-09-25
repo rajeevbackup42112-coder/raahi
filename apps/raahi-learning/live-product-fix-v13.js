@@ -17,6 +17,44 @@
     'live-teacher-profile-form',
     'live-option-form'
   ]);
+  // Bootstrap can legitimately re-render an already-visible setup form after
+  // the user has started typing. Preserve those in-progress values so the
+  // replacement form does not become blank and fail native required-field
+  // validation before a submit event can even be emitted.
+  const SETUP_FORM_DRAFTS = new Map();
+  const setupControls = form => [...form.elements].filter(control =>
+    control?.name && !(control instanceof HTMLInputElement && control.type === 'file')
+  );
+  const snapshotSetupDraft = form => {
+    if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    const controls = setupControls(form);
+    SETUP_FORM_DRAFTS.set(form.id, controls.map((control, index) => ({
+      name:control.name,
+      index,
+      value:'value' in control ? String(control.value ?? '') : '',
+      checked:'checked' in control ? !!control.checked : null
+    })));
+  };
+  const restoreSetupDraft = form => {
+    if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    const draft = SETUP_FORM_DRAFTS.get(form.id);
+    if (!draft?.length) return;
+    const controls = setupControls(form);
+    for (const saved of draft) {
+      const control = controls[saved.index];
+      if (!control || control.name !== saved.name) continue;
+      if (saved.checked !== null && 'checked' in control) control.checked = saved.checked;
+      if ('value' in control) control.value = saved.value;
+    }
+  };
+  const restoreVisibleSetupDrafts = () => {
+    for (const formId of SETUP_FORM_DRAFTS.keys()) restoreSetupDraft(document.getElementById(formId));
+  };
+  document.addEventListener('input', e => snapshotSetupDraft(e.target?.form), true);
+  document.addEventListener('change', e => snapshotSetupDraft(e.target?.form), true);
+  new MutationObserver(restoreVisibleSetupDrafts).observe(document.documentElement,{subtree:true,childList:true});
+  window.addEventListener('hashchange', () => SETUP_FORM_DRAFTS.clear());
+
   const replayEarlySetupSubmit = (formId, fields, retries) => {
     if (retries >= 200) return;
     setTimeout(() => {
@@ -47,6 +85,7 @@
     const submit = e.target.closest?.('button[type="submit"],input[type="submit"]');
     const form = submit?.form;
     if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    restoreSetupDraft(form);
     if (window.RaahiLearningLive?.__productFixV13Ready) return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -55,6 +94,7 @@
   document.addEventListener('submit', e => {
     const form = e.target;
     if (!(form instanceof HTMLFormElement) || !EARLY_SETUP_FORMS.has(form.id)) return;
+    restoreSetupDraft(form);
     if (window.RaahiLearningLive?.__productFixV13Ready) return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -1219,7 +1259,12 @@
       }
     };
 
-    api.render();
+    // All canonical handlers are installed at this point. If bootstrap already
+    // painted a setup form, do not replace it underneath a person who may have
+    // started typing; the next normal navigation/render will use this overlay.
+    const setupFormAlreadyVisible = [...EARLY_SETUP_FORMS]
+      .some(formId => document.getElementById(formId) instanceof HTMLFormElement);
     live.__productFixV13Ready = true;
+    if (!setupFormAlreadyVisible) api.render();
   }, 50);
 })();
