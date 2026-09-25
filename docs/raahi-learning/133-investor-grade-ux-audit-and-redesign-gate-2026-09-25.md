@@ -22,13 +22,13 @@ Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
 ## Audit evidence
 
-Authenticated live crawl completed across Raahi-02 through Raahi-09:
-- 8 authenticated browser profiles
-- 13 role contexts
-- 461 rendered screens
-- 232 desktop screens
-- 229 iPhone screens
-- 5,947 visible interactive controls inventoried
+Authenticated live crawl is now complete across all nine persistent browser profiles:
+- 9 authenticated browser profiles
+- 14 role contexts
+- 493 rendered live screens
+- 248 desktop screens
+- 245 iPhone screens
+- 6,360 visible interactive controls inventoried
 - 53 distinct live routes reached safely without production mutations
 
 Supplemental deterministic audit covered 32 record-dependent / first-use routes at desktop + iPhone:
@@ -36,18 +36,18 @@ Supplemental deterministic audit covered 32 record-dependent / first-use routes 
 - exact local frontend built from the current branch
 - no production writes
 
-Raahi-01 was also audited for the unauthenticated Welcome experience. Its signed-in Gomoh Local Manager session currently requires a real Google login before account-specific review can resume.
+Raahi-01 was re-authenticated successfully after a stale OAuth-state error and its Gomoh Local Manager desktop/mobile workspace is now included in the live audit.
 
 The QA-only State Gallery is not considered launch-facing product UX.
 
 ## What the audit found
 
-Across the 461 authenticated live screens:
-- 227 screens had at least one measurable UX/layout issue
-- 176 horizontal-overflow findings
-- 224 mobile small-tap-target findings
-- 14 interactive-overlap findings
-- 42 text-heavy first-screen findings
+Across the 493 authenticated live screens:
+- 243 screens had at least one measurable UX/layout issue
+- 191 horizontal-overflow findings
+- 240 mobile small-tap-target findings
+- 15 interactive-overlap findings
+- 45 text-heavy first-screen findings
 - 6 repeated generic-CTA findings
 - 2 clipped-control findings
 
@@ -239,9 +239,7 @@ This is a presentation/experience program. Frozen business rules, canonical RPC 
 
 ## Current human step
 
-Raahi-01 / port 9231 currently reaches Google sign-in and no longer has an authenticated Raahi session.
+No additional login is required for the UX audit. All nine persistent browser profiles are now included.
 
-Its unauthenticated Welcome experience has been audited. To complete the account-specific Gomoh Local Manager review, sign into Raahi-01 with the intended Google account when convenient.
-
-Raahi-02 already provides Local Manager role coverage, so redesign work does not need to wait for this login.
+The next work is implementation of Raahi Design System V1 and the shared responsive shell before any further deployment.
 
