@@ -341,3 +341,30 @@ body{
   .v15-notification-actions .primary-btn,
   .v15-notification-actions .pill-btn{min-height:44px;padding:8px 11px;font-size:11px}
 }
+
+
+/* V1.4O mobile action ergonomics */
+@media(max-width:860px){
+  .main .small{
+    min-width:44px;
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .main .chip{
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding-top:9px;
+    padding-bottom:9px;
+  }
+  .main .section-title a{
+    min-width:44px;
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    padding:8px 2px;
+  }
+}

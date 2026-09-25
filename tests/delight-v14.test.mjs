@@ -37,6 +37,9 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/Updates from your Classes, enquiries and Raahi activity\./);
   assert.match(js,/v15-notification-card/);
   assert.match(css,/v15-notification-summary/);
+  assert.match(css,/V1\.4O mobile action ergonomics/);
+  assert.match(css,/\.main \.small[\s\S]*min-height:44px/);
+  assert.match(css,/\.main \.chip[\s\S]*min-height:44px/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);
