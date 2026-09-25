@@ -21,6 +21,14 @@
       threadLoad = { key: null, status: 'idle', data: null, error: null };
       live.data.classThread = null;
     }
+    live.__setClassThreadDataV13 = (classId, learnerId, data) => {
+      if (!classId || !learnerId || !data) return false;
+      threadGeneration++;
+      const key = `${actorKey()}|${classId}|${learnerId}`;
+      threadLoad = { key, status: 'done', data, error: null };
+      live.data.classThread = data;
+      return true;
+    };
     // Never retain private conversation data across authentication events.
     live.client.auth.onAuthStateChange(() => {
       invalidateThread();

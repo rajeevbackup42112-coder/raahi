@@ -694,7 +694,9 @@
             p_idempotency_key:idk('class-message')
           });
           live.routeLoads.clear();
-          live.data.classThread = await rpc('get_class_learner_thread',{p_class_id:live.selected.classId,p_learner_id:learnerId});
+          const thread = await rpc('get_class_learner_thread',{p_class_id:live.selected.classId,p_learner_id:learnerId});
+          if (typeof live.__setClassThreadDataV13 === 'function') live.__setClassThreadDataV13(live.selected.classId,learnerId,thread);
+          else live.data.classThread = thread;
           api.toast('Message sent','success');
           api.render();
           return;

@@ -156,3 +156,6 @@ Next gate: push/qualify/deploy the Class materials visibility repair, prove the 
 - Focused V1.4L regression is now 16/16 green; sealed browser contracts complete successfully.
 
 Next gate: qualify/deploy the immediate Class-thread refresh repair, re-run both directions, then move to learning requests/opportunities and the Institute/Manager/Admin actor workspaces.
+### Class-thread refresh cache hardening
+
+The first immediate-refresh repair correctly refetched `get_class_learner_thread`, but the dedicated thread deep-link helper still owned its own private load cache. A direct assignment to `live.data.classThread` could therefore be overwritten by the helper's stale cached value during the same render cycle. The repair now exposes a narrow `__setClassThreadDataV13(classId, learnerId, data)` synchronization seam that updates both the helper cache and `live.data.classThread` from the freshly refetched authoritative projection. This does not add a second source of truth; PostgreSQL/RPC output remains authoritative. Focused regression remains 16/16 green and sealed browser contracts remain green.
