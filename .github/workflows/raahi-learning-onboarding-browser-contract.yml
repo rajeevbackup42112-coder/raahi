@@ -14,6 +14,7 @@ on:
       - 'apps/raahi-learning/build-source-v13.mjs'
       - 'tests/raahi-learning-e2e/human-language-browser-audit.mjs'
       - 'tests/raahi-learning-e2e/ux-shell-browser-contract.mjs'
+      - 'tests/raahi-learning-e2e/notification-ux-browser-contract.mjs'
       - 'tests/admin-management-v14e.test.mjs'
       - 'tests/raahi-learning-e2e/onboarding-browser-contract.mjs'
       - 'tests/raahi-learning-e2e/teacher-onboarding-browser-contract.mjs'
@@ -79,6 +80,10 @@ jobs:
         working-directory: tests/raahi-learning-e2e
         run: node ux-shell-browser-contract.mjs
 
+      - name: Run scan-friendly Notifications browser proof
+        working-directory: tests/raahi-learning-e2e
+        run: node notification-ux-browser-contract.mjs
+
       - name: Run product-wide human-language browser audit
         working-directory: tests/raahi-learning-e2e
         run: node human-language-browser-audit.mjs
@@ -102,6 +107,7 @@ jobs:
           name: raahi-learning-onboarding-browser-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             tests/raahi-learning-e2e/artifacts-ux-shell-browser-contract/
+            tests/raahi-learning-e2e/artifacts-notification-ux-browser-contract/
             tests/raahi-learning-e2e/artifacts-human-language-browser-audit/
             tests/raahi-learning-e2e/artifacts-onboarding-browser-contract/
             tests/raahi-learning-e2e/artifacts-teacher-onboarding-browser-contract/

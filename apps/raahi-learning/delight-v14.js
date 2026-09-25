@@ -386,6 +386,85 @@
     const enquire=document.querySelector('[data-live-enquire-option]'); if(enquire) enquire.textContent='Ask about this';
   }
 
+  function polishNotifications(){
+    if(route()!=='notifications') return;
+    const main=document.querySelector('.main');
+    const stack=main?.querySelector(':scope > .stack');
+    const live=window.RaahiLearningLive;
+    if(!main||!stack||!Array.isArray(live?.data?.notifications)) return;
+
+    const head=main.querySelector('.page-head');
+    const subtitle=head?.querySelector('p');
+    if(subtitle) subtitle.textContent='Updates from your Classes, enquiries and Raahi activity.';
+
+    const rows=live.data.notifications;
+    const unread=rows.filter(n=>!n.read_at).length;
+    if(!main.querySelector('.v15-notification-summary')){
+      const summary=document.createElement('div');
+      summary.className='v15-notification-summary';
+      const strong=document.createElement('strong');
+      strong.textContent=unread ? String(unread)+' new' : 'All caught up';
+      const span=document.createElement('span');
+      span.textContent=unread
+        ? (rows.length===unread ? 'Everything here still needs a look.' : String(rows.length-unread)+' already read.')
+        : 'No unread updates right now.';
+      summary.append(strong,span);
+      stack.insertAdjacentElement('beforebegin',summary);
+    }
+
+    const categoryFor=type=>{
+      if(/message|enquiry/.test(type)) return {label:/enquiry/.test(type)?'Enquiry':'Message',icon:icons.messages};
+      if(/activity/.test(type)) return {label:'Activity',icon:icons.sparkle};
+      if(/test/.test(type)) return {label:'Test',icon:icons.audit};
+      if(/class/.test(type)) return {label:'Class',icon:icons.classes};
+      if(/trial/.test(type)) return {label:'Trial',icon:icons.teaching};
+      if(/organization/.test(type)) return {label:'Institute',icon:icons.people};
+      return {label:'Update',icon:icons.bell};
+    };
+
+    stack.classList.add('v15-notification-list');
+    const cards=[...stack.querySelectorAll(':scope > .card')];
+    cards.forEach((card,index)=>{
+      const n=rows[index]; if(!n) return;
+      card.classList.add('v15-notification-card');
+      card.classList.toggle('is-unread',!n.read_at);
+      card.classList.toggle('is-read',!!n.read_at);
+      const between=card.querySelector(':scope > .between'); if(!between) return;
+      between.classList.add('v15-notification-row');
+
+      let icon=between.querySelector(':scope > .v15-notification-icon');
+      const category=categoryFor(n.notification_type||'');
+      if(!icon){
+        icon=document.createElement('div');
+        icon.className='v15-notification-icon';
+        icon.setAttribute('aria-hidden','true');
+        between.prepend(icon);
+      }
+      icon.innerHTML=category.icon;
+
+      const copy=[...between.children].find(el=>el!==icon && !el.classList.contains('row'));
+      if(copy){
+        copy.classList.add('v15-notification-copy');
+        if(!copy.querySelector('.v15-notification-kind')){
+          const kind=document.createElement('span');
+          kind.className='v15-notification-kind';
+          kind.textContent=category.label;
+          copy.prepend(kind);
+        }
+        copy.querySelector('h3')?.classList.add('v15-notification-title');
+      }
+
+      const actions=between.querySelector(':scope > .row');
+      if(actions){
+        actions.classList.add('v15-notification-actions');
+        const mark=actions.querySelector('[data-live-notification-read]');
+        if(mark){ mark.classList.add('v15-mark-read'); mark.textContent='Mark read'; }
+        const read=actions.querySelector('.badge');
+        if(read) read.classList.add('v15-read-badge');
+      }
+    });
+  }
+
   function polishAvatarPicker(){
     if(route()!=='avatar-picker') return;
     const main=document.querySelector('.main');
@@ -475,6 +554,7 @@
       polishMessagePeople();
       polishLearningRequest();
       polishProviderDetail();
+      polishNotifications();
       polishAvatarPicker();
       polishCardsAndContext();
     } finally {
