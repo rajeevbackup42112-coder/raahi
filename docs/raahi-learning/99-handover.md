@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` first.**
+**For the current state, read `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -10,7 +10,7 @@ Canonical docs: `docs/raahi-learning/`
 
 ## Current status
 
-**2026-09-25 PRE-LAUNCH LIVE SIMULATION ROUND 5:** public is verified on source `2f96efcd984b80ded0f65bc45434d24f49d12a9b`; the implementation branch is ahead on `dfbc89a445418a4a2115e194d7035b60bddbe671` with Platform Audit / Ads presentation polish. Model Tests #765 passed, but Browser Contract #33 failed the iPhone Parent journey with `PARENT_HOME_NOT_REACHED_iphone` at `#/learner-add`. Do not deploy `dfbc89a` until that browser contract is green. The live simulation has already closed the Class, Activity revision/review, Test evaluation/result-release, Class materials and contextual Class-message vertical slices. Read `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` first, then `130-prelaunch-live-simulation-registry-2026-09-23.md`.
+**2026-09-25 PRE-LAUNCH LIVE SIMULATION ROUND 6:** public is verified on exact product source `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`. Browser Contract #33 was rerun unchanged on `dfbc89a` and passed 27/27; the admin Audit/Ads polish was previewed, hash-verified and deployed. Round 6 then exposed a real Class-message double-submit race: two immediate clicks created two messages because each click generated a fresh idempotency key. The narrow UI in-flight lock repair `5d8ea74` passed 5,349,572 model cases, focused 18/18, sealed browser 27/27, GitHub Model Tests #770 and Browser Contract #34. Preview and production hashes match with zero mismatches. Live Teacher and Parent double-click proofs now each produce one send, one authoritative thread refetch and one visible message. Reload/deep-link and Explorer logout→Google-login recovery are green. Safety has 0 open reports and Gomoh Community has no existing posts, so exact-target report/block/community mutations were intentionally not fabricated. Read `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` first.
 
 **2026-09-23 FIRST GENUINE TEACHER CLOSED:** V1.4K public source `e4010e3` is live. The first genuine assisted Teacher supplied real facts, reviewed the private draft, passed phone trust with an alternate number after a duplicate-phone conflict was correctly diagnosed, and explicitly published. Canonical state is **1 active teach capability / 1 visible Teacher Profile / 1 Teaching Option / request accepted**. The option is visible in Explore Gomoh and Teacher edit ownership is proven. Duplicate-phone trust now fails early with clear guidance, and Teacher workspace shows **Access confirmed** instead of internal authorization language. Read `129-current-execution-handover-first-teacher-closed-2026-09-23.md` first, then `128-first-genuine-founding-supply-closure-2026-09-23.md`.
 
@@ -42,7 +42,10 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - **canonical current execution handover; first genuine Teacher proof is closed and controlled Gomoh pilot is next**
+1. `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` - **canonical current execution handover; admin polish and Class-message double-submit recovery are public-live and proven**
+2. `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` - Round-5 predecessor and Browser Contract #33 failure context
+3. `130-prelaunch-live-simulation-registry-2026-09-23.md` - persistent isolated browser personas and accumulated live-simulation state
+4. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - first genuine Teacher closure and controlled Gomoh pilot baseline
 2. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **V1.4H StartMessaging phone trust public-live handover**
 3. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
 4. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order
