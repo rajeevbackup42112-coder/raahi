@@ -382,42 +382,71 @@ Major findings:
 
 ---
 
+## Shared Foundation Reuse Matrix — Completed
+
+A code-level reuse pass has now been completed and stored in:
+
+`docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
+
+Key outcome:
+
+**Do not choose one existing Raahi application as the codebase for the shared shell.**
+
+Instead:
+
+- reuse/adapt Raahi Learning's proven backend semantics for Account, Location, selected Location, scoped admin, phone trust, audit and canonical commands;
+- rebuild the shared Location-first homepage cleanly using the stronger Raahi ToTo product model;
+- borrow modern OAuth/session plumbing selectively from Raahi Mini / Raahi School;
+- use Where is my Raahi anonymous-session/Turnstile patterns only where a genuinely ephemeral public action needs them;
+- keep product-specific operational data and state inside each focused product.
+
+Important implementation findings:
+
+1. Raahi Learning's backend/database foundation is considerably more reusable than its current frontend.
+2. Learning's current frontend is reconstructed/retrofit-heavy under `apps/raahi-learning`; do not make that the shared shell.
+3. Raahi ToTo's Location-first UI/model strongly validates the shared-home concept, but its actual `app-1.js`–`app-4.js` code is a hard-coded prototype and should not become production core.
+4. Raahi School and Raahi Mini contain cleaner modern Next.js/Supabase OAuth/session plumbing that may be adapted, but their role/onboarding semantics are too product-specific to copy wholesale.
+5. The missing common platform feature is a small generic **Product registry + Location × Product enablement/state** layer.
+
+---
+
 ## Exact Current Point / Next Action
 
-The strategy discussion should NOT be restarted.
+Do not restart archaeology or external GitHub research.
 
-The agreed shared front door remains:
+The following are now established artifacts:
 
-- `myraahi.co.in`
-- user chooses/confirms Location first
-- homepage asks "How can Raahi help you today?"
-- only products genuinely enabled/live in that Location are shown
-- ordinary discovery/browsing is public
-- authentication starts when the user performs a meaningful persistent action
-- trust/verification strengthens progressively with the action
-- product-specific business logic remains inside each focused product
+- `docs/RAAHI_MASTER_HANDOVER.md`
+- `docs/RAAHI_DNA_V0.1.md`
+- `docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
 
-The first archaeology synthesis is complete in `docs/RAAHI_DNA_V0.1.md`.
+The next phase is to freeze the **shared `myraahi.co.in` product contract before coding**, using the AI Builder discipline already used in Raahi projects.
 
-### Next action
+Proceed in this order:
 
-Continue archaeology one level deeper at the **actual implementation/code boundary**, not merely conceptual docs:
+1. Define the exact public homepage/user journey.
+2. Define actors and ownership:
+   - visitor
+   - Raahi Account
+   - provider identities/relationships only where needed
+   - Location Admin
+   - Platform Admin
+3. Define shared business rules.
+4. Define Location lifecycle.
+5. Define Product registry semantics.
+6. Define Location × Product lifecycle.
+7. Define public browse vs authenticated-action boundaries.
+8. Define logged-out vs logged-in Location persistence.
+9. Define common Account/auth/session behavior across product subdomains/URLs.
+10. Define minimal verification/trust vocabulary.
+11. Define invariants and edge/failure recovery.
+12. Only then define entities/relationships, Screen ↔ Backend contracts, architecture/database and walking skeleton.
 
-1. Raahi Learning: inspect frontend bootstrap/auth/profile/location routing and relevant shared RPC integration.
-2. Raahi ToTo: inspect the implemented/prototype Location-first homepage/product selector and auth-boundary code.
-3. Compare both against the agreed shared front-door journey.
-4. Identify which pieces can be safely reused as code, which should be rewritten cleanly as common-shell code, and which must remain product-specific.
-5. Produce a concise **Shared Raahi Foundation Reuse Matrix**:
-   - capability
-   - best existing source
-   - reuse as-is / adapt / concept-only / reject
-   - reason
-   - dependencies
-   - risk
-6. Do not implement, deploy or alter production during this pass.
-7. After that matrix is reviewed, freeze the shared `myraahi.co.in` product/architecture contract before coding.
+Do not implement, deploy, migrate production, or adopt external open-source dependencies before this product-contract gate is complete.
 
-Do not search external open-source projects again until the reuse matrix identifies real capability gaps.
+The current best architectural direction is:
+
+**clean new shared shell + proven backend concepts extracted/adapted from existing Raahi work + focused products remaining independently evolvable.**
 
 ---
 
