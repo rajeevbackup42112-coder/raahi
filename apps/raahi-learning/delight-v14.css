@@ -870,3 +870,15 @@ body{
     min-height:220px;
   }
 }
+
+
+/* V1.4V disclosure touch targets */
+@media(max-width:860px){
+  .main .card details > summary.tiny{
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+    padding:6px 0;
+  }
+}

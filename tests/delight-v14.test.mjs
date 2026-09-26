@@ -85,6 +85,8 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/r==='home'&&activeRole\(\)==='platform'/);
   assert.match(js,/r==='home'&&activeRole\(\)==='ads'/);
   assert.match(css,/V1\.4U final mobile ergonomics/);
+  assert.match(css,/V1\.4V disclosure touch targets/);
+  assert.match(css,/\.main \.card details > summary\.tiny[\s\S]*min-height:44px/);
   assert.match(css,/\.auth-shell button[\s\S]*min-height:44px/);
   assert.match(css,/max-height:calc\(100dvh - 445px\)/);
   assert.match(css,/prefers-reduced-motion/);

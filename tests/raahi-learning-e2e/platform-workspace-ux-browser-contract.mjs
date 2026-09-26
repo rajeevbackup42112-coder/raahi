@@ -115,10 +115,22 @@ await page.waitForFunction(()=>window.__RAAHI_PLATFORM_UX_FAKE__.platformReviews
 const afterCalls=await page.evaluate(n=>window.__RAAHI_PLATFORM_UX_FAKE__.calls.slice(n),before);
 const reviews=afterCalls.filter(x=>x.name==='review_ad_campaign_revision');
 assert(reviews.length===1&&reviews[0].args.p_review_scope==='platform'&&reviews[0].args.p_location_id===null&&reviews[0].args.p_decision==='approved','PLATFORM_CANONICAL_REVIEW_CHANGED_'+JSON.stringify(reviews));
-assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
-await page.screenshot({path:path.join(OUT,'platform-ads-mobile.png'),fullPage:true});
 
-const report={proof:'raahi-platform-workspace-ux-browser-contract-v1',commit:SHA,checks:17,home,platformHomeAlias,safety,ads,reviewCalls:reviews,result:'pass'};
+await page.evaluate(()=>window.RaahiLearningLive.api.go('platform-audit'));
+await page.waitForFunction(()=>document.querySelector('.main .card details > summary.tiny'),null,{timeout:10000});
+await page.waitForTimeout(200);
+const audit=await page.evaluate(()=>({
+  width:innerWidth,
+  scrollWidth:document.documentElement.scrollWidth,
+  summaries:[...document.querySelectorAll('.main .card details > summary.tiny')].map(s=>({text:s.textContent.trim(),h:Math.round(s.getBoundingClientRect().height),w:Math.round(s.getBoundingClientRect().width)}))
+}));
+assert(audit.scrollWidth<=audit.width,'PLATFORM_AUDIT_OVERFLOW_'+JSON.stringify(audit));
+assert(audit.summaries.length>0&&audit.summaries.every(s=>s.h>=44),'PLATFORM_AUDIT_DISCLOSURE_TOUCH_TARGET_'+JSON.stringify(audit));
+
+assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
+await page.screenshot({path:path.join(OUT,'platform-audit-mobile.png'),fullPage:true});
+
+const report={proof:'raahi-platform-workspace-ux-browser-contract-v1',commit:SHA,checks:19,home,platformHomeAlias,safety,ads,audit,reviewCalls:reviews,result:'pass'};
 fs.writeFileSync(path.join(OUT,'platform-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_PLATFORM_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=17 commit='+SHA);
+console.log('RAAHI_PLATFORM_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=19 commit='+SHA);
