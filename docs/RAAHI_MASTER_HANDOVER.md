@@ -438,34 +438,131 @@ Key frozen decisions include:
 
 ---
 
+## MyRaahi Public Shell — Implementation Started and Validated
+
+The design gates have now advanced into a deliberately isolated implementation.
+
+Repository:
+
+`rajeevbackup42112-coder/raahi`
+
+Implementation branch:
+
+`myraahi-shared-shell-v1`
+
+Current branch HEAD:
+
+`62c1bc0c8d60d70a5a57be396674184c41549131`
+
+Validated implementation commit:
+
+`699871e0a5ae9b98508e01cd66415a1c5c1e1dda`
+
+Branch-specific execution handover:
+
+`docs/MYRAAHI_SHELL_CURRENT_EXECUTION_HANDOVER.md`
+
+### Validation evidence
+
+GitHub Actions workflow:
+
+`Validate MyRaahi Shell`
+
+Successful run:
+
+- Run ID: `36239610837`
+- Validated SHA: `699871e0a5ae9b98508e01cd66415a1c5c1e1dda`
+- Result: **SUCCESS**
+
+Passed:
+- dependency install
+- TypeScript Worker typecheck
+- browser JavaScript syntax
+- Wrangler dry-run bundle
+- D1/SQLite schema validation
+- development fixture validation/assertions
+
+### Current implementation scope
+
+Path:
+
+`apps/myraahi-shell/`
+
+Implemented:
+- Cloudflare Worker read-only public API
+- D1 schema for Locations, Products and LocationProducts
+- responsive public Location-first homepage
+- no-login first-value journey
+- browser persistence of logged-out selected Location
+- LIVE/PAUSED Product rendering
+- safe Raahi-owned Product deep links with Location hint
+- human loading/error/recovery states
+- development/staging-only fixture
+- automated branch CI
+
+Not implemented:
+- shared Account/SSO
+- OTP
+- admin web UI
+- sponsored content
+- production catalogue
+- production D1
+- production DNS
+- production deployment
+- Learning production adapter
+
+### Safety state
+
+No production deployment has occurred.
+
+No `myraahi.co.in` production DNS has changed.
+
+No Raahi Learning production database/auth behavior has changed.
+
+The D1 database ID remains an intentional placeholder.
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not restart strategy, archaeology, or product-contract discussion.
+Do not restart strategy, archaeology, product-contract design, domain-model design, or public-shell scaffolding.
 
-Current durable artifacts:
+Current durable artifacts include:
 
 1. `docs/RAAHI_MASTER_HANDOVER.md`
 2. `docs/RAAHI_DNA_V0.1.md`
 3. `docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
 4. `docs/MYRAAHI_SHARED_FRONT_DOOR_PRODUCT_CONTRACT_V0.1.md`
+5. `docs/MYRAAHI_SHARED_FOUNDATION_DOMAIN_MODEL_V0.1.md`
+6. `docs/MYRAAHI_SHARED_FRONT_DOOR_SCREEN_BACKEND_CONTRACTS_V0.1.md`
+7. `docs/MYRAAHI_FREE_INFRA_IDENTITY_ARCHITECTURE_GATE_V0.1.md`
+8. `docs/MYRAAHI_PUBLIC_SHELL_D1_WORKER_BLUEPRINT_V0.1.md`
+9. branch `myraahi-shared-shell-v1` → `docs/MYRAAHI_SHELL_CURRENT_EXECUTION_HANDOVER.md`
 
-### Next gate
+### Next execution step
 
-Continue the AI Builder sequence from the frozen product contract:
+Proceed to a **non-production Cloudflare staging proof**, not production launch:
 
-1. define canonical shared entities and relationships;
-2. define state diagrams/lifecycles;
-3. define invariants and uniqueness constraints;
-4. define Screen ↔ Backend contracts;
-5. compare authentication/session architecture options under free-tier constraints;
-6. define product URL/subdomain integration model;
-7. define database/RPC blueprint;
-8. define the minimum walking skeleton;
-9. only then begin implementation.
+1. access the authorized Cloudflare account/environment for Raahi;
+2. create a non-production D1 database for the shell;
+3. replace the placeholder D1 ID only in staging/branch configuration;
+4. apply `apps/myraahi-shell/migrations/0001_public_shell.sql`;
+5. load `apps/myraahi-shell/fixtures/dev-seed.sql` only into the non-production database;
+6. deploy to a non-production Workers/staging hostname;
+7. verify mobile and desktop as a real user:
+   - Location selection
+   - Gomoh/Dhanbad catalogue difference
+   - refresh persistence
+   - PAUSED Product treatment
+   - API failure/recovery
+   - safe Product deep links
+8. make one controlled non-production D1 configuration change and prove the homepage changes without a frontend rebuild;
+9. document visual/browser evidence and UX findings;
+10. only after that proof, begin the isolated cross-product Account/SSO technology spike.
 
-The architecture must preserve the product contract. If a technical choice would contradict it, reopen the affected product decision explicitly before implementation.
+Do not point production `myraahi.co.in` to the shell without explicit launch approval.
 
-No production changes, deployments, paid services, or external open-source adoption are authorized during this design gate.
+Do not modify Raahi Learning production auth/database as part of the staging-shell proof.
 
 ---
 
