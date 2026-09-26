@@ -21,18 +21,18 @@ type ProductRow = {
   availability_message: string | null;
 };
 
-const JSON_HEADERS = {
+const JSON_HEADERS: HeadersInit = {
   "content-type": "application/json; charset=utf-8",
   "cache-control": "public, max-age=30, s-maxage=120, stale-while-revalidate=300",
   "x-content-type-options": "nosniff",
 };
 
-const NO_STORE_JSON_HEADERS = {
+const NO_STORE_JSON_HEADERS: HeadersInit = {
   ...JSON_HEADERS,
   "cache-control": "no-store",
 };
 
-function json(data: unknown, status = 200, headers = JSON_HEADERS) {
+function json(data: unknown, status = 200, headers: HeadersInit = JSON_HEADERS) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
