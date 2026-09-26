@@ -413,8 +413,35 @@ These can improve without reopening domain rules if behavior remains unchanged.
 
 # Gate 9 result
 
-**PARTIAL — behaviour and wording contract is ready, but strict Gate 9 is not fully PASS until the existing prototype is verified in a real browser on representative mobile and desktop sizes.**
+**PASS for the current public-shell scope.**
 
-This is an **evidence gate**, not a business-decision gap.
+Real-browser evidence was completed on the isolated branch `myraahi-shared-shell-v1`.
 
-We may continue preparing Gate 10 acceptance scenarios, but must not declare broad implementation readiness or freeze the current visual implementation until browser validation is complete.
+Final validated implementation commit:
+
+`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
+
+Successful GitHub Actions run:
+
+- Run ID: `36247865290`
+- Result: **SUCCESS**
+- Passed: dependency install, TypeScript, browser JavaScript syntax, Worker dry-run bundle, D1 schema/fixture validation, Chromium installation, and real-browser UI checks.
+
+Browser coverage included:
+- 375×667 mobile
+- 430×932 mobile
+- 1366×768 desktop
+- 320×700 long-Location stress case
+- Location selection/switching
+- PAUSED Product treatment
+- refresh persistence
+- no horizontal overflow/header overlap
+- human catalogue-error recovery
+
+Defect classification during evidence:
+1. Two initial failures were **test/harness defects** caused by ambiguous selectors; product code was not changed.
+2. Screenshot inspection found one genuine **implementation/UI defect**: after selecting Gomoh, a catalogue error left the header on Gomoh but reverted the hero subtitle to location-selection copy.
+3. The implementation was corrected to preserve selected-Location context in the error state and a regression assertion was added.
+4. The final run passed unchanged product rules.
+
+The behavior/copy contract is therefore frozen for the public-shell V0 scope. Exact brand art, typography, colors and decorative treatment remain polish-level choices as already defined above.
