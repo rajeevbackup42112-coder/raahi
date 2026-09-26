@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`a58a52860e071a32e46181df14cba914ac316d1f` — **Redesign Institute workspace for mobile clarity**
+`f9fd83e871d9b41423138b0c97b2b8be43ed6036` — **Redesign Platform and Ads workspaces**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–7**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, Institute workspace browser contract 13/13, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #789 and Browser Contract #44 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–9**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, Institute workspace browser contract 15/15, Local Manager workspace browser contract 20/20, Platform workspace browser contract 16/16, Ads workspace browser contract 18/18, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #792 and Browser Contract #46 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -165,6 +165,39 @@ Real Institute06 mobile evidence:
 Exact product SHA `a58a52860e071a32e46181df14cba914ac316d1f` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher workspace 10/10, Institute workspace 13/13, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #789 and Browser Contract #44 passed first attempt.
 
 Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–7 remain intentionally undeployed.
+
+### Slice 8 — Local Manager workspace hierarchy — CLOSED / UNDEPLOYED
+
+Delivered:
+- Local Manager Home now uses the manager's scoped Location as the workspace identity instead of repeating a generic summary dump
+- existing authorized aggregate fields are grouped by job: **Needs attention** (open reports + learning requests) and **Local activity** (Classes, learning options, Community posts, sponsored placements)
+- `People & safety` explicitly preserves the no-public-learner-directory boundary and shows governed report work rather than browsing people
+- `Learning activity` shows only aggregate local Classes, teaching supply, public learning requests and Community activity
+- repeated raw summary blocks were removed from Manager Home / People / Learning
+- Manager action labels are specific (`Review reports`, `Learning activity`, `Open Raahi Desk`, `Founding supply`) rather than generic Open/Manage CTAs
+- permanent `manager-workspace-ux-browser-contract.mjs` verifies exact aggregate values, privacy boundary, no raw summaries, no unrelated metrics, no mutation on render and 44px mobile geometry
+- Institute Learning residual copy was also corrected so ordinary users no longer see `staff access` implementation language
+
+Exact product SHA `72958a9e8f88c79c20ed9a43a204e570099a492c` passed Model Tests #791 and Browser Contract #45 on first attempt. Local Manager browser proof passes 20/20 and the extended Institute proof passes 15/15.
+
+### Slice 9 — Platform + Ads operational clarity — CLOSED / UNDEPLOYED
+
+Delivered:
+- Platform Home now separates **review queues** from the broader governed platform footprint
+- Platform Safety is framed as `Safety & trust`; reports are explicitly review signals rather than findings
+- Platform Ads presents submitted-campaign and live-placement counts separately from the creative review queue
+- Platform creative review is rebuilt from the already-authorized `platformAdReview` projection using the existing revision IDs and canonical review handlers
+- Platform actions are specific (`Safety review`, `Ads review`, `Location admins`, `Audit log`) and retain 44px mobile targets
+- Raahi Ads Home explicitly states that advertising cannot change verification or organic ranking
+- campaign creation uses human fields (`Advertiser`, `Campaign goal`, `Who should see this?`, `Learning topic`) plus a clear draft/review trust note
+- Ads inventory converts raw availability output into date rows with remaining/capacity/max-per-campaign values
+- Ads analytics converts raw metric rows into aggregate totals and explicitly states that no named viewer list is provided
+- permanent `platform-workspace-ux-browser-contract.mjs` verifies governed context, exact metrics, review actions, canonical review RPCs, mobile geometry and no real Supabase network
+- permanent `ads-workspace-ux-browser-contract.mjs` verifies role switching, Ads Home, human campaign form, canonical `create_ad_campaign`, inventory values, aggregate analytics/privacy and no real Supabase network
+
+Exact product SHA `f9fd83e871d9b41423138b0c97b2b8be43ed6036` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher 10/10, Institute 15/15, Manager 20/20, Platform 16/16, Ads 18/18, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #792 and Browser Contract #46 passed first attempt.
+
+Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–9 remain intentionally undeployed.
 
 ## Audit evidence
 
