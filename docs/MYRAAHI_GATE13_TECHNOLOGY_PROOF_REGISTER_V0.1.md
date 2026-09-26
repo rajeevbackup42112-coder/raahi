@@ -242,6 +242,52 @@ The branch cannot accidentally bind to a real D1 database until the placeholder 
 
 **Result: PASS as configuration safety evidence.**
 
+
+---
+
+## Spike 13G — GitHub Actions as headless cloud computer
+
+### Why this matters
+The reusable AI-project tooling doctrine says GitHub Codespaces is the preferred interactive cloud development computer and Desktop Commander is reserved mainly for real-user validation. In the current ChatGPT connector, interactive Codespaces terminal control is not exposed, but GitHub Actions is available and already successfully runs MyRaahi builds/tests in GitHub's cloud.
+
+### Read-only Cloudflare credential probe
+A branch-only workflow was added on `myraahi-shared-shell-v1`:
+
+`.github/workflows/myraahi-cloudflare-access-probe.yml`
+
+Commit:
+`f82324ca407e4c86c1f7be5b268a1229f62ad512`
+
+Workflow run:
+`36261265502`
+
+The probe:
+1. checked out the isolated branch;
+2. installed the existing shell dependencies;
+3. checked only whether standard GitHub Actions secret names were populated;
+4. would have run read-only `wrangler whoami` if credentials existed;
+5. contained no deploy/create/delete/DNS command.
+
+### Observed result
+The workflow showed:
+- `CLOUDFLARE_API_TOKEN` = unavailable/empty;
+- `CLOUDFLARE_ACCOUNT_ID` = unavailable/empty;
+- `wrangler whoami` was skipped;
+- no Cloudflare access or change occurred.
+
+This proves the current repository cannot yet deploy/probe Cloudflare from GitHub Actions using those standard secret names.
+
+### Consequence
+GitHub Actions **can** serve as the headless cloud execution environment for Gate 13 after a one-time Cloudflare credential bootstrap. Desktop Commander is not required for routine build/deploy once those credentials are safely available to the workflow.
+
+The preferred zero-recurring-cost path is therefore:
+1. one-time Cloudflare authentication/token bootstrap by the user in an authorized browser/Codespace;
+2. store only the required scoped Cloudflare API token and account ID as GitHub Actions secrets;
+3. GitHub Actions handles non-production D1 creation/migrations/staging deployment headlessly;
+4. Desktop Commander is used later only for real-user/browser validation when warranted.
+
+**Result: PASS for GitHub Actions cloud-compute feasibility; BLOCKED only on one-time Cloudflare credential bootstrap.**
+
 # Gate 13 current result
 
 **PARTIAL / ACTIVE.**
