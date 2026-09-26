@@ -45,3 +45,17 @@ jobs:
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from locations where state='LIVE';")" = "2"
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='LIVE';")" = "3"
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='PAUSED';")" = "1"
+
+      - name: Install Chromium for UI evidence
+        run: npx playwright install --with-deps chromium
+
+      - name: Run real-browser UI checks
+        run: npm run ui:test
+
+      - name: Upload UI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: myraahi-shell-ui-evidence
+          path: apps/myraahi-shell/test-results/
+          if-no-files-found: ignore
