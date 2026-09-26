@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`f4c85ae421362448f15812befd9e66de287b4dea` — **Redesign conversation detail experience**
+`c66b5f2338d4b4ae119e8b59dab60c403e0c24f2` — **Redesign Teacher workspace for mobile clarity**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–5**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #785 and Browser Contract #42 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–6**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #787 and Browser Contract #43 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -116,6 +116,31 @@ Real Parent04 mobile evidence:
 Exact product SHA `f4c85ae421362448f15812befd9e66de287b4dea` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #785 and Browser Contract #42 passed first attempt.
 
 Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–5 remain intentionally undeployed.
+
+### Slice 6 — Teacher workspace clarity — CLOSED / UNDEPLOYED
+
+Delivered:
+- Teacher Home now starts with a clear `Your teaching` purpose instead of a marketing slogan
+- the signed-in Teacher sees a truthful profile identity block with headline, profile visibility, teaching Location and experience summary already present in authorized workspace data
+- the private signed-in workspace can reuse the same non-persisted Google-photo fallback used by the account header; no public Teacher photo is invented or auto-published
+- `What I teach`, `Classes`, and `Updates` are summarized with counts derived from existing authorized data
+- generic `Manage` actions were replaced with specific actions: `Edit what I teach`, `Open Classes`, and `Messages`
+- current Classes remain visible below the summary with humanized state labels
+- the remaining Explore topic chips now meet the same 44px mobile-target rule
+- permanent `teacher-workspace-ux-browser-contract.mjs` verifies truthful profile evidence, derived counts, mobile geometry, no generic Manage CTA, no authority mutation, private-photo fallback and topic-chip touch targets
+- Browser Contract CI trigger paths/evidence upload were corrected for Settings, Conversation and Teacher UX contracts
+
+Real Teacher07 mobile evidence:
+- headline: `Class 9–12 Mathematics Teacher`
+- Location: Gomoh
+- experience: `10 years teaching Class 9–12 Mathematics.`
+- 1 teaching option, 1 current Class, 0 unread updates
+- private signed-in profile photo fallback visible
+- zero small mobile controls and no horizontal overflow
+
+Exact product SHA `c66b5f2338d4b4ae119e8b59dab60c403e0c24f2` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher workspace 10/10, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #787 and Browser Contract #43 passed first attempt.
+
+Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–6 remain intentionally undeployed.
 
 ## Audit evidence
 
