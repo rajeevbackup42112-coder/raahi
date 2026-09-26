@@ -11,8 +11,8 @@
     "db:seed:local": "wrangler d1 execute myraahi-shell-db --local --file=fixtures/dev-seed.sql"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260917.0",
+    "@cloudflare/workers-types": "5.20260926.1",
     "typescript": "^5.9.2",
-    "wrangler": "^4.0.0"
+    "wrangler": "4.140.0"
   }
 }
