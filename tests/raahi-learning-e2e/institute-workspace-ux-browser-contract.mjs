@@ -94,6 +94,11 @@ const mutationNames=['update_organization_profile','upsert_teaching_option','cre
 assert(!fullCalls.some(x=>mutationNames.includes(x.name)),'INSTITUTE_HOME_MUTATED_STATE_'+JSON.stringify(fullCalls));
 assert(full.real.length===0,'REAL_SUPABASE_NETWORK_FULL_'+full.real.join(','));
 
+await full.page.evaluate(()=>window.RaahiLearningLive.api.go('home'));
+await full.page.waitForFunction(()=>document.querySelector('.v15-institute-profile-card')&&document.querySelector('.page-head h1')?.textContent==='Institute workspace',null,{timeout:10000});
+const instituteHomeAlias=await snapshot(full.page);
+assert(instituteHomeAlias.heading==='Institute workspace'&&instituteHomeAlias.exactManage===0,'INSTITUTE_GENERIC_HOME_NOT_CONVERGED_'+JSON.stringify(instituteHomeAlias));
+
 await full.page.evaluate(()=>window.RaahiLearningLive.api.go('org-teaching'));
 await full.page.waitForFunction(()=>location.hash.startsWith('#/org-teaching'),null,{timeout:10000});
 await full.page.waitForTimeout(200);
@@ -112,7 +117,7 @@ assert(limited.real.length===0,'REAL_SUPABASE_NETWORK_LIMITED_'+limited.real.joi
 await limited.page.screenshot({path:path.join(OUT,'institute-limited-mobile.png'),fullPage:true});
 await limited.context.close();
 
-const report={proof:'raahi-institute-workspace-ux-browser-contract-v1',commit:SHA,checks:15,full:fullSnap,limited:limitedSnap,result:'pass'};
+const report={proof:'raahi-institute-workspace-ux-browser-contract-v1',commit:SHA,checks:16,full:fullSnap,instituteHomeAlias,limited:limitedSnap,result:'pass'};
 fs.writeFileSync(path.join(OUT,'institute-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_INSTITUTE_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=15 commit='+SHA);
+console.log('RAAHI_INSTITUTE_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=16 commit='+SHA);

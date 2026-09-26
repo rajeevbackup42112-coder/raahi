@@ -75,6 +75,18 @@ assert(JSON.stringify(home.metrics.map(x=>[x.label,x.value]))===JSON.stringify([
 assert(home.small.length===0&&!home.raw,'PLATFORM_HOME_GEOMETRY_OR_RAW_'+JSON.stringify(home));
 assert(['Safety review','Ads review','Location admins','Audit log'].every(t=>home.buttons.some(b=>b.text===t)),'PLATFORM_HOME_ACTIONS_BAD_'+JSON.stringify(home.buttons));
 
+await page.waitForFunction(()=>[...document.querySelectorAll('[data-live-role-select] option')].some(o=>o.value==='platform'),null,{timeout:10000});
+await page.evaluate(()=>{
+  const select=document.querySelector('[data-live-role-select]');
+  select.value='platform';
+  select.dispatchEvent(new Event('change',{bubbles:true}));
+});
+await page.waitForFunction(()=>document.querySelector('[data-live-role-select]')?.value==='platform',null,{timeout:10000});
+await page.evaluate(()=>window.RaahiLearningLive.api.go('home'));
+await page.waitForFunction(()=>document.querySelector('.v15-platform-context-card')&&document.querySelector('.page-head h1')?.textContent==='Platform operations',null,{timeout:10000});
+const platformHomeAlias=await snap(page);
+assert(platformHomeAlias.heading==='Platform operations'&&platformHomeAlias.metrics.length===7,'PLATFORM_GENERIC_HOME_NOT_CONVERGED_'+JSON.stringify(platformHomeAlias));
+
 await page.evaluate(()=>window.RaahiLearningLive.api.go('platform-safety'));
 await page.waitForFunction(()=>document.querySelectorAll('.v15-platform-metric-card').length===2,null,{timeout:10000});
 await page.waitForTimeout(200);
@@ -106,7 +118,7 @@ assert(reviews.length===1&&reviews[0].args.p_review_scope==='platform'&&reviews[
 assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
 await page.screenshot({path:path.join(OUT,'platform-ads-mobile.png'),fullPage:true});
 
-const report={proof:'raahi-platform-workspace-ux-browser-contract-v1',commit:SHA,checks:16,home,safety,ads,reviewCalls:reviews,result:'pass'};
+const report={proof:'raahi-platform-workspace-ux-browser-contract-v1',commit:SHA,checks:17,home,platformHomeAlias,safety,ads,reviewCalls:reviews,result:'pass'};
 fs.writeFileSync(path.join(OUT,'platform-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_PLATFORM_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=16 commit='+SHA);
+console.log('RAAHI_PLATFORM_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=17 commit='+SHA);

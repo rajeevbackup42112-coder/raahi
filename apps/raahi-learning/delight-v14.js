@@ -24,6 +24,7 @@
   };
 
   const route=()=>location.hash.replace(/^#\//,'').split('?')[0]||'home';
+  const activeRole=()=>document.querySelector('[data-live-role-select]')?.value||'';
   const locationName=()=>document.querySelector('[data-route="location-picker"] .label')?.textContent?.trim()
     || [...document.querySelectorAll('.rightbar .strong')].map(x=>x.textContent.trim()).find(Boolean)
     || 'your area';
@@ -387,7 +388,8 @@
   }
 
   function polishTeacherWorkspace(){
-    if(route()!=='teacher-home') return;
+    const r=route();
+    if(r!=='teacher-home' && !(r==='home'&&activeRole()==='teacher')) return;
     const live=window.RaahiLearningLive;
     const main=document.querySelector('.main');
     const workspace=live?.data?.teacherWorkspace;
@@ -529,7 +531,8 @@
   }
 
   function polishInstituteWorkspace(){
-    if(route()!=='org-home') return;
+    const r=route();
+    if(r!=='org-home' && !(r==='home'&&activeRole()==='institute')) return;
     const live=window.RaahiLearningLive;
     const main=document.querySelector('.main');
     const workspace=live?.data?.orgWorkspace;
@@ -660,7 +663,8 @@
   }
 
   function polishPlatformWorkspace(){
-    const r=route();
+    let r=route();
+    if(r==='home'&&activeRole()==='platform') r='platform-home';
     if(!['platform-home','platform-safety','platform-ads'].includes(r)) return;
     const live=window.RaahiLearningLive;
     const main=document.querySelector('.main');
@@ -848,7 +852,8 @@
   }
 
   function polishAdsWorkspace(){
-    const r=route();
+    let r=route();
+    if(r==='home'&&activeRole()==='ads') r='ads-home';
     const main=document.querySelector('.main');
     if(!main||!['ads-home','ads-create','ads-inventory','ads-analytics'].includes(r)) return;
     const head=main.querySelector('.page-head');
@@ -993,7 +998,8 @@
   }
 
   function polishManagerWorkspace(){
-    const r=route();
+    let r=route();
+    if(r==='home'&&activeRole()==='manager') r='manager-home';
     if(!['manager-home','manager-people','manager-learning'].includes(r)) return;
     const live=window.RaahiLearningLive;
     const main=document.querySelector('.main');

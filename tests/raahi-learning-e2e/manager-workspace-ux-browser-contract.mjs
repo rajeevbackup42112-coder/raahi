@@ -72,6 +72,11 @@ assert(home.small.length===0&&home.generic.length===0,'MANAGER_HOME_ACTION_HIERA
 assert(!/Learners\s+\d|Accounts\s+\d/.test(home.body),'MANAGER_HOME_LEARNER_DIRECTORY_SIGNAL_'+home.body);
 assert(!home.rawSummary,'MANAGER_HOME_RAW_SUMMARY_RETURNED');
 
+await page.evaluate(()=>window.RaahiLearningLive.api.go('home'));
+await page.waitForFunction(()=>document.querySelector('.v15-manager-scope-card')&&document.querySelector('.page-head h1')?.textContent==='Dhanbad operations',null,{timeout:10000});
+const managerHomeAlias=await snapshot(page);
+assert(managerHomeAlias.heading==='Dhanbad operations'&&managerHomeAlias.generic.length===0,'MANAGER_GENERIC_HOME_NOT_CONVERGED_'+JSON.stringify(managerHomeAlias));
+
 await page.evaluate(()=>window.RaahiLearningLive.api.go('manager-people'));
 await page.waitForFunction(()=>document.querySelector('.v15-manager-privacy-card'),null,{timeout:10000});
 await page.waitForTimeout(200);
@@ -102,7 +107,7 @@ assert(!calls.some(x=>mutationNames.includes(x.name)),'MANAGER_WORKSPACE_MUTATED
 assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
 
 await page.screenshot({path:path.join(OUT,'manager-learning-mobile.png'),fullPage:true});
-const report={proof:'raahi-manager-workspace-ux-browser-contract-v1',commit:SHA,checks:20,home,people,learning,result:'pass'};
+const report={proof:'raahi-manager-workspace-ux-browser-contract-v1',commit:SHA,checks:21,home,managerHomeAlias,people,learning,result:'pass'};
 fs.writeFileSync(path.join(OUT,'manager-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_MANAGER_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=20 commit='+SHA);
+console.log('RAAHI_MANAGER_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=21 commit='+SHA);

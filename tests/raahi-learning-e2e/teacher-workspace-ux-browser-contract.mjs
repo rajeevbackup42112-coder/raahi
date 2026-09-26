@@ -78,6 +78,11 @@ const callsAfterHome=await page.evaluate(()=>window.__RAAHI_TEACHER_UX_FAKE__.ca
 const mutationNames=['update_teacher_profile','upsert_teaching_option','create_class','enable_teaching'];
 assert(!callsAfterHome.some(x=>mutationNames.includes(x.name)),'TEACHER_HOME_MUTATED_AUTHORITY_'+JSON.stringify(callsAfterHome));
 
+await page.evaluate(()=>window.RaahiLearningLive.api.go('home'));
+await page.waitForFunction(()=>document.querySelector('.v15-teacher-profile-card')&&document.querySelector('.page-head h1')?.textContent==='Your teaching',null,{timeout:10000});
+const teacherHomeAlias=await page.evaluate(()=>({heading:document.querySelector('.page-head h1')?.textContent?.trim(),genericManage:[...document.querySelectorAll('.main button')].filter(b=>b.textContent.trim()==='Manage').length}));
+assert(teacherHomeAlias.heading==='Your teaching'&&teacherHomeAlias.genericManage===0,'TEACHER_GENERIC_HOME_NOT_CONVERGED_'+JSON.stringify(teacherHomeAlias));
+
 await page.evaluate(()=>window.RaahiLearningLive.api.go('explore'));
 await page.waitForFunction(()=>document.querySelectorAll('.v14-category-chip').length===5,null,{timeout:10000});
 const explore=await page.evaluate(()=>({
@@ -89,7 +94,7 @@ assert(explore.chips.length===5&&explore.chips.every(x=>x.h>=44&&x.w>=44),'EXPLO
 
 await page.screenshot({path:path.join(OUT,'teacher-home-mobile.png'),fullPage:true});
 assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
-const report={proof:'raahi-teacher-workspace-ux-browser-contract-v1',commit:SHA,checks:10,home,explore,result:'pass'};
+const report={proof:'raahi-teacher-workspace-ux-browser-contract-v1',commit:SHA,checks:11,home,teacherHomeAlias,explore,result:'pass'};
 fs.writeFileSync(path.join(OUT,'teacher-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_TEACHER_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=10 commit='+SHA);
+console.log('RAAHI_TEACHER_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=11 commit='+SHA);

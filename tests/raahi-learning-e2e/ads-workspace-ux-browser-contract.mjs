@@ -68,7 +68,7 @@ await page.evaluate(()=>{
   select.value='ads';
   select.dispatchEvent(new Event('change',{bubbles:true}));
 });
-await page.waitForFunction(()=>document.querySelector('[data-live-role-select]')?.value==='ads',null,{timeout:10000});
+await page.waitForFunction(()=>document.querySelector('[data-live-role-select]')?.value==='ads'&&location.hash.startsWith('#/ads-home')&&!/don’t have access to this page yet/i.test(document.body.innerText||''),null,{timeout:12000});
 try{
   await page.waitForFunction(()=>document.querySelector('.v15-ad-campaign-card'),null,{timeout:12000});
 }catch(error){
@@ -88,6 +88,11 @@ const home=await page.evaluate(()=>({
 assert(home.scrollWidth<=home.width,'ADS_HOME_OVERFLOW_'+JSON.stringify(home));
 assert(home.heading==='Raahi Ads'&&/Advertising never changes verification or organic ranking/.test(home.subtitle||''),'ADS_HOME_PURPOSE_BAD_'+JSON.stringify(home));
 assert(home.create==='Create campaign'&&home.campaigns.length===1&&!home.raw,'ADS_HOME_CAMPAIGN_LIST_BAD_'+JSON.stringify(home));
+
+await page.evaluate(()=>window.RaahiLearningLive.api.go('home'));
+await page.waitForFunction(()=>document.querySelector('.v15-ad-campaign-card')&&document.querySelector('.page-head h1')?.textContent==='Raahi Ads',null,{timeout:10000});
+const adsHomeAlias=await page.evaluate(()=>({heading:document.querySelector('.page-head h1')?.textContent?.trim(),campaigns:document.querySelectorAll('.v15-ad-campaign-card').length,genericManage:[...document.querySelectorAll('.main button')].filter(b=>b.textContent.trim()==='Manage').length}));
+assert(adsHomeAlias.heading==='Raahi Ads'&&adsHomeAlias.campaigns===1&&adsHomeAlias.genericManage===0,'ADS_GENERIC_HOME_NOT_CONVERGED_'+JSON.stringify(adsHomeAlias));
 
 await page.evaluate(()=>window.RaahiLearningLive.api.go('ads-create'));
 await page.waitForFunction(()=>document.querySelector('#live-ad-create-form.v15-ads-form'),null,{timeout:10000});
@@ -139,7 +144,7 @@ assert(!analytics.raw&&analytics.scrollWidth<=analytics.width,'ADS_ANALYTICS_RAW
 assert(real.length===0,'REAL_SUPABASE_NETWORK_'+real.join(','));
 
 await page.screenshot({path:path.join(OUT,'ads-analytics-mobile.png'),fullPage:true});
-const report={proof:'raahi-ads-workspace-ux-browser-contract-v1',commit:SHA,checks:18,home,create,inventory,analytics,createRpc,result:'pass'};
+const report={proof:'raahi-ads-workspace-ux-browser-contract-v1',commit:SHA,checks:19,home,adsHomeAlias,create,inventory,analytics,createRpc,result:'pass'};
 fs.writeFileSync(path.join(OUT,'ads-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_ADS_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=18 commit='+SHA);
+console.log('RAAHI_ADS_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=19 commit='+SHA);

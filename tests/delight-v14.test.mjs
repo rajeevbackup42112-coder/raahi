@@ -78,6 +78,12 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/does not provide a named viewer list/);
   assert.match(css,/v15-platform-metric-grid/);
   assert.match(css,/v15-ads-metric-grid/);
+  assert.match(js,/const activeRole=/);
+  assert.match(js,/r==='home'&&activeRole\(\)==='teacher'/);
+  assert.match(js,/r==='home'&&activeRole\(\)==='institute'/);
+  assert.match(js,/r==='home'&&activeRole\(\)==='manager'/);
+  assert.match(js,/r==='home'&&activeRole\(\)==='platform'/);
+  assert.match(js,/r==='home'&&activeRole\(\)==='ads'/);
   assert.match(css,/V1\.4U final mobile ergonomics/);
   assert.match(css,/\.auth-shell button[\s\S]*min-height:44px/);
   assert.match(css,/max-height:calc\(100dvh - 445px\)/);
