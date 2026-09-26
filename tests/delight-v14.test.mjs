@@ -44,6 +44,12 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/Pause or close account/);
   assert.match(js,/Phone security/);
   assert.match(css,/v15-account-options:not\(\[open\]\)/);
+  assert.match(js,/Your conversations with teachers and Classes\./);
+  assert.match(js,/Private Class conversation about/);
+  assert.match(js,/Write a message…/);
+  assert.match(js,/v15-message-bubble/);
+  assert.match(css,/v15-conversation-composer/);
+  assert.match(css,/v15-message-bubble\.is-mine/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

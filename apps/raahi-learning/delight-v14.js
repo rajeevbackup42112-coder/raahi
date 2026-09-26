@@ -386,6 +386,88 @@
     const enquire=document.querySelector('[data-live-enquire-option]'); if(enquire) enquire.textContent='Ask about this';
   }
 
+  function polishConversationThreads(){
+    const r=route();
+    const live=window.RaahiLearningLive;
+    if(!live) return;
+
+    if(r==='messages'){
+      const head=document.querySelector('.main .page-head');
+      const subtitle=head?.querySelector('p');
+      if(subtitle) subtitle.textContent='Your conversations with teachers and Classes.';
+      document.querySelectorAll('.main .stack > .card').forEach(card=>card.classList.add('v15-conversation-preview'));
+      return;
+    }
+
+    if(!['enquiry','class-thread'].includes(r)) return;
+    const main=document.querySelector('.main');
+    const thread=r==='enquiry'?live.data?.enquiryThread:live.data?.classThread;
+    if(!main||!thread) return;
+
+    main.classList.add('v15-conversation-page');
+    const head=main.querySelector('.page-head');
+    const subtitle=head?.querySelector('p');
+    if(r==='class-thread'&&subtitle){
+      const learner=thread.learner_name||'this learner';
+      subtitle.textContent='Private Class conversation about '+learner+'.';
+    }else if(r==='enquiry'&&subtitle){
+      subtitle.textContent=subtitle.textContent.replace(/\s*[\uFFFD·]\s*/g,' · ');
+    }
+
+    const card=main.querySelector(':scope > .card');
+    if(!card) return;
+    card.classList.add('v15-conversation-shell');
+
+    const stack=card.querySelector(':scope > .stack');
+    const messages=Array.isArray(thread.messages)?thread.messages:[];
+    if(stack){
+      stack.classList.add('v15-message-list');
+      const bubbles=[...stack.querySelectorAll(':scope > .notice')];
+      bubbles.forEach((bubble,index)=>{
+        const message=messages[index]; if(!message) return;
+        const mine=String(message.sender_account_id||'')===String(live.context?.account?.account_id||'');
+        const previous=index>0?messages[index-1]:null;
+        const continuation=!!previous&&String(previous.sender_account_id||'')===String(message.sender_account_id||'');
+        bubble.classList.add('v15-message-bubble',mine?'is-mine':'is-theirs');
+        bubble.classList.toggle('is-continuation',continuation);
+        const sender=bubble.querySelector('strong');
+        if(sender){
+          sender.classList.add('v15-message-sender');
+          if(mine) sender.textContent='You';
+        }
+        bubble.querySelector('p')?.classList.add('v15-message-body');
+        bubble.querySelector('.tiny')?.classList.add('v15-message-time');
+      });
+      if(stack.dataset.v15ConversationScrolled!=='true'){
+        stack.dataset.v15ConversationScrolled='true';
+        requestAnimationFrame(()=>{stack.scrollTop=stack.scrollHeight;});
+      }
+    }
+
+    const textarea=card.querySelector(r==='enquiry'?'#live-enquiry-message':'#live-class-message');
+    const send=card.querySelector(r==='enquiry'?'[data-live-send-enquiry-message]':'[data-live-send-class-message]');
+    const field=textarea?.closest('.field');
+    if(textarea){
+      textarea.placeholder='Write a message…';
+      textarea.setAttribute('aria-label','Write a message');
+    }
+    if(field&&send&&!card.querySelector('.v15-conversation-composer')){
+      const composer=document.createElement('div');
+      composer.className='v15-conversation-composer';
+      field.insertAdjacentElement('beforebegin',composer);
+      composer.append(field,send);
+      const divider=composer.previousElementSibling;
+      if(divider?.classList.contains('divider')) divider.classList.add('v15-composer-divider');
+    }
+
+    if(r==='enquiry'){
+      const meta=card.querySelector(':scope > .between');
+      if(meta) meta.classList.add('v15-conversation-meta');
+      const state=meta?.querySelector('.badge');
+      if(state) state.textContent=(state.textContent||'').replace(/^./,c=>c.toUpperCase());
+    }
+  }
+
   function polishSettings(){
     if(route()!=='settings') return;
     const main=document.querySelector('.main');
@@ -634,6 +716,7 @@
       polishMessagePeople();
       polishLearningRequest();
       polishProviderDetail();
+      polishConversationThreads();
       polishSettings();
       polishNotifications();
       polishAvatarPicker();

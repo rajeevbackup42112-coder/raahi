@@ -93,6 +93,10 @@ jobs:
         working-directory: tests/raahi-learning-e2e
         run: node settings-ux-browser-contract.mjs
 
+      - name: Run conversation detail browser proof
+        working-directory: tests/raahi-learning-e2e
+        run: node conversation-ux-browser-contract.mjs
+
       - name: Run product-wide human-language browser audit
         working-directory: tests/raahi-learning-e2e
         run: node human-language-browser-audit.mjs
