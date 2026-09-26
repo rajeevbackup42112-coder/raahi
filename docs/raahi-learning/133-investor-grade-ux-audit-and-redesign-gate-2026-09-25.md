@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`998b92b42bdd7173eae5f114d9741fdae07dac85` — **Enforce mobile action touch targets**
+`05210a8fafd970d1ae6b3719028145a09e9e70c6` — **Redesign Settings hierarchy and account controls**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–3**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #781 and Browser Contract #40 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–4**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #783 and Browser Contract #41 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -73,6 +73,28 @@ Measured effect on the 32-route difficult-screen audit:
 Exact product SHA `998b92b42bdd7173eae5f114d9741fdae07dac85` passed 5,349,572 model cases / 0 failures plus shell 5/5, Notifications 9/9, mobile actions 32/32, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #781 and Browser Contract #40 passed first attempt.
 
 Production remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–3 remain intentionally undeployed.
+
+### Slice 4 — Settings + account hierarchy — CLOSED / UNDEPLOYED
+
+Delivered:
+- Settings now has three clear user-facing layers: **Profile**, **Security**, and **Account**
+- implementation-facing `Phone trust pending DEV configuration` and `Account lifecycle` copy is no longer shown in ordinary Settings
+- profile actions use human labels such as `Name on Raahi`, `Save name`, and `Profile photo`
+- phone trust is presented as `Phone security` / `Phone confirmation` without changing the underlying trust model
+- pause and account-closure actions are progressively disclosed under `Pause or close account`
+- destructive closure styling remains distinct and all controls retain 44px+ mobile targets
+- canonical profile save remains `update_account_profile`; lifecycle handlers and permissions are unchanged
+- permanent `settings-ux-browser-contract.mjs` verifies mobile overflow, human language, disclosure behavior, touch targets, canonical profile mutation, and destructive-action hierarchy
+
+Real Parent04 mobile proof:
+- zero horizontal overflow
+- first mobile viewport reduced to 43 visible words in the Settings content measurement
+- pause/closure controls hidden until disclosure is opened
+- no undersized Settings actions
+
+Exact product SHA `05210a8fafd970d1ae6b3719028145a09e9e70c6` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #783 and Browser Contract #41 passed first attempt.
+
+Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–4 remain intentionally undeployed.
 
 ## Audit evidence
 
