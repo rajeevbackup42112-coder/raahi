@@ -178,6 +178,7 @@ test("catalogue failure stays human and recoverable", async ({ page }) => {
   await page.getByRole("button", { name: /Gomoh/ }).click();
 
   await expect(page.getByRole("heading", { name: "Raahi couldn’t load this location" })).toBeVisible();
+  await expect(page.getByText("We couldn’t check what Raahi can help with in Gomoh right now.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Choose another location" })).toBeVisible();
   await expect(page.getByText("SERVICE_UNAVAILABLE")).toHaveCount(0);
   await assertNoHorizontalOverflow(page);

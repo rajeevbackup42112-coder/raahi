@@ -194,7 +194,10 @@ async function chooseLocation(slug) {
     return;
   }
 
+  state.selectedLocation = known;
   els.locationButtonLabel.textContent = known.display_name;
+  els.heroSubtitle.textContent =
+    `Here’s what Raahi can help with in ${known.display_name} right now.`;
   setStatus({
     title: `Loading ${known.display_name}`,
     message: "Checking what Raahi can genuinely help with there.",
@@ -211,6 +214,8 @@ async function chooseLocation(slug) {
     if (error.code === "LOCATION_NOT_SELECTABLE" || error.code === "LOCATION_NOT_FOUND") {
       clearSavedLocation();
     }
+    els.heroSubtitle.textContent =
+      `We couldn’t check what Raahi can help with in ${known.display_name} right now.`;
     setStatus({
       title: "Raahi couldn’t load this location",
       message: error.message,
