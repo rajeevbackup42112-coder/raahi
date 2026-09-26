@@ -528,6 +528,137 @@
     }
   }
 
+  function polishInstituteWorkspace(){
+    if(route()!=='org-home') return;
+    const live=window.RaahiLearningLive;
+    const main=document.querySelector('.main');
+    const workspace=live?.data?.orgWorkspace;
+    const organization=workspace?.organization;
+    if(!main||!organization) return;
+
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const subtitle=head?.querySelector('p');
+    if(title) title.textContent='Institute workspace';
+    if(subtitle) subtitle.textContent='Learning, Classes, team and Raahi Ads in one place.';
+
+    const grid=main.querySelector(':scope > .grid.two');
+    if(!grid) return;
+    grid.classList.add('v15-institute-dashboard');
+
+    if(!main.querySelector('.v15-institute-profile-card')){
+      const hero=document.createElement('div');
+      hero.className='card v15-institute-profile-card';
+
+      const identity=document.createElement('div');
+      identity.className='v15-institute-profile-row';
+
+      const mark=document.createElement('div');
+      mark.className='v15-institute-mark';
+      mark.textContent=initials(organization.name||'Institute');
+
+      const copy=document.createElement('div');
+      copy.className='v15-institute-profile-copy';
+      const eyebrow=document.createElement('span');
+      eyebrow.className='v15-institute-eyebrow';
+      eyebrow.textContent='Institute';
+      const h=document.createElement('h2');
+      h.textContent=organization.name||'Institute';
+
+      const meta=document.createElement('div');
+      meta.className='v15-institute-profile-meta';
+      const type=document.createElement('span');
+      type.className='badge';
+      const typeMap={coaching:'Coaching institute',school:'School',college:'College',university:'University',training_centre:'Training centre',training_center:'Training centre'};
+      type.textContent=typeMap[organization.organization_type]||String(organization.organization_type||'Institute').replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+      meta.appendChild(type);
+      if(organization.status){
+        const status=document.createElement('span');
+        status.className='badge '+(organization.status==='active'?'success':'');
+        status.textContent=String(organization.status).replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+        meta.appendChild(status);
+      }
+      copy.append(eyebrow,h,meta);
+
+      if(organization.description){
+        const desc=document.createElement('p');
+        desc.className='v15-institute-description';
+        desc.textContent=organization.description;
+        copy.appendChild(desc);
+      }
+      if(organization.venue_text){
+        const venue=document.createElement('div');
+        venue.className='v15-institute-venue';
+        venue.innerHTML=icons.location;
+        const txt=document.createElement('span');
+        txt.textContent=organization.venue_text;
+        venue.appendChild(txt);
+        copy.appendChild(venue);
+      }
+
+      identity.append(mark,copy);
+      hero.appendChild(identity);
+
+      const edit=head?.querySelector('[data-route="org-profile"]');
+      if(edit){
+        edit.textContent='Edit institute profile';
+        edit.classList.add('v15-institute-edit');
+        hero.appendChild(edit);
+      }
+      grid.insertAdjacentElement('beforebegin',hero);
+    }
+
+    const cards=[...grid.children].filter(el=>el.classList.contains('card'));
+    for(const card of cards){
+      const learning=card.querySelector('[data-route="org-teaching"]');
+      const classes=card.querySelector('[data-route="teacher-classes"]');
+      const team=card.querySelector('[data-route="org-members"]');
+      const ads=card.querySelector('[data-route="ads-home"]');
+
+      if(learning){
+        card.className='card v15-institute-area-card v15-institute-learning-card';
+        const count=Array.isArray(workspace.teaching_options)?workspace.teaching_options.length:0;
+        card.innerHTML='<span class="v15-institute-area-label">Learning</span><strong class="v15-institute-area-value"></strong><span class="v15-institute-area-copy"></span>';
+        card.querySelector('.v15-institute-area-value').textContent=String(count);
+        card.querySelector('.v15-institute-area-copy').textContent=count===1?'public learning option':'public learning options';
+        learning.textContent='Edit learning';
+        learning.className='pill-btn v15-institute-area-action';
+        card.appendChild(learning);
+        continue;
+      }
+
+      if(classes){
+        card.className='card v15-institute-area-card v15-institute-classes-card';
+        card.innerHTML='<span class="v15-institute-area-label">Classes</span><strong class="v15-institute-area-title">Run your Classes</strong><span class="v15-institute-area-copy">Create and manage institute Classes.</span>';
+        classes.textContent='Open Classes';
+        classes.className='pill-btn v15-institute-area-action';
+        card.appendChild(classes);
+        continue;
+      }
+
+      if(team){
+        card.className='card v15-institute-area-card v15-institute-team-card';
+        const members=Array.isArray(live.data?.orgMembers)?live.data.orgMembers:[];
+        const active=members.filter(m=>!m.status||m.status==='active').length;
+        card.innerHTML='<span class="v15-institute-area-label">Team</span><strong class="v15-institute-area-value"></strong><span class="v15-institute-area-copy"></span>';
+        card.querySelector('.v15-institute-area-value').textContent=String(active);
+        card.querySelector('.v15-institute-area-copy').textContent=active===1?'active member':'active members';
+        team.textContent='Manage team';
+        team.className='pill-btn v15-institute-area-action';
+        card.appendChild(team);
+        continue;
+      }
+
+      if(ads){
+        card.className='card v15-institute-area-card v15-institute-ads-card';
+        card.innerHTML='<span class="v15-institute-area-label">Raahi Ads</span><strong class="v15-institute-area-title">Reach local learners</strong><span class="v15-institute-area-copy">Education-only campaigns for your institute.</span>';
+        ads.textContent='Open Raahi Ads';
+        ads.className='pill-btn v15-institute-area-action';
+        card.appendChild(ads);
+      }
+    }
+  }
+
   function polishConversationThreads(){
     const r=route();
     const live=window.RaahiLearningLive;
@@ -859,6 +990,7 @@
       polishLearningRequest();
       polishProviderDetail();
       polishTeacherWorkspace();
+      polishInstituteWorkspace();
       polishConversationThreads();
       polishSettings();
       polishNotifications();
