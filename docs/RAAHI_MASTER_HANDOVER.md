@@ -410,43 +410,62 @@ Important implementation findings:
 
 ---
 
+## Shared Front Door Product Contract — Frozen V0.1
+
+The shared `myraahi.co.in` product contract has now been created and frozen at:
+
+`docs/MYRAAHI_SHARED_FRONT_DOOR_PRODUCT_CONTRACT_V0.1.md`
+
+Key frozen decisions include:
+
+- `myraahi.co.in` is the shared front door.
+- Location first.
+- Public discovery before authentication.
+- Authentication at consequential persistent actions.
+- Safe draft/context should survive auth handoff.
+- Selected Location is context, not identity or authority.
+- One Account may participate in multiple Raahi products/relationships.
+- No permanent single end-user role across the platform.
+- Product availability is independently configurable per Location.
+- Product-specific operational data remains product-owned.
+- Exact verification claims replace vague generic “Verified”.
+- Google-first Account authentication + selective phone trust is the current default direction; phone-only fallback is deferred until real-user evidence requires it.
+- Global vs Location Admin authority is explicitly scoped.
+- Sponsored visibility cannot purchase trust.
+- Shared shell will be a clean new implementation, not the Learning retrofit frontend or ToTo prototype.
+- No AI-first navigation in the initial shell.
+- No new recurring non-OTP paid API/subscription without first exhausting free/open alternatives.
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not restart archaeology or external GitHub research.
+Do not restart strategy, archaeology, or product-contract discussion.
 
-The following are now established artifacts:
+Current durable artifacts:
 
-- `docs/RAAHI_MASTER_HANDOVER.md`
-- `docs/RAAHI_DNA_V0.1.md`
-- `docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
+1. `docs/RAAHI_MASTER_HANDOVER.md`
+2. `docs/RAAHI_DNA_V0.1.md`
+3. `docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
+4. `docs/MYRAAHI_SHARED_FRONT_DOOR_PRODUCT_CONTRACT_V0.1.md`
 
-The next phase is to freeze the **shared `myraahi.co.in` product contract before coding**, using the AI Builder discipline already used in Raahi projects.
+### Next gate
 
-Proceed in this order:
+Continue the AI Builder sequence from the frozen product contract:
 
-1. Define the exact public homepage/user journey.
-2. Define actors and ownership:
-   - visitor
-   - Raahi Account
-   - provider identities/relationships only where needed
-   - Location Admin
-   - Platform Admin
-3. Define shared business rules.
-4. Define Location lifecycle.
-5. Define Product registry semantics.
-6. Define Location × Product lifecycle.
-7. Define public browse vs authenticated-action boundaries.
-8. Define logged-out vs logged-in Location persistence.
-9. Define common Account/auth/session behavior across product subdomains/URLs.
-10. Define minimal verification/trust vocabulary.
-11. Define invariants and edge/failure recovery.
-12. Only then define entities/relationships, Screen ↔ Backend contracts, architecture/database and walking skeleton.
+1. define canonical shared entities and relationships;
+2. define state diagrams/lifecycles;
+3. define invariants and uniqueness constraints;
+4. define Screen ↔ Backend contracts;
+5. compare authentication/session architecture options under free-tier constraints;
+6. define product URL/subdomain integration model;
+7. define database/RPC blueprint;
+8. define the minimum walking skeleton;
+9. only then begin implementation.
 
-Do not implement, deploy, migrate production, or adopt external open-source dependencies before this product-contract gate is complete.
+The architecture must preserve the product contract. If a technical choice would contradict it, reopen the affected product decision explicitly before implementation.
 
-The current best architectural direction is:
-
-**clean new shared shell + proven backend concepts extracted/adapted from existing Raahi work + focused products remaining independently evolvable.**
+No production changes, deployments, paid services, or external open-source adoption are authorized during this design gate.
 
 ---
 
