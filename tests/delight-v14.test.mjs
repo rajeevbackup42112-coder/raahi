@@ -69,6 +69,15 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/Learning activity/);
   assert.match(js,/v15-manager-metric-card/);
   assert.match(css,/v15-manager-metric-grid/);
+  assert.match(js,/Platform operations/);
+  assert.match(js,/Governed platform view/);
+  assert.match(js,/Safety & trust/);
+  assert.match(js,/Ads review/);
+  assert.match(js,/Advertising never changes verification or organic ranking/);
+  assert.match(js,/Campaign results/);
+  assert.match(js,/does not provide a named viewer list/);
+  assert.match(css,/v15-platform-metric-grid/);
+  assert.match(css,/v15-ads-metric-grid/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

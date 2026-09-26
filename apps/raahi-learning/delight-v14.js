@@ -659,6 +659,325 @@
     }
   }
 
+  function polishPlatformWorkspace(){
+    const r=route();
+    if(!['platform-home','platform-safety','platform-ads'].includes(r)) return;
+    const live=window.RaahiLearningLive;
+    const main=document.querySelector('.main');
+    const summary=live?.data?.platformSummary;
+    if(!main||!summary||typeof summary!=='object') return;
+    if(main.dataset.v15PlatformRoute===r) return;
+    main.dataset.v15PlatformRoute=r;
+
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const subtitle=head?.querySelector('p');
+    const valueOf=key=>Object.prototype.hasOwnProperty.call(summary,key)&&summary[key]!=null?String(summary[key]):'—';
+    const numberOf=key=>Object.prototype.hasOwnProperty.call(summary,key)&&summary[key]!=null?Number(summary[key]):null;
+    const metric=(key,label,help,kind='')=>{
+      const card=document.createElement('div');
+      card.className='card v15-platform-metric-card'+(kind?' '+kind:'');
+      const value=document.createElement('strong');
+      value.className='v15-platform-metric-value';
+      value.textContent=valueOf(key);
+      const lab=document.createElement('span');
+      lab.className='v15-platform-metric-label';
+      lab.textContent=label;
+      const copy=document.createElement('span');
+      copy.className='v15-platform-metric-copy';
+      copy.textContent=help;
+      card.append(value,lab,copy);
+      return card;
+    };
+    const action=(label,target,primary=false)=>{
+      const button=document.createElement('button');
+      button.className=(primary?'primary-btn':'pill-btn')+' v15-platform-action';
+      button.dataset.route=target;
+      button.textContent=label;
+      return button;
+    };
+    const replaceAfterHead=(...nodes)=>{
+      [...main.children].forEach(el=>{if(el!==head)el.remove();});
+      nodes.forEach(node=>main.appendChild(node));
+    };
+    const contextCard=(heading,copyText,iconSvg)=>{
+      const card=document.createElement('div');
+      card.className='card v15-platform-context-card';
+      const icon=document.createElement('div');
+      icon.className='v15-platform-context-icon';
+      icon.innerHTML=iconSvg;
+      const copy=document.createElement('div');
+      copy.className='v15-platform-context-copy';
+      const eyebrow=document.createElement('span');
+      eyebrow.className='v15-platform-eyebrow';
+      eyebrow.textContent='Platform Admin';
+      const h=document.createElement('h2');
+      h.textContent=heading;
+      const p=document.createElement('p');
+      p.textContent=copyText;
+      copy.append(eyebrow,h,p);
+      card.append(icon,copy);
+      return card;
+    };
+
+    if(r==='platform-home'){
+      if(title) title.textContent='Platform operations';
+      if(subtitle) subtitle.textContent='System activity, safety attention and advertising across active Locations.';
+      const context=contextCard('Governed platform view','Broader operational scope still does not mean unrestricted access to private learning information.',icons.shield);
+
+      const attention=document.createElement('section');
+      attention.className='v15-platform-section';
+      const ah=document.createElement('div');
+      ah.className='v15-platform-section-head';
+      ah.innerHTML='<div><span class="v15-platform-eyebrow">Needs attention</span><h2>Review queues</h2></div>';
+      const ag=document.createElement('div');
+      ag.className='v15-platform-metric-grid';
+      ag.append(
+        metric('open_reports','Open reports','Safety reports waiting for governed review',numberOf('open_reports')>0?'is-attention':''),
+        metric('submitted_campaigns','Submitted campaigns','Campaign revisions waiting in review flow',numberOf('submitted_campaigns')>0?'is-attention':'')
+      );
+      attention.append(ah,ag);
+
+      const system=document.createElement('section');
+      system.className='v15-platform-section';
+      const sh=document.createElement('div');
+      sh.className='v15-platform-section-head';
+      sh.innerHTML='<div><span class="v15-platform-eyebrow">Platform view</span><h2>Current footprint</h2></div>';
+      const sg=document.createElement('div');
+      sg.className='v15-platform-metric-grid v15-platform-metric-grid-wide';
+      sg.append(
+        metric('locations','Active Locations','Locations in the platform view'),
+        metric('accounts','Accounts','Aggregate account count'),
+        metric('learners','Learner profiles','Aggregate learner-profile count'),
+        metric('audit_events','Audited actions','Governed actions in the summary'),
+        metric('live_ad_placements','Sponsored placements','Currently live sponsored placements')
+      );
+      system.append(sh,sg);
+
+      const actions=document.createElement('div');
+      actions.className='v15-platform-quick-actions';
+      actions.append(
+        action('Safety review','platform-safety',numberOf('open_reports')>0),
+        action('Ads review','platform-ads',numberOf('submitted_campaigns')>0),
+        action('Location admins','location-admins'),
+        action('Audit log','platform-audit')
+      );
+      replaceAfterHead(context,attention,system,actions);
+      return;
+    }
+
+    if(r==='platform-safety'){
+      if(title) title.textContent='Safety & trust';
+      if(subtitle) subtitle.textContent='Review safety signals and governed actions without treating reports as findings.';
+      const context=contextCard('Safety review','Reports are requests for review, not proof of wrongdoing. Exceptional actions remain logged and scoped.',icons.shield);
+      const grid=document.createElement('div');
+      grid.className='v15-platform-metric-grid v15-platform-safety-grid';
+      grid.append(
+        metric('open_reports','Open reports','Items currently waiting for review',numberOf('open_reports')>0?'is-attention':''),
+        metric('audit_events','Audited actions','Governed actions recorded in the platform summary')
+      );
+      const actions=document.createElement('div');
+      actions.className='v15-platform-quick-actions';
+      actions.append(action('Location admins','location-admins'),action('Audit log','platform-audit'));
+      replaceAfterHead(context,grid,actions);
+      return;
+    }
+
+    if(r==='platform-ads'){
+      if(title) title.textContent='Ads review';
+      if(subtitle) subtitle.textContent='Review submitted creatives separately from commercial approval and inventory.';
+      const summaryGrid=document.createElement('div');
+      summaryGrid.className='v15-platform-metric-grid v15-platform-ads-summary';
+      summaryGrid.append(
+        metric('submitted_campaigns','Submitted campaigns','Campaigns currently in submitted state',numberOf('submitted_campaigns')>0?'is-attention':''),
+        metric('live_ad_placements','Live placements','Sponsored placements currently live')
+      );
+
+      const section=document.createElement('section');
+      section.className='section v15-platform-review-section';
+      const sectionHead=document.createElement('div');
+      sectionHead.className='section-title';
+      const sectionTitle=document.createElement('h2');
+      sectionTitle.textContent='Creative review queue';
+      sectionHead.appendChild(sectionTitle);
+      const stack=document.createElement('div');
+      stack.className='stack';
+      const reviews=Array.isArray(live.data?.platformAdReview)?live.data.platformAdReview:[];
+      if(reviews.length){
+        reviews.forEach(review=>{
+          const card=document.createElement('div');
+          card.className='card v15-platform-review-card';
+          const row=document.createElement('div');
+          row.className='between';
+          const copy=document.createElement('div');
+          const h=document.createElement('h3');
+          h.textContent=review.campaign_name||review.headline||'Campaign revision';
+          const state=document.createElement('p');
+          state.className='card-sub';
+          state.textContent=(review.current_review_state||'pending').replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+          copy.append(h,state);
+          const actions=document.createElement('div');
+          actions.className='row v15-platform-review-actions';
+          [['Approve','approved','primary-btn'],['Request changes','changes_requested','pill-btn'],['Reject','rejected','danger-btn']].forEach(([label,decision,klass])=>{
+            const button=document.createElement('button');
+            button.className=klass+' small';
+            button.dataset.liveAdReview=review.revision_id;
+            button.dataset.reviewScope='platform';
+            button.dataset.decision=decision;
+            button.textContent=label;
+            actions.appendChild(button);
+          });
+          row.append(copy,actions);
+          card.appendChild(row);
+          stack.appendChild(card);
+        });
+      }else{
+        const empty=document.createElement('div');
+        empty.className='card empty-state';
+        const h=document.createElement('h3');
+        h.textContent='No Ads waiting';
+        const p=document.createElement('p');
+        p.className='muted';
+        p.textContent='No submitted campaign revision currently needs platform review.';
+        empty.append(h,p);
+        stack.appendChild(empty);
+      }
+      section.append(sectionHead,stack);
+      replaceAfterHead(summaryGrid,section);
+    }
+  }
+
+  function polishAdsWorkspace(){
+    const r=route();
+    const main=document.querySelector('.main');
+    if(!main||!['ads-home','ads-create','ads-inventory','ads-analytics'].includes(r)) return;
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const subtitle=head?.querySelector('p');
+
+    if(r==='ads-home'){
+      if(title) title.textContent='Raahi Ads';
+      if(subtitle) subtitle.textContent='Create and manage education-only campaigns. Advertising never changes verification or organic ranking.';
+      const create=head?.querySelector('[data-route="ads-create"]');
+      if(create) create.textContent='Create campaign';
+      main.querySelectorAll('.stack > .card.clickable').forEach(card=>{
+        card.classList.add('v15-ad-campaign-card');
+        const state=card.querySelector('.badge');
+        if(state?.textContent) state.textContent=state.textContent.replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+      });
+      return;
+    }
+
+    if(r==='ads-create'){
+      if(title) title.textContent='Create campaign';
+      if(subtitle) subtitle.textContent='Set the campaign goal, audience and dates. You can review details before anything goes live.';
+      const form=main.querySelector('#live-ad-create-form');
+      if(!form) return;
+      form.classList.add('v15-ads-form');
+      const rename=(name,label,placeholder)=>{
+        const input=form.querySelector('[name="'+name+'"]');
+        const field=input?.closest('.field');
+        const lab=field?.querySelector('label');
+        if(lab) lab.textContent=label;
+        if(placeholder&&input) input.placeholder=placeholder;
+      };
+      rename('owner','Advertiser');
+      rename('objective','Campaign goal');
+      rename('name','Campaign name');
+      rename('audience','Who should see this?','Example: families looking for Class 10 tuition');
+      rename('category','Learning topic','Example: Mathematics, admissions, music');
+      rename('starts','Starts');
+      rename('ends','Ends');
+      const submit=form.querySelector('button[type="submit"]');
+      if(submit) submit.textContent='Create draft';
+      if(!form.querySelector('.v15-ads-form-note')){
+        const note=document.createElement('div');
+        note.className='notice v15-ads-form-note';
+        note.textContent='Draft campaigns are not shown to learners until the required review and placement steps are complete.';
+        form.prepend(note);
+      }
+      return;
+    }
+
+    if(r==='ads-inventory'){
+      if(title) title.textContent='Sponsored availability';
+      if(subtitle) subtitle.textContent='Choose a placement and date range to check or reserve availability.';
+      const form=main.querySelector('#live-ad-inventory-form');
+      if(form){
+        form.classList.add('v15-ads-form');
+        const units=form.querySelector('[name="units"]')?.closest('.field')?.querySelector('label');
+        if(units) units.textContent='Units needed';
+        const check=form.querySelector('[data-live-check-inventory]');
+        if(check) check.textContent='Check dates';
+        const reserve=form.querySelector('button[type="submit"]');
+        if(reserve) reserve.textContent='Reserve dates';
+      }
+      const result=[...main.querySelectorAll(':scope > .section.card')].at(-1);
+      if(result){
+        result.classList.add('v15-ads-results-card');
+        const rows=Array.isArray(window.RaahiLearningLive?.data?.adInventory)?window.RaahiLearningLive.data.adInventory:[];
+        if(rows.length){
+          const list=document.createElement('div');
+          list.className='v15-ads-availability-list';
+          rows.forEach(row=>{
+            const item=document.createElement('div');
+            item.className='v15-ads-availability-row';
+            const copy=document.createElement('div');
+            const date=document.createElement('strong');
+            date.textContent=row.inventory_date||'Date';
+            const detail=document.createElement('span');
+            const remaining=Number(row.remaining_units??0);
+            const capacity=Number(row.capacity??0);
+            detail.textContent=remaining+' of '+capacity+' units available';
+            copy.append(date,detail);
+            const max=document.createElement('span');
+            max.className='badge';
+            max.textContent='Up to '+String(row.max_units_per_campaign??'—')+' per campaign';
+            item.append(copy,max);
+            list.appendChild(item);
+          });
+          result.replaceChildren(list);
+        }
+      }
+      return;
+    }
+
+    if(r==='ads-analytics'){
+      if(title) title.textContent='Campaign results';
+      if(subtitle) subtitle.textContent='Only aggregate totals are shown. Raahi does not provide a named viewer list.';
+      const card=main.querySelector(':scope > .card');
+      if(card){
+        card.classList.add('v15-ads-results-card');
+        const rows=Array.isArray(window.RaahiLearningLive?.data?.adMetrics)?window.RaahiLearningLive.data.adMetrics:[];
+        if(rows.length){
+          const totals=rows.reduce((acc,row)=>{
+            acc.views+=Number(row.sponsored_views||0);
+            acc.opens+=Number(row.opens||0);
+            acc.enquiries+=Number(row.enquiries||0);
+            acc.visits+=Number(row.external_visits||0);
+            return acc;
+          },{views:0,opens:0,enquiries:0,visits:0});
+          const grid=document.createElement('div');
+          grid.className='v15-ads-metric-grid';
+          [['Sponsored views',totals.views],['Opens',totals.opens],['Enquiries',totals.enquiries],['External visits',totals.visits]].forEach(([label,value])=>{
+            const item=document.createElement('div');
+            item.className='v15-ads-metric-card';
+            const strong=document.createElement('strong');
+            strong.textContent=String(value);
+            const span=document.createElement('span');
+            span.textContent=label;
+            item.append(strong,span);
+            grid.appendChild(item);
+          });
+          card.replaceChildren(grid);
+        }else{
+          const muted=card.querySelector('.muted');
+          if(muted&&/No aggregate metrics/i.test(muted.textContent||'')) muted.textContent='No aggregate results are available for this campaign yet.';
+        }
+      }
+    }
+  }
+
   function polishInstituteLearning(){
     if(route()!=='org-teaching') return;
     const main=document.querySelector('.main');
@@ -1154,6 +1473,8 @@
       polishInstituteWorkspace();
       polishInstituteLearning();
       polishManagerWorkspace();
+      polishPlatformWorkspace();
+      polishAdsWorkspace();
       polishConversationThreads();
       polishSettings();
       polishNotifications();
