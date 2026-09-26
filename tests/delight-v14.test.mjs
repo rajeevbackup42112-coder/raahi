@@ -63,6 +63,12 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/Open Raahi Ads/);
   assert.match(js,/v15-institute-profile-card/);
   assert.match(css,/v15-institute-dashboard/);
+  assert.match(js,/Learning options offered by this institute\./);
+  assert.match(js,/Dhanbad operations|\+\' operations\'/);
+  assert.match(js,/People & safety/);
+  assert.match(js,/Learning activity/);
+  assert.match(js,/v15-manager-metric-card/);
+  assert.match(css,/v15-manager-metric-grid/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

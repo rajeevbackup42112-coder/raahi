@@ -93,6 +93,14 @@ const fullCalls=await full.page.evaluate(()=>window.__RAAHI_INSTITUTE_UX_FAKE__.
 const mutationNames=['update_organization_profile','upsert_teaching_option','create_class','invite_organization_member','create_ad_campaign'];
 assert(!fullCalls.some(x=>mutationNames.includes(x.name)),'INSTITUTE_HOME_MUTATED_STATE_'+JSON.stringify(fullCalls));
 assert(full.real.length===0,'REAL_SUPABASE_NETWORK_FULL_'+full.real.join(','));
+
+await full.page.evaluate(()=>window.RaahiLearningLive.api.go('org-teaching'));
+await full.page.waitForFunction(()=>location.hash.startsWith('#/org-teaching'),null,{timeout:10000});
+await full.page.waitForTimeout(200);
+const learningText=(await full.page.locator('body').innerText()).replace(/\s+/g,' ');
+assert(/Learning options offered by this institute\./.test(learningText),'INSTITUTE_LEARNING_SUBTITLE_NOT_HUMAN_'+learningText);
+assert(!/staff access/i.test(learningText),'INSTITUTE_LEARNING_INTERNAL_LANGUAGE_'+learningText);
+
 await full.page.screenshot({path:path.join(OUT,'institute-full-mobile.png'),fullPage:true});
 await full.context.close();
 
@@ -104,7 +112,7 @@ assert(limited.real.length===0,'REAL_SUPABASE_NETWORK_LIMITED_'+limited.real.joi
 await limited.page.screenshot({path:path.join(OUT,'institute-limited-mobile.png'),fullPage:true});
 await limited.context.close();
 
-const report={proof:'raahi-institute-workspace-ux-browser-contract-v1',commit:SHA,checks:13,full:fullSnap,limited:limitedSnap,result:'pass'};
+const report={proof:'raahi-institute-workspace-ux-browser-contract-v1',commit:SHA,checks:15,full:fullSnap,limited:limitedSnap,result:'pass'};
 fs.writeFileSync(path.join(OUT,'institute-workspace-ux-browser-contract.json'),JSON.stringify(report,null,2));
 await browser.close();
-console.log('RAAHI_INSTITUTE_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=13 commit='+SHA);
+console.log('RAAHI_INSTITUTE_WORKSPACE_UX_BROWSER_CONTRACT_PASS checks=15 commit='+SHA);

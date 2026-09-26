@@ -659,6 +659,167 @@
     }
   }
 
+  function polishInstituteLearning(){
+    if(route()!=='org-teaching') return;
+    const main=document.querySelector('.main');
+    if(!main) return;
+    const subtitle=main.querySelector('.page-head p');
+    if(subtitle) subtitle.textContent='Learning options offered by this institute.';
+    for(const node of main.querySelectorAll('p,.card-sub,.muted')){
+      const text=(node.textContent||'').trim();
+      if(/staff access allows it/i.test(text)){
+        node.textContent='Create a learning option if you can manage learning for this institute.';
+      }
+    }
+  }
+
+  function polishManagerWorkspace(){
+    const r=route();
+    if(!['manager-home','manager-people','manager-learning'].includes(r)) return;
+    const live=window.RaahiLearningLive;
+    const main=document.querySelector('.main');
+    const overview=live?.data?.managerOverview;
+    if(!main||!overview||typeof overview!=='object') return;
+    if(main.dataset.v15ManagerRoute===r) return;
+    main.dataset.v15ManagerRoute=r;
+
+    const scope=(Array.isArray(live.context?.manager_scopes)?live.context.manager_scopes:[])[0]||null;
+    const locationName=scope?.location_name||live.context?.selected_location?.name||'Local';
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const subtitle=head?.querySelector('p');
+
+    const valueOf=key=>Object.prototype.hasOwnProperty.call(overview,key)&&overview[key]!=null?String(overview[key]):'—';
+    const numberOf=key=>Object.prototype.hasOwnProperty.call(overview,key)&&overview[key]!=null?Number(overview[key]):null;
+    const metric=(key,label,help,kind='')=>{
+      const card=document.createElement('div');
+      card.className='card v15-manager-metric-card'+(kind?' '+kind:'');
+      const value=document.createElement('strong');
+      value.className='v15-manager-metric-value';
+      value.textContent=valueOf(key);
+      const lab=document.createElement('span');
+      lab.className='v15-manager-metric-label';
+      lab.textContent=label;
+      const copy=document.createElement('span');
+      copy.className='v15-manager-metric-copy';
+      copy.textContent=help;
+      card.append(value,lab,copy);
+      return card;
+    };
+    const action=(label,target,primary=false)=>{
+      const button=document.createElement('button');
+      button.className=(primary?'primary-btn':'pill-btn')+' v15-manager-action';
+      button.dataset.route=target;
+      button.textContent=label;
+      return button;
+    };
+    const replaceAfterHead=(...nodes)=>{
+      [...main.children].forEach(el=>{if(el!==head)el.remove();});
+      nodes.forEach(node=>main.appendChild(node));
+    };
+
+    if(r==='manager-home'){
+      if(title) title.textContent=locationName+' operations';
+      if(subtitle) subtitle.textContent='What needs attention and how local learning is moving.';
+
+      const scopeCard=document.createElement('div');
+      scopeCard.className='card v15-manager-scope-card';
+      const icon=document.createElement('div');
+      icon.className='v15-manager-scope-icon';
+      icon.innerHTML=icons.location;
+      const copy=document.createElement('div');
+      copy.className='v15-manager-scope-copy';
+      const eyebrow=document.createElement('span');
+      eyebrow.className='v15-manager-eyebrow';
+      eyebrow.textContent='Local Manager';
+      const h=document.createElement('h2');
+      h.textContent=locationName;
+      const p=document.createElement('p');
+      p.textContent='Aggregate local activity only — private learner and Class content stays private.';
+      copy.append(eyebrow,h,p);
+      scopeCard.append(icon,copy);
+
+      const attention=document.createElement('section');
+      attention.className='v15-manager-section';
+      const attentionHead=document.createElement('div');
+      attentionHead.className='v15-manager-section-head';
+      attentionHead.innerHTML='<div><span class="v15-manager-eyebrow">Needs attention</span><h2>Today</h2></div>';
+      const attentionGrid=document.createElement('div');
+      attentionGrid.className='v15-manager-metric-grid';
+      const reports=numberOf('open_reports');
+      const requests=numberOf('open_learning_requests');
+      attentionGrid.append(
+        metric('open_reports','Open reports','Governed reports waiting for review',reports&&reports>0?'is-attention':''),
+        metric('open_learning_requests','Learning requests','Public local needs currently open',requests&&requests>0?'is-attention':'')
+      );
+      attention.append(attentionHead,attentionGrid);
+
+      const activity=document.createElement('section');
+      activity.className='v15-manager-section';
+      const activityHead=document.createElement('div');
+      activityHead.className='v15-manager-section-head';
+      activityHead.innerHTML='<div><span class="v15-manager-eyebrow">Local activity</span><h2>Learning ecosystem</h2></div>';
+      const grid=document.createElement('div');
+      grid.className='v15-manager-metric-grid v15-manager-metric-grid-four';
+      grid.append(
+        metric('active_classes','Active Classes','Current Classes in this Location'),
+        metric('teaching_options','Learning options','Public local teaching supply'),
+        metric('published_community_posts','Community posts','Published local conversations'),
+        metric('live_ad_placements','Sponsored placements','Live local sponsored placements')
+      );
+      activity.append(activityHead,grid);
+
+      const actions=document.createElement('div');
+      actions.className='v15-manager-quick-actions';
+      actions.append(action('Review reports','manager-reports',reports&&reports>0),action('Learning activity','manager-learning'),action('Open Raahi Desk','raahi-desk'));
+      replaceAfterHead(scopeCard,attention,activity,actions);
+      return;
+    }
+
+    if(r==='manager-people'){
+      if(title) title.textContent='People & safety';
+      if(subtitle) subtitle.textContent='Review concerns without creating a browseable learner directory.';
+
+      const privacy=document.createElement('div');
+      privacy.className='card v15-manager-privacy-card';
+      const icon=document.createElement('div');
+      icon.className='v15-manager-scope-icon';
+      icon.innerHTML=icons.shield;
+      const copy=document.createElement('div');
+      copy.className='v15-manager-scope-copy';
+      const h=document.createElement('h2');
+      h.textContent='Privacy by design';
+      const p=document.createElement('p');
+      p.textContent='Local Managers work from governed reports and aggregate activity. Raahi does not expose a learner directory here.';
+      copy.append(h,p);
+      privacy.append(icon,copy);
+
+      const reportsCard=metric('open_reports','Open reports','Reports are review requests, not proof of wrongdoing',numberOf('open_reports')>0?'is-attention':'');
+      reportsCard.classList.add('v15-manager-focus-card');
+      reportsCard.appendChild(action('Review reports','manager-reports',numberOf('open_reports')>0));
+      replaceAfterHead(privacy,reportsCard);
+      return;
+    }
+
+    if(r==='manager-learning'){
+      if(title) title.textContent='Learning activity';
+      if(subtitle) subtitle.textContent='Classes, teaching supply and learner demand across '+locationName+'.';
+
+      const grid=document.createElement('div');
+      grid.className='v15-manager-metric-grid v15-manager-learning-grid';
+      grid.append(
+        metric('active_classes','Active Classes','Current local Classes'),
+        metric('teaching_options','Learning options','Public teaching supply'),
+        metric('open_learning_requests','Learning requests','Public local demand'),
+        metric('published_community_posts','Community posts','Local learning conversations')
+      );
+      const actions=document.createElement('div');
+      actions.className='v15-manager-quick-actions';
+      actions.append(action('Open Raahi Desk','raahi-desk'),action('Founding supply','founding-supply'));
+      replaceAfterHead(grid,actions);
+    }
+  }
+
   function polishConversationThreads(){
     const r=route();
     const live=window.RaahiLearningLive;
@@ -991,6 +1152,8 @@
       polishProviderDetail();
       polishTeacherWorkspace();
       polishInstituteWorkspace();
+      polishInstituteLearning();
+      polishManagerWorkspace();
       polishConversationThreads();
       polishSettings();
       polishNotifications();
