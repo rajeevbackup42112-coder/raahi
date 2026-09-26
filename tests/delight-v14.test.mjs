@@ -40,6 +40,10 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(css,/V1\.4O mobile action ergonomics/);
   assert.match(css,/\.main \.small[\s\S]*min-height:44px/);
   assert.match(css,/\.main \.chip[\s\S]*min-height:44px/);
+  assert.match(js,/Your profile, sign-in and account\./);
+  assert.match(js,/Pause or close account/);
+  assert.match(js,/Phone security/);
+  assert.match(css,/v15-account-options:not\(\[open\]\)/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

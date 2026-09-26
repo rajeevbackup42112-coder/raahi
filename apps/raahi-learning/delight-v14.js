@@ -386,6 +386,86 @@
     const enquire=document.querySelector('[data-live-enquire-option]'); if(enquire) enquire.textContent='Ask about this';
   }
 
+  function polishSettings(){
+    if(route()!=='settings') return;
+    const main=document.querySelector('.main');
+    if(!main) return;
+
+    const head=main.querySelector('.page-head');
+    const subtitle=head?.querySelector('p');
+    if(subtitle) subtitle.textContent='Your profile, sign-in and account.';
+
+    const grid=main.querySelector(':scope > .grid.two');
+    const cards=grid?[...grid.children].filter(el=>el.classList.contains('card')):[];
+    const profile=cards[0], security=cards[1];
+
+    if(profile && profile.dataset.v15SettingsProfile!=='true'){
+      profile.dataset.v15SettingsProfile='true';
+      profile.classList.add('v15-settings-card','v15-settings-profile');
+      const intro=document.createElement('div');
+      intro.className='v15-settings-section-head';
+      intro.innerHTML='<div class="v15-settings-icon">'+icons.people+'</div><div><h3>Profile</h3><p>How your name and photo appear on Raahi.</p></div>';
+      profile.prepend(intro);
+      const label=profile.querySelector('.field label');
+      if(label) label.textContent='Name on Raahi';
+      const save=profile.querySelector('#live-profile-form button[type="submit"]');
+      if(save) save.textContent='Save name';
+      const avatar=profile.querySelector('[data-route="avatar-picker"]');
+      if(avatar) avatar.textContent='Profile photo';
+    }
+
+    if(security && security.dataset.v15SettingsSecurity!=='true'){
+      security.dataset.v15SettingsSecurity='true';
+      security.classList.add('v15-settings-card','v15-settings-security');
+      const title=security.querySelector('h3');
+      if(title) title.textContent='Security';
+      const badges=[...security.querySelectorAll('.badge')];
+      if(badges[0]) badges[0].textContent='Google sign-in';
+      if(badges[1]){
+        badges[1].textContent='Phone confirmation';
+        badges[1].classList.remove('warning');
+        badges[1].classList.add('info');
+      }
+      const copy=security.querySelector('.card-sub');
+      if(copy) copy.textContent='Raahi may ask you to confirm your phone before sensitive changes.';
+      const phone=security.querySelector('[data-route="phone-check"]');
+      if(phone) phone.textContent='Phone security';
+      const icon=document.createElement('div');
+      icon.className='v15-settings-icon';
+      icon.innerHTML=icons.shield;
+      title?.insertAdjacentElement('beforebegin',icon);
+    }
+
+    const account=[...main.querySelectorAll(':scope > .section.card')].find(card=>/Account lifecycle|Account/i.test(card.querySelector('h3')?.textContent||''));
+    if(account && account.dataset.v15SettingsAccount!=='true'){
+      account.dataset.v15SettingsAccount='true';
+      account.classList.add('v15-settings-card','v15-settings-account');
+      const title=account.querySelector('h3');
+      if(title) title.textContent='Account';
+      const originalCopy=account.querySelector(':scope > p');
+      const actions=account.querySelector(':scope > .row');
+      const lead=document.createElement('p');
+      lead.className='card-sub v15-account-lead';
+      lead.textContent='Sign out above, or manage longer-term account options here.';
+      title?.insertAdjacentElement('afterend',lead);
+
+      const details=document.createElement('details');
+      details.className='v15-account-options';
+      const summary=document.createElement('summary');
+      summary.textContent='Pause or close account';
+      details.appendChild(summary);
+      const body=document.createElement('div');
+      body.className='v15-account-options-body';
+      if(originalCopy){
+        originalCopy.textContent='Pausing limits new public activity. Account closure can be blocked while responsibilities are unresolved.';
+        body.appendChild(originalCopy);
+      }
+      if(actions) body.appendChild(actions);
+      details.appendChild(body);
+      account.appendChild(details);
+    }
+  }
+
   function polishNotifications(){
     if(route()!=='notifications') return;
     const main=document.querySelector('.main');
@@ -554,6 +634,7 @@
       polishMessagePeople();
       polishLearningRequest();
       polishProviderDetail();
+      polishSettings();
       polishNotifications();
       polishAvatarPicker();
       polishCardsAndContext();
