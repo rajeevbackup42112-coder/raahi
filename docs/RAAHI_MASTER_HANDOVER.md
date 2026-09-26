@@ -72,6 +72,47 @@ Do not launch every Raahi product everywhere at once.
 
 ---
 
+## Common Raahi Front Door and Identity Foundation
+
+`myraahi.co.in` is the intended common front door for the Raahi ecosystem.
+
+The preferred first-time user journey is:
+
+1. Land on `myraahi.co.in`.
+2. Choose or confirm a location.
+3. See a simple prompt such as "How can Raahi help you today?"
+4. Show only the Raahi products/services that are genuinely live in that location.
+5. Allow public browsing without forcing authentication first.
+6. Require authentication only when the user attempts a consequential action such as booking, contacting, ordering, posting, applying, becoming a provider or otherwise creating operational state.
+
+Authentication should not be confused with identity verification.
+
+Suggested trust/identity progression:
+- Visitor: no account; can browse public information.
+- Verified user: phone OTP verified.
+- Local profile: profile completed and locality associated.
+- Verified provider: stronger role-specific verification, for example teacher credentials, driver/vehicle documents, doctor registration, or shop/owner verification.
+
+Raahi should communicate verification precisely, e.g. phone verified, identity verified, professional credentials verified, rather than implying that OTP alone proves identity.
+
+The common foundation should initially stay small and reusable:
+- location
+- user identity/profile
+- authentication
+- verification status
+- products enabled per location
+- local administration/configuration
+
+Specialized business logic should remain inside the relevant product so Learning, ToTo, Doctors, Shops, etc. can evolve independently.
+
+The desired architecture is therefore:
+
+One Raahi front door + one shared identity/locality foundation + independently evolving products.
+
+AI should not be required for the initial homepage experience. Start with clear deterministic navigation/cards. A future "Ask Raahi" layer may route natural-language needs to the correct product after enough real usage data exists.
+
+---
+
 ## Product Sequencing Principle
 
 Raahi should not begin as a single giant super-app.
@@ -311,22 +352,35 @@ Do not rely on chat memory alone.
 
 ## Exact Current Point / Next Action
 
-This conversation stopped immediately before beginning the Raahi Archaeology Pass.
+The common front-door decision is now agreed:
 
-The next chat should NOT restart the strategy discussion.
+- `myraahi.co.in` is the shared Raahi entry point.
+- Location comes first.
+- The homepage asks how Raahi can help in that selected place.
+- Only products actually live in that location are shown.
+- Public browsing should not require login.
+- Authentication begins when the user performs a consequential action.
+- OTP verifies phone ownership, not full identity; stronger role-specific verification is separate.
+- The shared core should stay minimal: location, profile/identity, authentication, verification status, enabled products per location, and local admin/configuration.
+- Product-specific business logic remains inside each product.
+
+The next chat should NOT restart the strategy discussion or redesign this foundation from scratch.
 
 Start by reading this file in full.
 
-Then perform a read-only archaeology pass beginning with:
+Then perform the read-only Raahi Archaeology Pass, specifically asking: which pieces of the agreed common front door / identity / locality foundation have already been implemented well in existing Raahi projects?
+
+Begin with:
 
 1. rajeevbackup42112-coder/raahi
 2. identify its important branches and canonical documentation
 3. reconstruct the current Raahi Learning/product patterns from source + docs
-4. then inspect raahi-toto
-5. then Where-is-my-Raahi-
-6. then schooltransportos
-7. then raahimini / other experiments
-8. inspect local-only projects such as Naresh separately when GitHub access is unavailable
+4. identify reusable authentication, profile, locality, verification and city/product-enable patterns
+5. then inspect raahi-toto
+6. then Where-is-my-Raahi-
+7. then schooltransportos
+8. then raahimini / other experiments
+9. inspect local-only projects such as Naresh separately when GitHub access is unavailable
 
 Do not change production, deploy anything, or modify application code during the archaeology pass unless explicitly asked.
 
