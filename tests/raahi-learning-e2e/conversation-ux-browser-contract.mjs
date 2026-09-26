@@ -59,6 +59,10 @@ async function metrics(page){
   return page.evaluate(()=>{
     const visible=e=>!!(e&&e.getClientRects().length&&getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden');
     const list=document.querySelector('.v15-message-list');
+    const composer=document.querySelector('.v15-conversation-composer');
+    const nav=document.querySelector('.mobile-nav');
+    const composerRect=composer?.getBoundingClientRect();
+    const navRect=nav?.getBoundingClientRect();
     const controls=[...document.querySelectorAll('.v15-conversation-page button,.v15-conversation-page textarea')].filter(visible).map(e=>{const r=e.getBoundingClientRect();return{w:Math.round(r.width),h:Math.round(r.height),text:(e.getAttribute('aria-label')||e.textContent||'').trim()}});
     return {
       width:innerWidth,scrollWidth:document.documentElement.scrollWidth,scrollHeight:document.documentElement.scrollHeight,
@@ -67,7 +71,9 @@ async function metrics(page){
       theirs:document.querySelectorAll('.v15-message-bubble.is-theirs').length,
       continuations:document.querySelectorAll('.v15-message-bubble.is-continuation').length,
       list:list?{clientHeight:list.clientHeight,scrollHeight:list.scrollHeight,scrollTop:list.scrollTop}:null,
-      composer:!!document.querySelector('.v15-conversation-composer'),
+      composer:!!composer,
+      composerBottom:Math.round(composerRect?.bottom||0),
+      navTop:Math.round(navRect?.top||innerHeight),
       placeholder:document.querySelector('.v15-conversation-composer textarea')?.getAttribute('placeholder')||'',
       smallControls:controls.filter(x=>x.w<44||x.h<44).length,
       subtitle:document.querySelector('.page-head p')?.textContent?.trim()||''
@@ -100,6 +106,7 @@ const enquiryBefore=await metrics(page);
 assert(enquiryBefore.scrollWidth<=enquiryBefore.width,'ENQUIRY_MOBILE_OVERFLOW_'+JSON.stringify(enquiryBefore));
 assert(enquiryBefore.bubbles===9&&enquiryBefore.mine>0&&enquiryBefore.theirs>0,'ENQUIRY_BUBBLE_OWNERSHIP_LOST_'+JSON.stringify(enquiryBefore));
 assert(enquiryBefore.composer&&enquiryBefore.placeholder==='Write a message…','ENQUIRY_COMPOSER_MISSING_'+JSON.stringify(enquiryBefore));
+assert(enquiryBefore.composerBottom<=enquiryBefore.navTop,'ENQUIRY_COMPOSER_NAV_OVERLAP_'+JSON.stringify(enquiryBefore));
 assert(enquiryBefore.smallControls===0,'ENQUIRY_SMALL_CONTROLS_'+JSON.stringify(enquiryBefore));
 assert(atLatest(enquiryBefore),'ENQUIRY_NOT_OPENED_AT_LATEST_'+JSON.stringify(enquiryBefore));
 const enquiryCallsBefore=await page.evaluate(()=>window.__RAAHI_CONVERSATION_UX_FAKE__.calls.length);
@@ -122,6 +129,7 @@ assert(classBefore.scrollWidth<=classBefore.width,'CLASS_THREAD_MOBILE_OVERFLOW_
 assert(classBefore.bubbles===14&&classBefore.mine>0&&classBefore.theirs>0,'CLASS_THREAD_BUBBLE_OWNERSHIP_LOST_'+JSON.stringify(classBefore));
 assert(classBefore.subtitle==='Private Class conversation about Aru.','CLASS_THREAD_HUMAN_CONTEXT_MISSING_'+classBefore.subtitle);
 assert(classBefore.composer&&classBefore.smallControls===0,'CLASS_THREAD_COMPOSER_BAD_'+JSON.stringify(classBefore));
+assert(classBefore.composerBottom<=classBefore.navTop,'CLASS_THREAD_COMPOSER_NAV_OVERLAP_'+JSON.stringify(classBefore));
 assert(atLatest(classBefore),'CLASS_THREAD_NOT_OPENED_AT_LATEST_'+JSON.stringify(classBefore));
 
 const classCallsBefore=await page.evaluate(()=>window.__RAAHI_CONVERSATION_UX_FAKE__.calls.length);

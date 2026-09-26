@@ -848,3 +848,25 @@ body{
   .v15-ads-metric-card{min-height:100px;padding:12px}
   .v15-ads-metric-card strong{font-size:25px}
 }
+
+
+/* V1.4U final mobile ergonomics */
+@media(max-width:860px){
+  .v15-shell .v15-shell-brand{
+    min-height:44px;
+    height:44px;
+    align-items:center;
+  }
+  .auth-shell button,
+  .auth-shell .primary-btn,
+  .auth-shell .pill-btn,
+  .auth-shell .ghost-btn{
+    min-height:44px;
+  }
+}
+@media(max-width:600px){
+  .v15-message-list{
+    max-height:calc(100dvh - 445px);
+    min-height:220px;
+  }
+}

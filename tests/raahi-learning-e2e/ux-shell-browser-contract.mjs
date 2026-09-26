@@ -57,6 +57,7 @@ async function shellMetrics(page){
     return {
       width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
       topHeight:Math.round(top?.getBoundingClientRect().height||0),
+      brandHeight:Math.round(document.querySelector('.v15-shell-brand')?.getBoundingClientRect().height||0),
       shell:top?.className||'',
       bell:!!document.querySelector('.v15-notification-button svg'),
       badge:document.querySelector('.v15-notification-badge')?.textContent||'',
@@ -77,6 +78,7 @@ try{
     assert(m.scrollWidth<=m.width,'SINGLE_MOBILE_HORIZONTAL_OVERFLOW '+JSON.stringify(m));
     assert(m.shell.includes('v15-single-context'),'SINGLE_CONTEXT_CLASS_MISSING');
     assert(m.topHeight===64,'SINGLE_HEADER_NOT_COMPACT '+m.topHeight);
+    assert(m.brandHeight>=44,'MOBILE_BRAND_TOUCH_TARGET '+m.brandHeight);
     assert(m.bell&&m.badge==='3','NOTIFICATION_BELL_BADGE_MISSING '+JSON.stringify(m));
     assert(m.photo,'PRIVATE_HEADER_PHOTO_FALLBACK_MISSING');
     assert(!m.roleVisible,'SINGLE_ROLE_SELECTOR_SHOULD_BE_HIDDEN');
