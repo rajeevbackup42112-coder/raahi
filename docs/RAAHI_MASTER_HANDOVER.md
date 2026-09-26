@@ -609,7 +609,30 @@ Current gate:
 
 ### Next action
 
-Bring Desktop Commander device `Dipti` online.
+The tooling strategy has now been rechecked against the earlier reusable AI-project tooling doctrine:
+
+- GitHub Codespaces = intended interactive cloud development computer.
+- GitHub Actions = available headless cloud execution in the current chat.
+- Desktop Commander = real-user/browser validation, not routine coding/deployment.
+
+A read-only GitHub Actions Cloudflare access probe was run:
+
+- branch commit: `f82324ca407e4c86c1f7be5b268a1229f62ad512`
+- workflow run: `36261265502`
+- result: standard secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are not currently available to the repo workflow.
+- no Cloudflare action or deployment occurred.
+
+Therefore the preferred next step is a **one-time Cloudflare credential bootstrap**, after which GitHub Actions can handle non-production staging without keeping Dipti in the critical path.
+
+One-time bootstrap options:
+1. authorize Cloudflare in an interactive GitHub Codespace/browser and create a narrowly scoped API token/account ID for Actions; or
+2. use the authorized local browser/Desktop Commander once solely to create/store those GitHub Actions secrets.
+
+After the secrets exist, continue Gate 13 entirely through GitHub Actions for D1 creation/migrations/staging deploy, then reserve Desktop Commander for real-user validation.
+
+Do not use paid TinyFish or a paid cloud VM merely to solve this bootstrap.
+
+
 
 Then:
 
