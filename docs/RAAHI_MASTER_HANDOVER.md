@@ -523,46 +523,110 @@ The D1 database ID remains an intentional placeholder.
 
 ---
 
+## AI Builder Cheat Code v2.0 — Strict Gate Reconciliation
+
+The actual personal Library file `AI-Builder-Cheat-Code-v2.0.md` was retrieved and read in full. MyRaahi work is now governed by that strict gate sequence.
+
+New canonical gate artifacts on `main`:
+
+- `docs/MYRAAHI_AI_BUILDER_GATE_REGISTER_V0.1.md`
+- `docs/MYRAAHI_GATE1_ACTOR_CATALOGUE_V0.1.md`
+- `docs/MYRAAHI_GATE2_AUTHORITY_MATRIX_V0.1.md`
+- `docs/MYRAAHI_GATE3_BUSINESS_RULES_V0.1.md`
+- `docs/MYRAAHI_GATE4_INVARIANTS_V0.1.md`
+- `docs/MYRAAHI_GATE5_STATE_LIFECYCLES_V0.1.md`
+- `docs/MYRAAHI_GATE6_EDGE_RECOVERY_V0.1.md`
+- `docs/MYRAAHI_GATE7_MINIMUM_DATA_V0.1.md`
+- `docs/MYRAAHI_GATE8_BEHAVIOUR_FLOWS_V0.1.md`
+- `docs/MYRAAHI_GATE9_UI_BEHAVIOUR_FREEZE_V0.1.md`
+- `docs/MYRAAHI_GATE10_ACCEPTANCE_SCENARIOS_V0.1.md`
+- `docs/MYRAAHI_GATE11_CHANGE_IMPACT_REGISTER_V0.1.md`
+- `docs/MYRAAHI_GATE12_ARCHITECTURE_RECONCILIATION_V0.1.md`
+- `docs/MYRAAHI_GATE13_TECHNOLOGY_PROOF_REGISTER_V0.1.md`
+
+Current gate status:
+
+- Gates 0–8: PASS
+- Gate 9: PASS with real Chromium evidence
+- Gate 10: PASS as canonical acceptance specification; execution is slice-dependent
+- Gate 11: PASS
+- Gate 12: PASS logically; physical choices remain provisional pending technology proof
+- Gate 13: ACTIVE/PARTIAL
+
+### Gate 9 evidence
+
+Implementation branch:
+
+`myraahi-shared-shell-v1`
+
+Final validated public-shell commit:
+
+`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
+
+Successful GitHub Actions run:
+
+`36247865290`
+
+Passed:
+- install
+- TypeScript
+- browser JS syntax
+- Worker dry-run bundle
+- D1-compatible schema/fixture
+- Chromium
+- Playwright real-browser checks
+
+Browser checks covered 375px, 430px, 1366px, 320px long-Location stress, Location switching, PAUSED behavior, refresh persistence, header overlap/overflow, and error recovery.
+
+Two early failures were test-harness selector defects. One real implementation defect was found visually: catalogue-error copy lost selected Location context. It was fixed and regression-tested in `c3424217…`.
+
+### Gate 13 access evidence
+
+The public shell build/browser primitives are proven, but real Cloudflare runtime is not yet proven.
+
+Attempts:
+- TinyFish Cloudflare read-only automation could not start because TinyFish wallet balance was `-$0.04`.
+- Plugin Directory search found no Cloudflare Workers/D1 connector.
+- GitHub repo search found no existing Cloudflare deployment workflow/token reference that can be safely reused.
+- Authorized Desktop Commander device `Dipti` was offline when checked.
+
+This is classified as an external authorized-access evidence boundary, not a product/code defect.
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not restart strategy, archaeology, product-contract design, domain-model design, or public-shell scaffolding.
+Do not restart strategy, archaeology, Gates 0–12, shell scaffolding or UI redesign.
 
-Current durable artifacts include:
+Current implementation branch:
+`myraahi-shared-shell-v1`
 
-1. `docs/RAAHI_MASTER_HANDOVER.md`
-2. `docs/RAAHI_DNA_V0.1.md`
-3. `docs/RAAHI_SHARED_FOUNDATION_REUSE_MATRIX_V0.1.md`
-4. `docs/MYRAAHI_SHARED_FRONT_DOOR_PRODUCT_CONTRACT_V0.1.md`
-5. `docs/MYRAAHI_SHARED_FOUNDATION_DOMAIN_MODEL_V0.1.md`
-6. `docs/MYRAAHI_SHARED_FRONT_DOOR_SCREEN_BACKEND_CONTRACTS_V0.1.md`
-7. `docs/MYRAAHI_FREE_INFRA_IDENTITY_ARCHITECTURE_GATE_V0.1.md`
-8. `docs/MYRAAHI_PUBLIC_SHELL_D1_WORKER_BLUEPRINT_V0.1.md`
-9. branch `myraahi-shared-shell-v1` → `docs/MYRAAHI_SHELL_CURRENT_EXECUTION_HANDOVER.md`
+Current validated implementation commit:
+`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
 
-### Next execution step
+Current gate:
+**Gate 13 — Technology Proof / Spikes**
 
-Proceed to a **non-production Cloudflare staging proof**, not production launch:
+### Next action
 
-1. access the authorized Cloudflare account/environment for Raahi;
-2. create a non-production D1 database for the shell;
-3. replace the placeholder D1 ID only in staging/branch configuration;
-4. apply `apps/myraahi-shell/migrations/0001_public_shell.sql`;
-5. load `apps/myraahi-shell/fixtures/dev-seed.sql` only into the non-production database;
-6. deploy to a non-production Workers/staging hostname;
-7. verify mobile and desktop as a real user:
-   - Location selection
-   - Gomoh/Dhanbad catalogue difference
-   - refresh persistence
-   - PAUSED Product treatment
-   - API failure/recovery
-   - safe Product deep links
-8. make one controlled non-production D1 configuration change and prove the homepage changes without a frontend rebuild;
-9. document visual/browser evidence and UX findings;
-10. only after that proof, begin the isolated cross-product Account/SSO technology spike.
+Bring Desktop Commander device `Dipti` online.
 
-Do not point production `myraahi.co.in` to the shell without explicit launch approval.
+Then:
 
-Do not modify Raahi Learning production auth/database as part of the staging-shell proof.
+1. verify Cloudflare dashboard authentication **read-only**;
+2. confirm the authorized Cloudflare account/zone for `myraahi.co.in`;
+3. confirm Workers/D1 access;
+4. create only a non-production D1 database and Worker/staging target;
+5. apply `apps/myraahi-shell/migrations/0001_public_shell.sql`;
+6. load `apps/myraahi-shell/fixtures/dev-seed.sql` only in non-production;
+7. deploy only to workers.dev or a dedicated staging hostname;
+8. verify real API + mobile/desktop browser behavior;
+9. change one non-production LocationProduct state and prove the homepage changes without frontend rebuild;
+10. document observed evidence/limits;
+11. only then begin the separate cross-product Account/SSO spike.
+
+Do not point production `myraahi.co.in` to the shell.
+Do not modify Raahi Learning production auth/database.
 
 ---
 
@@ -580,7 +644,7 @@ Before a chat reaches its limit, update the document with:
 
 Project-specific execution work should continue to maintain its own detailed handover as well.
 
-The goal is that a new chat can resume with:
+A new chat should resume with:
 "Read docs/RAAHI_MASTER_HANDOVER.md and continue from Exact Current Point."
 
 No reconstruction from memory should be required.
