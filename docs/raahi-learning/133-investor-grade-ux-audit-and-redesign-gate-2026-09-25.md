@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`c66b5f2338d4b4ae119e8b59dab60c403e0c24f2` — **Redesign Teacher workspace for mobile clarity**
+`a58a52860e071a32e46181df14cba914ac316d1f` — **Redesign Institute workspace for mobile clarity**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–6**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #787 and Browser Contract #43 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–7**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, Institute workspace browser contract 13/13, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #789 and Browser Contract #44 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -141,6 +141,30 @@ Real Teacher07 mobile evidence:
 Exact product SHA `c66b5f2338d4b4ae119e8b59dab60c403e0c24f2` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher workspace 10/10, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #787 and Browser Contract #43 passed first attempt.
 
 Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–6 remain intentionally undeployed.
+
+### Slice 7 — Institute workspace clarity — CLOSED / UNDEPLOYED
+
+Delivered:
+- Institute Home now starts with a clear `Institute workspace` purpose and the real institute identity rather than a flat management-card grid
+- institute initials are used when no institute logo exists; the operator's personal Google photo is never reused as an institute logo
+- organization type, active status, existing description and venue are shown only when present in the authorized organization projection
+- Learning and Team show truthful derived counts; Classes deliberately shows no invented count because the organization workspace projection does not expose one
+- generic `Manage` buttons were replaced with specific actions: `Edit learning`, `Open Classes`, `Manage team`, and `Open Raahi Ads`
+- the mobile workspace uses a compact 2×2 area grid and stays shorter than the old Institute06 dashboard
+- presentation transforms only cards already emitted by capability-gated product logic; reduced-capability proof confirms no Classes/Team/Ads action leakage
+- permanent `institute-workspace-ux-browser-contract.mjs` verifies identity evidence, truthful counts, no invented Class metric, no personal-photo leakage, capability gating, mobile targets, no mutation on render, and no real Supabase network
+
+Real Institute06 mobile evidence:
+- active coaching institute identity and existing controlled-test description preserved
+- Learning: 0 public options
+- Team: 1 active member
+- Classes shown as an action area without a fabricated count
+- zero generic exact `Manage` CTAs, zero small controls and zero horizontal overflow
+- total page height 975 px baseline -> 947 px after redesign
+
+Exact product SHA `a58a52860e071a32e46181df14cba914ac316d1f` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher workspace 10/10, Institute workspace 13/13, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #789 and Browser Contract #44 passed first attempt.
+
+Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–7 remain intentionally undeployed.
 
 ## Audit evidence
 
