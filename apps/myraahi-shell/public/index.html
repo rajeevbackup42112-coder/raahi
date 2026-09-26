@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8faf8" />
+  <meta
+    name="description"
+    content="Raahi helps you discover useful, trustworthy local services in your town."
+  />
+  <title>Raahi — Your local starting point</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Raahi home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Raahi</span>
+      </a>
+      <button class="location-button" id="locationButton" type="button" aria-haspopup="dialog">
+        <span class="pin" aria-hidden="true">⌖</span>
+        <span id="locationButtonLabel">Choose location</span>
+        <span aria-hidden="true">⌄</span>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="eyebrow">Local help, made simpler</div>
+        <h1 id="heroTitle">How can Raahi help you today?</h1>
+        <p id="heroSubtitle">
+          Choose your location to see what Raahi can genuinely help with there.
+        </p>
+      </section>
+
+      <section class="catalog-section" aria-live="polite" aria-busy="false">
+        <div id="status" class="status-card">
+          <div class="status-icon" aria-hidden="true">⌖</div>
+          <h2>Start with your location</h2>
+          <p>Raahi is local first. Pick your town and we’ll show only what is available there.</p>
+          <button class="primary-button" id="chooseLocationCta" type="button">Choose location</button>
+        </div>
+
+        <div id="catalog" class="catalog" hidden>
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">Available in <span id="catalogLocation">your area</span></div>
+              <h2>What do you need?</h2>
+            </div>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </section>
+
+      <section class="trust-note">
+        <div class="trust-icon" aria-hidden="true">✓</div>
+        <div>
+          <strong>Local by design</strong>
+          <p>Raahi adds services place by place. If something is shown here, it should genuinely belong to this location.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Raahi</span>
+      <span class="footer-dot">•</span>
+      <span>One local problem at a time.</span>
+    </footer>
+  </div>
+
+  <dialog id="locationDialog" class="location-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">Your Raahi location</div>
+          <h2>Where should Raahi help?</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="Close location chooser">×</button>
+      </div>
+      <div id="locationList" class="location-list"></div>
+      <p class="dialog-note">You can change this anytime. Choosing a location does not create an account.</p>
+    </form>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
