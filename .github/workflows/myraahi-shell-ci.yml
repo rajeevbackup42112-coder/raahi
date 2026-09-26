@@ -1,0 +1,47 @@
+name: Validate MyRaahi Shell
+
+on:
+  push:
+    branches:
+      - myraahi-shared-shell-v1
+    paths:
+      - "apps/myraahi-shell/**"
+      - ".github/workflows/myraahi-shell-ci.yml"
+  pull_request:
+    paths:
+      - "apps/myraahi-shell/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/myraahi-shell
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck Worker
+        run: npm run typecheck
+
+      - name: Check browser JavaScript syntax
+        run: node --check public/app.js
+
+      - name: Validate Worker bundle
+        run: npx wrangler deploy --dry-run --outdir=.wrangler-dist
+
+      - name: Validate D1 schema and fixture
+        run: |
+          sqlite3 /tmp/myraahi-shell.db < migrations/0001_public_shell.sql
+          sqlite3 /tmp/myraahi-shell.db < fixtures/dev-seed.sql
+          test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from locations where state='LIVE';")" = "2"
+          test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='LIVE';")" = "3"
+          test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='PAUSED';")" = "1"
