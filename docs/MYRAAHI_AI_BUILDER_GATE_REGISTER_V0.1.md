@@ -15,19 +15,19 @@ Status meanings:
 | Gate | Status | Evidence / gap |
 |---|---|---|
 | 0 — Problem, scope, evidence boundary | PASS | Product contract defines human problem, V1 shared-front-door scope, non-goals, cost constraints, and unresolved identity/SSO dependency. |
-| 1 — Actors | PARTIAL → CURRENT | Human actors exist, but system actors and full actor visibility/initiation boundaries were not explicitly catalogued. |
-| 2 — Decision ownership & authority | PARTIAL | Admin scope exists conceptually, but no complete consequential-decision ownership matrix. |
-| 3 — Business rules | PARTIAL | Product laws exist, but rules are not normalized consistently as Action → Actor → Preconditions → Invariant → Effect → Recovery. |
-| 4 — Domain invariants | PASS WITH REVIEW | Domain model contains a substantial invariant register. Must be rechecked after Gates 1–3. |
-| 5 — State lifecycles | PASS WITH REVIEW | Location, Product, LocationProduct, Account/assignment lifecycles exist. Must be reconciled with authority/rules. |
-| 6 — Edge cases & recovery | PARTIAL | Product contract has several failures/recoveries, but no systematic ugly-case catalogue covering stale/retry/revocation/concurrency/auth interruption. |
-| 7 — Minimum data/entities/relationships | PROVISIONAL LATER WORK | Domain model exists, but strict sequence requires revalidation after Gates 1–6. |
-| 8 — Behaviour flows | PARTIAL | First-time public journey exists; returning/day-30/multi-capability/deep-link/failure simulations are incomplete. |
-| 9 — UI behaviour validation/wording | PARTIAL | Shell UI exists and product contract has screen intent, but no formal UI behaviour freeze against all behaviour journeys. |
-| 10 — Given/When/Then acceptance | PARTIAL | 12 acceptance scenarios exist, but adversarial/privacy/retry/concurrency/recovery coverage is incomplete. |
-| 11 — Change impact analysis | NOT STARTED | No formal A/B/C/D change register for the shared shell decisions. |
-| 12 — Architecture | PROVISIONAL LATER WORK | Architecture gate and D1/Worker blueprint exist, but cannot be treated as frozen until earlier gates pass. |
-| 13 — Technology proof/spikes | NOT PASSED | CI/dry-run proves buildability only. Real Cloudflare staging and cross-product identity/SSO primitives are unproven. |
+| 1 — Actors | PASS | Complete human/system actor catalogue in `MYRAAHI_GATE1_ACTOR_CATALOGUE_V0.1.md`. |
+| 2 — Decision ownership & authority | PASS | Complete intent/owner/validator/executor/scope matrix in `MYRAAHI_GATE2_AUTHORITY_MATRIX_V0.1.md`. |
+| 3 — Business rules | PASS | 30 normalized canonical rules in `MYRAAHI_GATE3_BUSINESS_RULES_V0.1.md`. |
+| 4 — Domain invariants | PASS | Reconciled invariant register covers authority, consent, privacy, agreement, capacity, atomicity, history, evidence, independence, retention, money, idempotency, server authority and safety. |
+| 5 — State lifecycles | PASS | Complete shared lifecycles and invalid transitions in `MYRAAHI_GATE5_STATE_LIFECYCLES_V0.1.md`; destructive Account deletion and phone-trust duration remain explicitly deferred. |
+| 6 — Edge cases & recovery | PASS | 50-case recovery catalogue in `MYRAAHI_GATE6_EDGE_RECOVERY_V0.1.md`. |
+| 7 — Minimum data/entities/relationships | PASS | Revalidated minimum shared entities in `MYRAAHI_GATE7_MINIMUM_DATA_V0.1.md`; physical Account storage deferred to identity spike. |
+| 8 — Behaviour flows | PASS | First-day, returning, day-30, multi-capability, deep-link, admin and recovery journeys in `MYRAAHI_GATE8_BEHAVIOUR_FLOWS_V0.1.md`. |
+| 9 — UI behaviour validation/wording | PASS | Behavior/copy contract plus successful Chromium evidence run `36247865290` at `c3424217…`; one real UI recovery defect fixed and regression-tested. |
+| 10 — Given/When/Then acceptance | PASS AS SPEC | 53 canonical Given/When/Then scenarios in `MYRAAHI_GATE10_ACCEPTANCE_SCENARIOS_V0.1.md`; execution remains slice-dependent. |
+| 11 — Change impact analysis | PASS | A/B/C/D impact register in `MYRAAHI_GATE11_CHANGE_IMPACT_REGISTER_V0.1.md`; shared-shell changes explicitly separated from Learning production changes. |
+| 12 — Architecture | PASS LOGICALLY | Architecture reconciled against Gates 0–11 in `MYRAAHI_GATE12_ARCHITECTURE_RECONCILIATION_V0.1.md`; physical choices remain provisional pending Gate 13. |
+| 13 — Technology proof/spikes | CURRENT | Build/browser evidence exists, but real non-production Cloudflare Worker+D1 runtime and later cross-product identity/SSO primitives remain unproven. |
 | 14 — Screen ↔ backend executable contract | PROVISIONAL LATER WORK | Contract doc exists, but must be reconciled after technology proof and read/write-symmetry audit. |
 | 15 — Side-effects matrix | NOT STARTED | No explicit transition → audit/notification/deep-link/analytics/external effect matrix. |
 | 16 — Walking skeleton E2E | NOT PASSED | Code scaffold exists, but no real deployed browser→backend proof and no real auth/session journey. |
@@ -56,6 +56,16 @@ The existing code may be used as:
 
 ## Exact next gate
 
-Complete **Gate 1 — Actor Catalogue**, including human and system actors, goals, initiation rights, visibility, prohibitions, and multi-context rules.
+**Gate 13 — Technology Proof / Spikes.**
 
-Then complete Gate 2.
+First prove the isolated public shell in a real non-production Cloudflare environment:
+1. create/use a non-production D1 database;
+2. apply the shell schema and staging fixture;
+3. deploy the Worker only to a non-production hostname/workers.dev target;
+4. verify real API + browser behavior;
+5. change LocationProduct configuration and prove the homepage changes without a frontend rebuild;
+6. record observed limits/failures/evidence.
+
+Only after this public-runtime spike should the separate cross-product Account/SSO technology spike begin.
+
+Do not touch production DNS or Raahi Learning production during this proof.
