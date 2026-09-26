@@ -1,0 +1,46 @@
+name: Probe MyRaahi Cloudflare Access
+
+on:
+  push:
+    branches:
+      - myraahi-shared-shell-v1
+    paths:
+      - ".github/workflows/myraahi-cloudflare-access-probe.yml"
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/myraahi-shell
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install shell dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check Cloudflare secret presence
+        shell: bash
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN is not available to this workflow."
+            exit 21
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "CLOUDFLARE_ACCOUNT_ID is not available to this workflow."
+            exit 22
+          fi
+          echo "Required Cloudflare secret names are present."
+
+      - name: Verify Cloudflare credentials read-only
+        run: npx wrangler whoami
