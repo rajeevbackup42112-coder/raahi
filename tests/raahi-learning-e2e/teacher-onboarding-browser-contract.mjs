@@ -57,7 +57,7 @@ async function proveSelf(browser,viewport){
     await page.getByRole('button',{name:'Publish'}).click();
 
     await page.waitForURL(u=>u.hash==='#/teacher-home',{timeout:20000});
-    await page.getByRole('heading',{name:'Teach locally, without chasing leads.'}).waitFor({timeout:10000});
+    await page.getByRole('heading',{name:'Your teaching'}).waitFor({timeout:10000});
     const state=await page.evaluate(()=>window.__RAAHI_TEACHER_FAKE__);
     assert(state.phoneFresh,'PHONE_NOT_FRESH_'+viewport.name);
     assert(state.context.capabilities.includes('teach'),'TEACH_NOT_GRANTED_BY_SERVER_'+viewport.name);
@@ -78,7 +78,7 @@ async function proveAssisted(browser,viewport){
     await page.getByRole('button',{name:'Publish these details'}).click();
     await phoneCheck(page);
     await page.waitForURL(u=>u.hash==='#/teacher-home',{timeout:20000});
-    await page.getByRole('heading',{name:'Teach locally, without chasing leads.'}).waitFor({timeout:10000});
+    await page.getByRole('heading',{name:'Your teaching'}).waitFor({timeout:10000});
     const state=await page.evaluate(()=>window.__RAAHI_TEACHER_FAKE__);
     assert(state.phoneFresh,'ASSISTED_PHONE_NOT_FRESH_'+viewport.name);
     assert(state.assisted[0].state==='accepted','ASSISTED_NOT_ACCEPTED_'+viewport.name);

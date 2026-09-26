@@ -386,6 +386,148 @@
     const enquire=document.querySelector('[data-live-enquire-option]'); if(enquire) enquire.textContent='Ask about this';
   }
 
+  function polishTeacherWorkspace(){
+    if(route()!=='teacher-home') return;
+    const live=window.RaahiLearningLive;
+    const main=document.querySelector('.main');
+    const workspace=live?.data?.teacherWorkspace;
+    if(!main||!workspace) return;
+
+    const head=main.querySelector('.page-head');
+    const title=head?.querySelector('h1');
+    const subtitle=head?.querySelector('p');
+    if(title) title.textContent='Your teaching';
+    if(subtitle) subtitle.textContent='Profile, Classes and learner activity in one place.';
+
+    const grid=main.querySelector(':scope > .grid.two');
+    if(!grid) return;
+    grid.classList.add('v15-teacher-dashboard');
+
+    const cards=[...grid.children].filter(el=>el.classList.contains('card'));
+    const profileCard=cards[0];
+    const optionCard=cards[1];
+    const account=live.context?.account||{};
+    const profile=workspace.profile||null;
+    const options=Array.isArray(workspace.teaching_options)?workspace.teaching_options:[];
+    const providerClasses=(Array.isArray(live.data?.classes)?live.data.classes:[]).filter(c=>c.context_kind==='provider');
+    const unread=(Array.isArray(live.data?.notifications)?live.data.notifications:[]).filter(n=>!n.read_at).length;
+    const name=account.display_name||'Teacher';
+    const headline=profile?.headline||'Build your public teacher profile';
+    const experience=profile?.experience_summary||'';
+    const visible=profile?.visibility_status==='visible';
+    const teachingLocations=[...new Set(options.flatMap(o=>Array.isArray(o.locations)?o.locations.map(l=>l?.name).filter(Boolean):[]))];
+
+    const editProfile=head?.querySelector('[data-route="teacher-profile-edit"]')||main.querySelector('[data-route="teacher-profile-edit"]');
+    if(profileCard && profileCard.dataset.v15TeacherHero!=='true'){
+      profileCard.dataset.v15TeacherHero='true';
+      profileCard.className='card v15-teacher-profile-card';
+
+      const row=document.createElement('div');
+      row.className='v15-teacher-profile-row';
+      const avatar=document.createElement('div');
+      avatar.className='v15-teacher-avatar';
+      const headerImage=document.querySelector('.v15-account-avatar img');
+      if(headerImage){
+        const img=document.createElement('img');
+        img.src=headerImage.src;
+        img.alt='';
+        avatar.appendChild(img);
+      }else avatar.textContent=initials(name);
+
+      const copy=document.createElement('div');
+      copy.className='v15-teacher-profile-copy';
+      const eyebrow=document.createElement('span');
+      eyebrow.className='v15-teacher-eyebrow';
+      eyebrow.textContent=name;
+      const h=document.createElement('h2');
+      h.textContent=headline;
+      const meta=document.createElement('div');
+      meta.className='v15-teacher-profile-meta';
+      const status=document.createElement('span');
+      status.className='badge '+(visible?'success':'');
+      status.textContent=visible?'Profile visible':'Profile hidden';
+      meta.appendChild(status);
+      if(teachingLocations.length){
+        const loc=document.createElement('span');
+        loc.className='v15-teacher-location';
+        loc.innerHTML=icons.location;
+        const txt=document.createElement('span');
+        txt.textContent=teachingLocations.slice(0,2).join(', ');
+        loc.appendChild(txt);
+        meta.appendChild(loc);
+      }
+      copy.append(eyebrow,h,meta);
+      if(experience){
+        const exp=document.createElement('p');
+        exp.className='v15-teacher-experience';
+        exp.textContent=experience;
+        copy.appendChild(exp);
+      }
+      row.append(avatar,copy);
+      profileCard.replaceChildren(row);
+      if(editProfile){
+        editProfile.textContent=profile?'Edit profile':'Set up profile';
+        editProfile.classList.add('v15-teacher-edit');
+        profileCard.appendChild(editProfile);
+      }
+    }
+
+    if(optionCard && optionCard.dataset.v15TeacherStat!=='true'){
+      optionCard.dataset.v15TeacherStat='true';
+      optionCard.className='card v15-teacher-stat-card';
+      const manage=optionCard.querySelector('[data-route="teaching-options"]');
+      if(manage) manage.remove();
+      optionCard.innerHTML='<span class="v15-teacher-stat-label">What I teach</span><strong class="v15-teacher-stat-value"></strong><span class="v15-teacher-stat-copy"></span>';
+      optionCard.querySelector('.v15-teacher-stat-value').textContent=String(options.length);
+      optionCard.querySelector('.v15-teacher-stat-copy').textContent=options.length===1?'teaching option':'teaching options';
+      if(manage){
+        manage.textContent='Edit what I teach';
+        manage.className='pill-btn v15-teacher-stat-action';
+        optionCard.appendChild(manage);
+      }
+    }
+
+    if(!grid.querySelector('.v15-teacher-classes-stat')){
+      const classCard=document.createElement('div');
+      classCard.className='card v15-teacher-stat-card v15-teacher-classes-stat';
+      classCard.innerHTML='<span class="v15-teacher-stat-label">Classes</span><strong class="v15-teacher-stat-value"></strong><span class="v15-teacher-stat-copy"></span><button class="pill-btn v15-teacher-stat-action" data-route="teacher-classes">Open Classes</button>';
+      classCard.querySelector('.v15-teacher-stat-value').textContent=String(providerClasses.length);
+      classCard.querySelector('.v15-teacher-stat-copy').textContent=providerClasses.length===1?'current Class':'current Classes';
+      grid.appendChild(classCard);
+    }
+
+    if(!grid.querySelector('.v15-teacher-updates-stat')){
+      const updateCard=document.createElement('div');
+      updateCard.className='card v15-teacher-stat-card v15-teacher-updates-stat';
+      updateCard.innerHTML='<span class="v15-teacher-stat-label">Updates</span><strong class="v15-teacher-stat-value"></strong><span class="v15-teacher-stat-copy"></span><button class="pill-btn v15-teacher-stat-action" data-route="messages">Messages</button>';
+      updateCard.querySelector('.v15-teacher-stat-value').textContent=String(unread);
+      updateCard.querySelector('.v15-teacher-stat-copy').textContent=unread===1?'unread update':'unread updates';
+      grid.appendChild(updateCard);
+    }
+
+    const section=main.querySelector(':scope > .section');
+    if(section){
+      section.classList.add('v15-teacher-classes-section');
+      if(!section.querySelector('.v15-teacher-section-title')){
+        const sectionHead=document.createElement('div');
+        sectionHead.className='section-title v15-teacher-section-title';
+        const h2=document.createElement('h2');
+        h2.textContent='Your Classes';
+        const open=document.createElement('button');
+        open.className='ghost-btn';
+        open.dataset.route='teacher-classes';
+        open.textContent='See all';
+        sectionHead.append(h2,open);
+        section.prepend(sectionHead);
+      }
+      section.querySelectorAll('.stack > .card').forEach(card=>{
+        card.classList.add('v15-teacher-class-card');
+        const badge=card.querySelector('.badge');
+        if(badge&&badge.textContent) badge.textContent=badge.textContent.replace(/^./,c=>c.toUpperCase());
+      });
+    }
+  }
+
   function polishConversationThreads(){
     const r=route();
     const live=window.RaahiLearningLive;
@@ -716,6 +858,7 @@
       polishMessagePeople();
       polishLearningRequest();
       polishProviderDetail();
+      polishTeacherWorkspace();
       polishConversationThreads();
       polishSettings();
       polishNotifications();

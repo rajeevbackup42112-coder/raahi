@@ -50,6 +50,13 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/v15-message-bubble/);
   assert.match(css,/v15-conversation-composer/);
   assert.match(css,/v15-message-bubble\.is-mine/);
+  assert.match(js,/Your teaching/);
+  assert.match(js,/Profile, Classes and learner activity in one place\./);
+  assert.match(js,/Edit what I teach/);
+  assert.match(js,/Open Classes/);
+  assert.match(js,/v15-teacher-profile-card/);
+  assert.match(css,/v15-teacher-dashboard/);
+  assert.match(css,/\.v14-category-chip[\s\S]*min-height:44px/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

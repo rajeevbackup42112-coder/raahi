@@ -23,7 +23,7 @@ const ROUTES=[
   {route:'community',actor:'learner',fixtureRole:'parent',titlePattern:/ Community$/},
   {route:'messages',actor:'learner',fixtureRole:'parent',title:'Messages'},
   {route:'settings',actor:'learner',fixtureRole:'parent',title:'Settings'},
-  {route:'teacher-home',actor:'teacher',fixtureRole:'teacher',title:'Teach locally, without chasing leads.'},
+  {route:'teacher-home',actor:'teacher',fixtureRole:'teacher',title:'Your teaching'},
   {route:'teaching-options',actor:'teacher',fixtureRole:'teacher',title:'What I Teach'},
   {route:'opportunities',actor:'teacher',fixtureRole:'teacher',title:'Teaching Opportunities'},
   {route:'teacher-classes',actor:'teacher',fixtureRole:'teacher',title:'Manage Classes'},

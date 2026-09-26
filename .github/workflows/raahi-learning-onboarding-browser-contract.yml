@@ -16,6 +16,9 @@ on:
       - 'tests/raahi-learning-e2e/ux-shell-browser-contract.mjs'
       - 'tests/raahi-learning-e2e/notification-ux-browser-contract.mjs'
       - 'tests/raahi-learning-e2e/mobile-action-browser-contract.mjs'
+      - 'tests/raahi-learning-e2e/settings-ux-browser-contract.mjs'
+      - 'tests/raahi-learning-e2e/conversation-ux-browser-contract.mjs'
+      - 'tests/raahi-learning-e2e/teacher-workspace-ux-browser-contract.mjs'
       - 'tests/admin-management-v14e.test.mjs'
       - 'tests/raahi-learning-e2e/onboarding-browser-contract.mjs'
       - 'tests/raahi-learning-e2e/teacher-onboarding-browser-contract.mjs'
@@ -97,6 +100,10 @@ jobs:
         working-directory: tests/raahi-learning-e2e
         run: node conversation-ux-browser-contract.mjs
 
+      - name: Run Teacher workspace browser proof
+        working-directory: tests/raahi-learning-e2e
+        run: node teacher-workspace-ux-browser-contract.mjs
+
       - name: Run product-wide human-language browser audit
         working-directory: tests/raahi-learning-e2e
         run: node human-language-browser-audit.mjs
@@ -122,6 +129,9 @@ jobs:
             tests/raahi-learning-e2e/artifacts-ux-shell-browser-contract/
             tests/raahi-learning-e2e/artifacts-notification-ux-browser-contract/
             tests/raahi-learning-e2e/artifacts-mobile-action-browser-contract/
+            tests/raahi-learning-e2e/artifacts-settings-ux-browser-contract/
+            tests/raahi-learning-e2e/artifacts-conversation-ux-browser-contract/
+            tests/raahi-learning-e2e/artifacts-teacher-workspace-ux-browser-contract/
             tests/raahi-learning-e2e/artifacts-human-language-browser-audit/
             tests/raahi-learning-e2e/artifacts-onboarding-browser-contract/
             tests/raahi-learning-e2e/artifacts-teacher-onboarding-browser-contract/

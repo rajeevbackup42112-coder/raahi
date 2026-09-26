@@ -102,7 +102,7 @@ async function switchJourney(browser,v){
   const before=(await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__.calls.length));
   await select.selectOption('teacher');
   await page.waitForURL(u=>u.hash==='#/teacher-home',{timeout:15000});
-  await page.getByRole('heading',{name:'Teach locally, without chasing leads.'}).waitFor({timeout:10000});
+  await page.getByRole('heading',{name:'Your teaching'}).waitFor({timeout:10000});
   const afterCalls=await page.evaluate(()=>window.__RAAHI_CONTEXT_FAKE__.calls.slice());
   const mutations=afterCalls.slice(before).filter(x=>['enable_teaching','create_learner','create_organization'].includes(x.name));
   assert(mutations.length===0,'CONTEXT_SWITCH_MUTATED_AUTHORITY_'+v.name);

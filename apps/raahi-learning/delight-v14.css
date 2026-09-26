@@ -492,3 +492,70 @@ body{
   .v15-conversation-composer textarea{min-height:48px!important;padding:10px 11px}
   .v15-conversation-composer .primary-btn{min-width:76px;min-height:48px;padding:9px 12px}
 }
+
+
+/* V1.4Q Teacher workspace + complete mobile topic targets */
+.v14-category-chip{
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  padding:9px 13px;
+}
+.v15-teacher-dashboard{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;
+}
+.v15-teacher-profile-card{
+  grid-column:1/-1;padding:20px;display:flex;align-items:center;gap:16px;
+  box-shadow:none;background:linear-gradient(135deg,#fff 0%,#fbfaff 100%);
+}
+.v15-teacher-profile-row{
+  min-width:0;display:flex;align-items:flex-start;gap:14px;flex:1;
+}
+.v15-teacher-avatar{
+  width:72px;height:72px;flex:0 0 72px;border-radius:22px;
+  display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(145deg,#e8e2ff,#d9ecff);color:#5147b7;
+  border:2px solid #fff;box-shadow:0 0 0 1px #ded9f2;
+  font-size:21px;font-weight:850;letter-spacing:.02em;
+}
+.v15-teacher-avatar img{width:100%;height:100%;object-fit:cover}
+.v15-teacher-profile-copy{min-width:0;flex:1}
+.v15-teacher-eyebrow{
+  display:block;margin-bottom:4px;font-size:11px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);
+}
+.v15-teacher-profile-copy h2{margin:0 0 8px;font-size:22px;line-height:1.2}
+.v15-teacher-profile-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.v15-teacher-location{
+  min-height:28px;display:inline-flex;align-items:center;gap:5px;
+  color:var(--muted);font-size:12px;font-weight:700;
+}
+.v15-teacher-location svg{width:15px;height:15px;color:var(--primary)}
+.v15-teacher-experience{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+.v15-teacher-edit{flex:0 0 auto;min-height:44px}
+.v15-teacher-stat-card{
+  min-height:164px;padding:17px;display:flex;flex-direction:column;align-items:flex-start;
+  box-shadow:none;
+}
+.v15-teacher-stat-label{
+  color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
+}
+.v15-teacher-stat-value{display:block;margin:6px 0 0;font-size:29px;line-height:1;color:var(--text)}
+.v15-teacher-stat-copy{margin:5px 0 14px;color:var(--muted);font-size:12px}
+.v15-teacher-stat-action{margin-top:auto;min-height:44px}
+.v15-teacher-classes-section{margin-top:18px}
+.v15-teacher-section-title{margin-bottom:10px}
+.v15-teacher-section-title h2{margin:0}
+.v15-teacher-section-title .ghost-btn{min-height:44px}
+.v15-teacher-class-card{box-shadow:none}
+@media(max-width:720px){
+  .v15-teacher-dashboard{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .v15-teacher-profile-card{grid-column:1/-1;padding:16px;align-items:stretch;flex-direction:column}
+  .v15-teacher-profile-row{gap:12px}
+  .v15-teacher-avatar{width:58px;height:58px;flex-basis:58px;border-radius:18px;font-size:18px}
+  .v15-teacher-profile-copy h2{font-size:18px}
+  .v15-teacher-experience{font-size:12px;margin-top:8px}
+  .v15-teacher-edit{width:100%;justify-content:center}
+  .v15-teacher-stat-card{min-height:150px;padding:14px}
+  .v15-teacher-stat-value{font-size:27px}
+  .v15-teacher-stat-action{width:100%;justify-content:center;padding:8px 10px}
+  .v15-teacher-updates-stat{grid-column:1/-1;min-height:128px}
+}
