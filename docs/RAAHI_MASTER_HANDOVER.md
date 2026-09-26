@@ -350,41 +350,74 @@ Do not rely on chat memory alone.
 
 ---
 
+## Archaeology Pass — First Synthesis Completed
+
+A first evidence-based archaeology pass has now been completed across:
+
+- `raahi` / `raahi-learning-implementation-v1`
+- `raahi-toto` / `main`
+- `Where-is-my-Raahi-` / `implementation-v1`
+- `schooltransportos` / `main`
+- `raahimini` / `rocket-staging-ready`
+
+The synthesis is stored in:
+
+`docs/RAAHI_DNA_V0.1.md`
+
+Major findings:
+
+1. The strongest common model is **Location → products enabled in that Location → local product rules → user journey**.
+2. Location is context/configuration, not permanent user identity.
+3. For the shared `myraahi.co.in` front door, the stronger cross-product rule is **Discovery is public. Transactions/actions are authenticated.**
+4. Raahi Learning's Google-first login gate is product/history-specific and must not be treated as a platform-wide invariant.
+5. Raahi Learning contains the strongest proven reusable model for separating authentication, phone trust and authority.
+6. OTP proves control of a phone, not legal identity and not role/capability authority.
+7. One Raahi Account may have multiple capabilities/relationships; avoid one global permanent role.
+8. Global Admin vs Location Admin scoped authority is already well modeled and partly implementation-proven.
+9. A generic Location × Product enablement concept is the key missing shared-shell layer.
+10. Where is my Raahi proves that invisible technical session ownership can protect ephemeral public experiences without visible login.
+11. School Transport reinforces cost discipline: derive useful truthful functionality from existing data before introducing paid APIs.
+12. Raahi Learning Ads provides strong trust guardrails: Sponsored visibility can be purchased; trust/verification/organic ranking cannot.
+13. The common architecture pattern across mature projects is UI → authorized reads + canonical commands/RPCs → PostgreSQL source of truth → realtime/notifications as derived delivery.
+
+---
+
 ## Exact Current Point / Next Action
 
-The common front-door decision is now agreed:
+The strategy discussion should NOT be restarted.
 
-- `myraahi.co.in` is the shared Raahi entry point.
-- Location comes first.
-- The homepage asks how Raahi can help in that selected place.
-- Only products actually live in that location are shown.
-- Public browsing should not require login.
-- Authentication begins when the user performs a consequential action.
-- OTP verifies phone ownership, not full identity; stronger role-specific verification is separate.
-- The shared core should stay minimal: location, profile/identity, authentication, verification status, enabled products per location, and local admin/configuration.
-- Product-specific business logic remains inside each product.
+The agreed shared front door remains:
 
-The next chat should NOT restart the strategy discussion or redesign this foundation from scratch.
+- `myraahi.co.in`
+- user chooses/confirms Location first
+- homepage asks "How can Raahi help you today?"
+- only products genuinely enabled/live in that Location are shown
+- ordinary discovery/browsing is public
+- authentication starts when the user performs a meaningful persistent action
+- trust/verification strengthens progressively with the action
+- product-specific business logic remains inside each focused product
 
-Start by reading this file in full.
+The first archaeology synthesis is complete in `docs/RAAHI_DNA_V0.1.md`.
 
-Then perform the read-only Raahi Archaeology Pass, specifically asking: which pieces of the agreed common front door / identity / locality foundation have already been implemented well in existing Raahi projects?
+### Next action
 
-Begin with:
+Continue archaeology one level deeper at the **actual implementation/code boundary**, not merely conceptual docs:
 
-1. rajeevbackup42112-coder/raahi
-2. identify its important branches and canonical documentation
-3. reconstruct the current Raahi Learning/product patterns from source + docs
-4. identify reusable authentication, profile, locality, verification and city/product-enable patterns
-5. then inspect raahi-toto
-6. then Where-is-my-Raahi-
-7. then schooltransportos
-8. then raahimini / other experiments
-9. inspect local-only projects such as Naresh separately when GitHub access is unavailable
+1. Raahi Learning: inspect frontend bootstrap/auth/profile/location routing and relevant shared RPC integration.
+2. Raahi ToTo: inspect the implemented/prototype Location-first homepage/product selector and auth-boundary code.
+3. Compare both against the agreed shared front-door journey.
+4. Identify which pieces can be safely reused as code, which should be rewritten cleanly as common-shell code, and which must remain product-specific.
+5. Produce a concise **Shared Raahi Foundation Reuse Matrix**:
+   - capability
+   - best existing source
+   - reuse as-is / adapt / concept-only / reject
+   - reason
+   - dependencies
+   - risk
+6. Do not implement, deploy or alter production during this pass.
+7. After that matrix is reviewed, freeze the shared `myraahi.co.in` product/architecture contract before coding.
 
-Do not change production, deploy anything, or modify application code during the archaeology pass unless explicitly asked.
-
-The immediate purpose is understanding and knowledge extraction, not implementation.
+Do not search external open-source projects again until the reuse matrix identifies real capability gaps.
 
 ---
 
