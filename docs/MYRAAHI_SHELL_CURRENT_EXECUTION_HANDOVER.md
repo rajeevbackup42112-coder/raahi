@@ -24,7 +24,7 @@ Implementation branch:
 
 Current validated HEAD:
 
-`699871e0a5ae9b98508e01cd66415a1c5c1e1dda`
+`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
 
 Important preceding commits:
 
@@ -47,10 +47,10 @@ GitHub Actions workflow:
 
 `Validate MyRaahi Shell`
 
-Successful run:
+Latest successful run:
 
-- Run ID: `36239610837`
-- Head SHA: `699871e0a5ae9b98508e01cd66415a1c5c1e1dda`
+- Run ID: `36247865290`
+- Head SHA: `c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
 - Result: **SUCCESS**
 
 Passed steps:
@@ -60,8 +60,12 @@ Passed steps:
 3. browser JavaScript syntax check
 4. Wrangler Worker dry-run bundle
 5. SQLite/D1 schema application
-6. development fixture application
-7. fixture assertions
+6. development fixture application/assertions
+7. Chromium installation
+8. real-browser Playwright UI checks on mobile/desktop/stress cases
+9. UI evidence artifact upload
+
+Gate-9 browser evidence also found and fixed one implementation defect: selected Location context is now preserved in catalogue-error copy.
 
 Earlier failed CI attempts were resolved:
 - first failure: invalid old Cloudflare Workers types version
@@ -173,29 +177,36 @@ Do not assume any of these exist yet:
 
 ## Exact next action
 
-The next execution step is **non-production Cloudflare staging**, not production launch.
+AI Builder Cheat Code v2.0 is now governing this work strictly.
 
-Proceed in this order:
+Gates 0–12 have been reconciled at the appropriate design/evidence level.
 
-1. obtain/access the authorized Cloudflare account for `myraahi.co.in`;
-2. create a non-production D1 database for the shell;
-3. replace the placeholder D1 ID only on the implementation branch/config used for staging;
-4. apply `0001_public_shell.sql`;
-5. apply the dev/staging fixture only to that non-production database;
-6. deploy the Worker to a non-production hostname / workers.dev or dedicated staging subdomain;
-7. test:
-   - mobile
-   - desktop
-   - Location selection
-   - Gomoh/Dhanbad catalogue difference
-   - refresh persistence
-   - PAUSED treatment
-   - API failure/recovery
-   - safe Product deep links
-8. perform a controlled D1 config change and prove the homepage changes without frontend rebuild;
-9. document screenshots/browser findings and any UX fixes;
-10. only after public-shell proof, begin isolated cross-product SSO technology spike.
+Current gate:
 
-Do not point production `myraahi.co.in` to this shell without explicit launch approval.
+**Gate 13 — Technology Proof / Spikes**
 
-Do not modify Learning production auth/database as part of staging shell setup.
+The first real runtime spike is blocked only by authorized Cloudflare access.
+
+Evidence already completed:
+- Worker/D1-shaped build passes
+- real Chromium UI checks pass
+- final branch commit `c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
+- final run `36247865290` = SUCCESS
+
+Next action:
+1. bring the authorized Desktop Commander device `Dipti` online;
+2. perform a read-only Cloudflare dashboard/account/zone/Workers/D1 access check;
+3. if authenticated access is available, create only non-production D1/Worker staging resources;
+4. apply migration + dev/staging fixture;
+5. deploy only to non-production workers.dev/staging;
+6. verify real API/browser runtime;
+7. mutate one non-production LocationProduct and prove UI changes without frontend rebuild;
+8. document evidence;
+9. only then start cross-product Account/SSO spike.
+
+Do not change production DNS.
+Do not modify Raahi Learning production auth/database.
+
+See main-branch:
+- `docs/MYRAAHI_AI_BUILDER_GATE_REGISTER_V0.1.md`
+- `docs/MYRAAHI_GATE13_TECHNOLOGY_PROOF_REGISTER_V0.1.md`
