@@ -14,9 +14,9 @@ The functional/product foundation is strong, but the current presentation does n
 Deployment of the current human-language candidate is frozen until this gate is closed.
 
 Current undeployed branch product source:
-`05210a8fafd970d1ae6b3719028145a09e9e70c6` — **Redesign Settings hierarchy and account controls**
+`f4c85ae421362448f15812befd9e66de287b4dea` — **Redesign conversation detail experience**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–4**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #783 and Browser Contract #41 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–5**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #785 and Browser Contract #42 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
 
 Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -95,6 +95,27 @@ Real Parent04 mobile proof:
 Exact product SHA `05210a8fafd970d1ae6b3719028145a09e9e70c6` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #783 and Browser Contract #41 passed first attempt.
 
 Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–4 remain intentionally undeployed.
+
+### Slice 5 — Conversation detail experience — CLOSED / UNDEPLOYED
+
+Delivered:
+- Messages list keeps its compact structure but now uses the human subtitle `Your conversations with teachers and Classes.`
+- Enquiry and Class-thread histories render as real conversation bubbles instead of identical full-width notice cards
+- authorized `sender_account_id` determines `You` vs the other participant; no identity is guessed or invented
+- repeated messages from the same sender are visually grouped without dropping any authoritative message
+- long histories scroll inside the conversation surface and open at the newest message
+- composer is visually separated from history and uses `Write a message…` while retaining the existing send buttons/handlers
+- Class thread context now reads as a private conversation about the selected learner instead of implementation-shaped `Private Class + ... thread` wording
+- permanent `conversation-ux-browser-contract.mjs` verifies Messages-card navigation, ownership bubbles, latest-message positioning, mobile geometry, canonical send RPCs, authoritative refetches, and the existing Class double-submit lock
+
+Real Parent04 mobile evidence:
+- Enquiry: 6/6 messages preserved; page height 1388 -> 964 px; 3 own + 3 other-participant messages rendered distinctly; no undersized controls
+- Class thread: 14/14 messages preserved; page height 2417 -> 855 px; history opens at the latest message; no horizontal overflow or undersized controls
+- Messages list remains compact and human-readable; subtitle shortened without altering relationship scoping
+
+Exact product SHA `f4c85ae421362448f15812befd9e66de287b4dea` passed 5,349,572 model cases / 0 failures plus source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #785 and Browser Contract #42 passed first attempt.
+
+Production was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`; Slices 1–5 remain intentionally undeployed.
 
 ## Audit evidence
 
