@@ -93,7 +93,7 @@ for (const viewport of [
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: "How can Raahi help you today?" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Choose location" })).toBeVisible();
+    await expect(page.locator("#statusAction")).toHaveText("Choose location");
     await expect(page.getByText("Sign in", { exact: true })).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
     await assertHeaderDoesNotOverlap(page);
