@@ -170,6 +170,78 @@ Must prove later:
 
 ---
 
+
+---
+
+## Spike 13E — Current Cloudflare Free-tier viability check
+
+### Purpose
+Confirm that the proposed public-shell runtime still fits Raahi's zero-recurring-cost doctrine using current provider limits rather than old assumptions.
+
+### Official Cloudflare evidence checked on 2026-09-26
+
+Workers Free:
+- 100,000 Worker requests/day;
+- 10 ms CPU time per HTTP request;
+- 50 external subrequests/invocation;
+- 1,000 subrequests to Cloudflare services/invocation;
+- 128 MB memory;
+- up to 100 Workers/account.
+
+D1 Free:
+- 5,000,000 rows read/day;
+- 100,000 rows written/day;
+- 5 GB total account storage;
+- up to 10 D1 databases/account;
+- 500 MB maximum per D1 database;
+- 50 D1 queries per Worker invocation;
+- 7-day Time Travel recovery.
+
+Important current behavior:
+- since 2026-09-01, D1 Free daily read/write limits are enforced as hard failures until midnight UTC after the limit is exceeded.
+
+Official references:
+- https://developers.cloudflare.com/workers/platform/limits/
+- https://developers.cloudflare.com/workers/platform/pricing/
+- https://developers.cloudflare.com/d1/platform/pricing/
+- https://developers.cloudflare.com/d1/platform/limits/
+- https://developers.cloudflare.com/changelog/post/2026-09-01-d1-free-tier-limit-enforcement/
+
+### Design consequence
+For the initial MyRaahi public shell, these limits are materially larger than the expected pilot configuration workload.
+
+However, launch design must treat quota exhaustion as a real failure mode:
+- catalogue reads should be indexed and minimal;
+- avoid wasteful polling;
+- static assets should not trigger unnecessary D1 reads;
+- cache public catalogue safely where freshness rules permit;
+- if D1 quota is exhausted, return human temporary-unavailability/retry behavior rather than stale invented availability;
+- do not auto-upgrade to a paid plan.
+
+**Result: PASS as current free-tier suitability evidence, subject to real account/runtime proof.**
+
+---
+
+## Spike 13F — Branch deployment-safety configuration check
+
+Current branch file:
+`apps/myraahi-shell/wrangler.jsonc`
+
+Observed:
+- Worker name: `myraahi-shell`
+- `workers_dev: true`
+- static assets served from `./public`
+- Worker-first routing only for `/api/*`
+- D1 binding name: `DB`
+- database name: `myraahi-shell-db`
+- database ID remains the deliberate placeholder `00000000-0000-0000-0000-000000000000`
+- no custom-domain route is configured
+
+### Design consequence
+The branch cannot accidentally bind to a real D1 database until the placeholder is intentionally replaced, and it is currently prepared for a `workers.dev` staging deployment rather than production `myraahi.co.in` routing.
+
+**Result: PASS as configuration safety evidence.**
+
 # Gate 13 current result
 
 **PARTIAL / ACTIVE.**
