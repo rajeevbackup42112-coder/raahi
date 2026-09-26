@@ -110,7 +110,7 @@ for (const viewport of [
     await assertHeaderDoesNotOverlap(page);
 
     await page.locator("#locationButton").click();
-    await page.getByRole("button", { name: /Dhanbad/ }).click();
+    await page.locator('[data-location="dhanbad"]').click();
     await expect(page.getByText("Available in Dhanbad")).toBeVisible();
     await expect(page.getByText("Temporarily unavailable.", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: /Open ToTo/ })).toHaveCount(0);
