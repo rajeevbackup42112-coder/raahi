@@ -24,7 +24,7 @@ Implementation branch:
 
 Current validated HEAD:
 
-`4704da826f4b1256b9a9008bcacd5d99c35647f1`
+`a99ee64924afbca98178dfb59c4d86bee5944f4c`
 
 Important preceding commits:
 
@@ -208,19 +208,63 @@ Latest branch validation:
 - run `36291608117`
 - result: SUCCESS
 
+## Gate 13D shared-identity state
+
+V1 architecture direction is now frozen:
+
+- shared identity authority = Supabase Auth project `iiwwmqokaeflaenhlyip`
+- MyRaahi D1 does not become the production Account identity store
+- stable authenticated subject = verified Supabase issuer + user UUID
+- public MyRaahi remains login-free
+- focused products retain their own roles/capabilities/transactions
+- origin-local sessions are acceptable for V1
+- seamless true SSO is optional future UX, not a launch blocker
+
+Detailed main-branch doc:
+`docs/MYRAAHI_GATE13_SHARED_IDENTITY_SSO_SPIKE_V0.1.md`
+
+Existing isolated branch spike:
+- `migrations/0002_gate13_sso_spike.sql`
+- `src/gate13-sso-spike.ts`
+- disabled unless `ENABLE_GATE13_SSO_SPIKE=true`
+- verifies Learn ES256 JWT via public JWKS
+- accepts token only in HTTPS POST body
+- creates spike-only D1 identity/session rows
+- issues HttpOnly/Secure/SameSite=Lax MyRaahi spike cookie
+- explicitly NOT production SSO design
+
+Privacy-safe fallback harness:
+- `spikes/shared-identity/generate-proof.mjs`
+- compares SHA-256 of subject and outputs only boolean identity continuity
+
+Latest CI:
+- branch HEAD `a99ee64924afbca98178dfb59c4d86bee5944f4c`
+- run `36297963846`
+- result: SUCCESS
+
 ## Exact next action
 
-Continue **AI Builder Gate 13 — Spike 13D: Cross-product Account/SSO**.
+Desktop Commander device `Dipti` is currently offline.
 
-Proceed read-only first:
-1. inspect Raahi Learning's actual current auth/session implementation and public origin(s);
-2. identify current Supabase auth project/session/callback topology without exposing secrets;
-3. identify whether a shared MyRaahi shell can recognize/bridge one durable Account safely;
-4. define the smallest non-production SSO proof;
-5. test only in non-production/staging;
-6. do not modify Learning production auth behavior during the spike.
+When it reconnects, run the isolated seamless-handoff proof:
 
-Production safety remains:
-- no production `myraahi.co.in` DNS change;
-- no Learning production database/auth migration;
-- no shared auth rollout until the spike passes.
+1. update isolated local checkout to branch HEAD `a99ee649...`;
+2. apply remote staging migration `0002_gate13_sso_spike.sql` to `myraahi-shell-gate13-staging`;
+3. enable `ENABLE_GATE13_SSO_SPIKE=true` only in the temporary local staging Wrangler config;
+4. deploy only `myraahi-shell-gate13-staging` to workers.dev;
+5. from an already-authenticated Raahi Learn test browser, read the access token only inside page memory and submit it by HTTPS POST directly to the staging handoff endpoint;
+6. do not print/copy/log the token;
+7. verify MyRaahi redirects and `/api/v1/_spike/auth/me` reports authenticated;
+8. repeat handoff and verify the same spike account resolves rather than duplicate identity;
+9. invoke spike logout;
+10. confirm the original Learn browser/session still works;
+11. disable `ENABLE_GATE13_SSO_SPIKE` and redeploy staging;
+12. document result.
+
+If that custom handoff proof becomes unnecessary or encounters a security/design concern, use the already-approved localhost identity-continuity harness instead.
+
+Do not modify:
+- production DNS;
+- Learning production auth configuration;
+- Google OAuth configuration;
+- Learning production code.
