@@ -682,38 +682,103 @@ Gate-13 evidence is documented at:
 
 ---
 
+## MyRaahi Shared Identity Direction — Gate 13D
+
+The auth/SSO spike has produced a simpler V1 decision.
+
+### Current facts
+
+Raahi Learn uses Supabase Auth project:
+
+`iiwwmqokaeflaenhlyip`
+
+Public origin:
+
+`https://learning.myraahi.co.in`
+
+A live session inspected read-only showed:
+- origin-local Supabase session storage;
+- ES256 JWT;
+- issuer `https://iiwwmqokaeflaenhlyip.supabase.co/auth/v1`;
+- audience `authenticated`;
+- asymmetric key ID present.
+
+Current Supabase docs confirm:
+- public JWKS verification for ES256;
+- automatic linking of OAuth identities with the same verified email within a project;
+- Supabase OAuth 2.1/OIDC Server exists and is currently beta/free on all plans during beta.
+
+### V1 decision
+
+Use the **existing Raahi Learn Supabase Auth project as the shared Raahi identity authority**.
+
+Do not create a duplicate Account database in D1.
+
+Canonical authenticated subject:
+- auth issuer
+- verified Supabase user UUID
+
+MyRaahi remains public-first.
+
+Focused products keep their own:
+- roles;
+- relationships;
+- permissions;
+- transactions;
+- verification workflows.
+
+V1 browser sessions may remain origin-local. A user may need another Google authentication interaction when entering a different authenticated Raahi product, but it must resolve to the same durable Raahi subject.
+
+True seamless SSO is **not a V1 launch blocker**.
+
+Leading future true-SSO candidate:
+- Supabase OAuth 2.1/OIDC Server
+
+Deferred due to unnecessary current complexity:
+- parent-domain custom auth cookies
+- custom token broker
+- migration of Learn's current localStorage session model
+
+Detailed document:
+
+`docs/MYRAAHI_GATE13_SHARED_IDENTITY_SSO_SPIKE_V0.1.md`
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not repeat the public-shell Cloudflare runtime spike.
-
 Current AI Builder gate:
-**Gate 13 — Spike 13D: Cross-product Account/SSO**
 
-Next:
+**Gate 13D — one empirical identity-continuity proof remains.**
 
-1. inspect current Raahi Learning authentication/session implementation read-only;
-2. map its current Supabase Auth project, callback/session behavior and public origins without exposing secrets;
-3. compare safe shared-identity options against the frozen rules:
-   - public browsing remains login-free;
-   - one durable Raahi Account;
-   - Account is not a role;
-   - selected Location survives auth;
-   - phone trust remains separate;
-   - no duplicate Account creation;
-4. define the smallest non-production MyRaahi ↔ focused-product SSO proof;
-5. prove it before altering Learning production auth behavior.
+When an authorized browser device is available:
+
+1. keep one known authenticated Raahi Learn test browser;
+2. privately record its Supabase user UUID in the harness;
+3. use the already-approved DEV redirect `http://localhost:4173/index.html`;
+4. run a tiny MyRaahi proof against the same Supabase project;
+5. authenticate the same designated Google test identity;
+6. compare only whether the returned UUID matches the Learn UUID;
+7. output only `same_raahi_subject=true/false`;
+8. sign out of the proof session;
+9. confirm Learn remains unaffected.
+
+No Supabase Auth configuration change is required or permitted for this proof.
 
 Do not:
-- change production `myraahi.co.in` DNS;
-- change Learning production auth/database;
-- roll out shared auth before the spike passes;
-- rename internal keys merely for public branding.
+- create another user database;
+- alter Learning production auth;
+- enable OAuth-server mode yet;
+- change Google OAuth config;
+- change production DNS.
+
+After this proof passes, Gate 13 identity technology is sufficient for V1 and we can move to the next AI Builder implementation gate rather than building seamless SSO prematurely.
 
 ---
 
 ## Handover Discipline Going Forward
 
-Update this master handover after every material product/architecture decision or successful/failed technology proof.
+Update this master handover after every material decision or technology proof.
 
 A new chat resumes with:
 "Read docs/RAAHI_MASTER_HANDOVER.md and continue from Exact Current Point."
