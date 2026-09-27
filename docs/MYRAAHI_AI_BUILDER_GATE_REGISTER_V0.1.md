@@ -27,8 +27,8 @@ Status meanings:
 | 10 — Given/When/Then acceptance | PASS AS SPEC | 53 canonical Given/When/Then scenarios in `MYRAAHI_GATE10_ACCEPTANCE_SCENARIOS_V0.1.md`; execution remains slice-dependent. |
 | 11 — Change impact analysis | PASS | A/B/C/D impact register in `MYRAAHI_GATE11_CHANGE_IMPACT_REGISTER_V0.1.md`; shared-shell changes explicitly separated from Learning production changes. |
 | 12 — Architecture | PASS LOGICALLY | Architecture reconciled against Gates 0–11 in `MYRAAHI_GATE12_ARCHITECTURE_RECONCILIATION_V0.1.md`; physical choices remain provisional pending Gate 13. |
-| 13 — Technology proof/spikes | CURRENT | Build/browser evidence exists, but real non-production Cloudflare Worker+D1 runtime and later cross-product identity/SSO primitives remain unproven. |
-| 14 — Screen ↔ backend executable contract | PROVISIONAL LATER WORK | Contract doc exists, but must be reconciled after technology proof and read/write-symmetry audit. |
+| 13 — Technology proof/spikes | PASS (V1 scope) | Real Cloudflare Worker+D1 runtime, dynamic config, browser path, durable cross-origin identity continuity, Location preservation and per-origin session isolation are proven. Shared-cookie SSO/OTP remain deferred until a slice needs them. |
+| 14 — Screen ↔ backend executable contract | CURRENT | Earlier contract exists; now reconcile it against proven Worker+D1 + central identity/per-origin-session architecture. |
 | 15 — Side-effects matrix | NOT STARTED | No explicit transition → audit/notification/deep-link/analytics/external effect matrix. |
 | 16 — Walking skeleton E2E | NOT PASSED | Code scaffold exists, but no real deployed browser→backend proof and no real auth/session journey. |
 | 17 — Vertical slices | NOT STARTED | Must wait for walking skeleton. |
@@ -56,16 +56,14 @@ The existing code may be used as:
 
 ## Exact next gate
 
-**Gate 13 — Technology Proof / Spikes.**
+**Gate 14 — Screen ↔ Backend Executable Contracts.**
 
-First prove the isolated public shell in a real non-production Cloudflare environment:
-1. create/use a non-production D1 database;
-2. apply the shell schema and staging fixture;
-3. deploy the Worker only to a non-production hostname/workers.dev target;
-4. verify real API + browser behavior;
-5. change LocationProduct configuration and prove the homepage changes without a frontend rebuild;
-6. record observed limits/failures/evidence.
+Reconcile the earlier contract against Gate 13 evidence:
+- Cloudflare Worker + D1 is proven for the public shared shell.
+- Supabase Auth is the central identity authority.
+- each origin maintains its own local session in V1.
+- a new Raahi origin authenticating through the same Supabase project resolves to the same user UUID.
+- do not transfer access/refresh tokens between origins.
+- focused Product remains authoritative for product transactions.
 
-Only after this public-runtime spike should the separate cross-product Account/SSO technology spike begin.
-
-Do not touch production DNS or Raahi Learning production during this proof.
+Then complete Gate 15 Side-Effects Matrix and Gate 16 Walking Skeleton before broad implementation.
