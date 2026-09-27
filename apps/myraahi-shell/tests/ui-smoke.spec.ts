@@ -10,7 +10,7 @@ const gomohCatalog = {
   products: [
     {
       key: "learning",
-      display_name: "Learning",
+      display_name: "Learn",
       short_description: "Find teachers and learning opportunities near you.",
       icon_ref: "learning",
       state: "LIVE",
@@ -19,8 +19,8 @@ const gomohCatalog = {
     },
     {
       key: "toto",
-      display_name: "ToTo",
-      short_description: "Find local transport options for your journey.",
+      display_name: "Ride",
+      short_description: "Find a local ride for your journey.",
       icon_ref: "toto",
       state: "LIVE",
       entry_url: "https://myraahi.co.in/toto",
@@ -34,7 +34,7 @@ const dhanbadCatalog = {
   products: [
     {
       key: "learning",
-      display_name: "Learning",
+      display_name: "Learn",
       short_description: "Find teachers and learning opportunities near you.",
       icon_ref: "learning",
       state: "LIVE",
@@ -43,8 +43,8 @@ const dhanbadCatalog = {
     },
     {
       key: "toto",
-      display_name: "ToTo",
-      short_description: "Find local transport options for your journey.",
+      display_name: "Ride",
+      short_description: "Find a local ride for your journey.",
       icon_ref: "toto",
       state: "PAUSED",
       entry_url: "https://myraahi.co.in/toto",
@@ -104,8 +104,8 @@ for (const viewport of [
     await page.getByRole("button", { name: /Gomoh/ }).click();
 
     await expect(page.getByText("Available in Gomoh")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Learning" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open Learning/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Learn" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open Learn/ })).toBeVisible();
     await assertNoHorizontalOverflow(page);
     await assertHeaderDoesNotOverlap(page);
 
@@ -113,7 +113,7 @@ for (const viewport of [
     await page.locator('[data-location="dhanbad"]').click();
     await expect(page.getByText("Available in Dhanbad")).toBeVisible();
     await expect(page.getByText("Temporarily unavailable.", { exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open ToTo/ })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Open Ride/ })).toHaveCount(0);
 
     await page.reload();
     await expect(page.getByText("Available in Dhanbad")).toBeVisible();
