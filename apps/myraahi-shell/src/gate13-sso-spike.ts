@@ -13,15 +13,11 @@ const COOKIE_NAME = "raahi_gate13_sso";
 const SESSION_SECONDS = 60 * 60;
 
 function spikeJson(data: unknown, status = 200, headers: HeadersInit = {}) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
-      "x-content-type-options": "nosniff",
-      ...headers,
-    },
-  });
+  const merged = new Headers(headers);
+  if (!merged.has("content-type")) merged.set("content-type", "application/json; charset=utf-8");
+  if (!merged.has("cache-control")) merged.set("cache-control", "no-store");
+  if (!merged.has("x-content-type-options")) merged.set("x-content-type-options", "nosniff");
+  return new Response(JSON.stringify(data), { status, headers: merged });
 }
 
 function cookieValue(request: Request, name: string) {
