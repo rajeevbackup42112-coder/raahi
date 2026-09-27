@@ -253,6 +253,37 @@ Ambiguous test selectors matched two valid UI controls/accessibility strings.
 
 ---
 
+## CR-21 — Short master-brand product naming: Learn / Ride / Health / Shops
+
+**Observed problem/evidence**
+Names such as “Raahi Learning” and “Raahi ToTo” feel like separate brands and over-specialize the capability. “ToTo” also limits future transport expansion to one vehicle type.
+
+**Proposed behavior**
+Raahi remains the master brand. The shared homepage uses short human product names:
+- Learn
+- Ride
+- Health
+- Shops
+- Events when/if introduced
+
+Focused surfaces may use fuller names such as “Raahi Learn” or “Raahi Ride”.
+
+Stable internal keys may remain `learning`, `toto`, etc. so branding does not force backend migration.
+
+**Classification**
+**A — branding/copy only** for the current shared shell.
+
+**Impact**
+- no domain entity/state/authority change;
+- no URL/database-key migration required;
+- fixture/test/public display metadata updated;
+- future focused-product renaming is separate and must respect existing product URLs/contracts.
+
+**Decision**
+**ADOPT.**
+
+---
+
 # Gate 11 result
 
 The shared-shell change register is **complete for current decisions**.
