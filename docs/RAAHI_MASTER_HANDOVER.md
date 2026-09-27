@@ -628,50 +628,92 @@ GitHub Actions remains suitable as headless cloud compute, but the repo still la
 
 ---
 
+## MyRaahi Gate 13 — Real Cloudflare Runtime Passed
+
+The public-shell technology spike has now passed in a real non-production Cloudflare environment.
+
+Staging resources:
+- D1 database: `myraahi-shell-gate13-staging`
+- Worker: `myraahi-shell-gate13-staging`
+- URL: `https://myraahi-shell-gate13-staging.rajeev-backup4-2112.workers.dev`
+- Worker version: `a91ea906-7d3a-450f-81b1-7243363a2ae9`
+
+Real evidence:
+- remote D1 migration succeeded;
+- remote staging fixture succeeded;
+- health/locations/catalog APIs succeeded;
+- real browser rendered against deployed Worker/D1;
+- changing Product public display metadata in D1 changed the live page without redeploy;
+- changing Dhanbad Ride from PAUSED→LIVE changed the same deployed page from unavailable to **Open Ride** without redeploy;
+- the row was then reverted LIVE→PAUSED and the same deployed page returned to paused treatment.
+
+Production remained untouched.
+
+### Brand vocabulary decision
+
+Public product naming is now:
+- **Learn**
+- **Ride**
+- future **Health**
+- **Shops**
+- **Events** when introduced
+
+Raahi remains the master brand.
+
+Inside focused products, fuller forms may be:
+- **Raahi Learn**
+- **Raahi Ride**
+- **Raahi Health**
+
+Stable backend keys remain implementation-friendly:
+- `learning`
+- `toto`
+- etc.
+
+This was classified as AI Builder Gate-11 **Class A — branding/copy only** for the shared shell; no domain/state/authority migration was needed.
+
+Branch source/tests were updated and validated:
+- `myraahi-shared-shell-v1`
+- validated commit `4704da826f4b1256b9a9008bcacd5d99c35647f1`
+- CI run `36291608117` = SUCCESS
+
+Gate-13 evidence is documented at:
+`docs/MYRAAHI_GATE13_TECHNOLOGY_PROOF_REGISTER_V0.1.md`
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not restart Gates 0–12 or the public-shell runtime spike.
+Do not repeat the public-shell Cloudflare runtime spike.
 
 Current AI Builder gate:
-
-**Gate 13 — Technology Proof / Spikes**
-
-Completed:
-- public shell build/toolchain
-- browser UI primitive
-- real Cloudflare Worker + D1 staging runtime
-- dynamic LocationProduct configuration proof
+**Gate 13 — Spike 13D: Cross-product Account/SSO**
 
 Next:
-**Spike 13D — Cross-product Account / SSO.**
 
-The spike must be isolated and must not modify Raahi Learning production auth behavior.
+1. inspect current Raahi Learning authentication/session implementation read-only;
+2. map its current Supabase Auth project, callback/session behavior and public origins without exposing secrets;
+3. compare safe shared-identity options against the frozen rules:
+   - public browsing remains login-free;
+   - one durable Raahi Account;
+   - Account is not a role;
+   - selected Location survives auth;
+   - phone trust remains separate;
+   - no duplicate Account creation;
+4. define the smallest non-production MyRaahi ↔ focused-product SSO proof;
+5. prove it before altering Learning production auth behavior.
 
-It must prove:
-1. a user can authenticate once with a durable Raahi identity;
-2. identity can be recognized across Raahi-owned shell/product boundaries;
-3. explicit selected Location survives authentication;
-4. safe return destination works;
-5. logout/relogin/session expiry behave correctly;
-6. no duplicate Account is created;
-7. existing Learning identities can be linked/consumed without a destructive migration;
-8. wrong-account/recovery cases are safe;
-9. phone trust remains separate from authentication.
-
-After SSO primitive evidence, define Gate 14 executable contracts against the proven technology.
-
-Separately, create a narrowly scoped Cloudflare API token and store it as GitHub Actions secrets when convenient, so future staging deploys can run entirely in GitHub cloud.
-
-Do not point production `myraahi.co.in` to staging.
-Do not change Raahi Learning production authentication during the spike.
+Do not:
+- change production `myraahi.co.in` DNS;
+- change Learning production auth/database;
+- roll out shared auth before the spike passes;
+- rename internal keys merely for public branding.
 
 ---
 
 ## Handover Discipline Going Forward
 
-At every major decision or material discovery, update this master handover.
+Update this master handover after every material product/architecture decision or successful/failed technology proof.
 
-A new chat should resume with:
+A new chat resumes with:
 "Read docs/RAAHI_MASTER_HANDOVER.md and continue from Exact Current Point."
-
-No reconstruction from memory should be required.
