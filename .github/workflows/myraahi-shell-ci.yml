@@ -45,6 +45,8 @@ jobs:
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from locations where state='LIVE';")" = "2"
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='LIVE';")" = "3"
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='PAUSED';")" = "1"
+          test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from sqlite_master where type='table' and name='sso_spike_accounts';")" = "1"
+          test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from sqlite_master where type='table' and name='sso_spike_sessions';")" = "1"
 
       - name: Install Chromium for UI evidence
         run: npx playwright install --with-deps chromium

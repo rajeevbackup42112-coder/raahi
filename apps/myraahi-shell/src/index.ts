@@ -1,6 +1,9 @@
+import { handleGate13SsoSpike } from "./gate13-sso-spike";
+
 interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
+  ENABLE_GATE13_SSO_SPIKE?: string;
 }
 
 type LocationRow = {
@@ -93,6 +96,9 @@ function apiNotFound() {
 
 async function handleApi(request: Request, env: Env) {
   const url = new URL(request.url);
+
+  const spikeResponse = await handleGate13SsoSpike(request, env);
+  if (spikeResponse) return spikeResponse;
 
   if (request.method !== "GET") {
     return json(

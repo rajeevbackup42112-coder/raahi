@@ -16,5 +16,8 @@
     "@playwright/test": "1.55.0",
     "typescript": "^5.9.2",
     "wrangler": "4.140.0"
+  },
+  "dependencies": {
+    "jose": "6.2.12"
   }
 }
