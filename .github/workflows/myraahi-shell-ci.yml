@@ -40,7 +40,11 @@ jobs:
 
       - name: Validate D1 schema and fixture
         run: |
-          sqlite3 /tmp/myraahi-shell.db < migrations/0001_public_shell.sql
+          rm -f /tmp/myraahi-shell.db
+          for migration in migrations/*.sql; do
+            echo "Applying $migration"
+            sqlite3 /tmp/myraahi-shell.db < "$migration"
+          done
           sqlite3 /tmp/myraahi-shell.db < fixtures/dev-seed.sql
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from locations where state='LIVE';")" = "2"
           test "$(sqlite3 /tmp/myraahi-shell.db "select count(*) from location_products where state='LIVE';")" = "3"
