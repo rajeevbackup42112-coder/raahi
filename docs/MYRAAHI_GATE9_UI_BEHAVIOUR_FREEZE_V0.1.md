@@ -4,7 +4,7 @@ Last updated: 2026-09-26
 
 Method: AI Builder Cheat Code v2.0 — Gate 9
 
-Status: **BEHAVIOUR/COPY FREEZE; VISUAL BROWSER VERIFICATION STILL REQUIRED BEFORE IMPLEMENTATION FREEZE**
+Status: **PASS FOR CURRENT PUBLIC-SHELL SCOPE; BROWSER-VERIFIED**
 
 Scope: public shared front door and the minimum shared interaction surfaces.
 
@@ -114,17 +114,17 @@ unless a future evidence-backed use case changes the rule.
 - clear action.
 
 Examples:
-- **Learning** — Find teachers and learning opportunities near you.
-- **ToTo** — Find local transport options for your journey.
+- **Learn** — Find teachers and learning opportunities near you.
+- **Ride** — Find a local ride for your journey.
 - **Shops** — Find useful local shops and what they offer.
-- **Doctors** — Find local doctors and available care information.
+- **Health** — Find local doctors and available care information.
 
 Descriptions are examples; focused Product positioning may refine them.
 
 ## Card action
 Prefer:
-- **Open Learning**
-- **Find a ride**
+- **Open Learn**
+- **Open Ride**
 - **Find a doctor**
 - **Explore shops**
 
@@ -149,7 +149,7 @@ If a previously known Product is PAUSED and shown:
 - show concise human reason such as:
   **Temporarily unavailable**
   or
-  **ToTo is temporarily unavailable in Gomoh.**
+  **Ride is temporarily unavailable in Gomoh.**
 
 If a useful availability message exists, show one sentence maximum.
 
