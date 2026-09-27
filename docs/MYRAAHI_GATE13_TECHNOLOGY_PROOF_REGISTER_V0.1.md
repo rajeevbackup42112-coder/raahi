@@ -78,76 +78,195 @@ Gate 9 is PASS; deployed-runtime proof is still required.
 
 ---
 
-## Spike 13C — Real non-production Cloudflare account/runtime access
 
-### Hypothesis
-The user’s authorized Cloudflare account can host a non-production Worker + D1 database for the shell without affecting production DNS.
+---
 
-### Required test
-1. authenticate to the user’s Cloudflare account;
-2. verify Workers/D1 access;
-3. create a non-production D1 database;
-4. apply migration and staging fixture;
-5. bind it to the isolated Worker;
-6. deploy only to workers.dev or a dedicated non-production hostname;
-7. call real health/locations/catalog APIs;
-8. use a real browser against the deployed shell;
-9. change one LocationProduct value in D1;
-10. prove the homepage changes without rebuilding frontend assets.
+## Spike 13C — Real non-production Cloudflare runtime
 
-### Access attempts/evidence
+**Result: PASS.**
 
-#### TinyFish
-A read-only Cloudflare dashboard automation was attempted.
+### Authorized access
 
-Result:
-- automation did **not start**;
-- TinyFish wallet balance was `-$0.04`;
-- tool reported insufficient wallet funds;
-- no Cloudflare page was visited and no change occurred.
-
-Raahi doctrine consequence:
-- do not make paid TinyFish browser credits a product/runtime dependency;
-- TinyFish top-up remains an optional operator convenience only.
-
-#### Cloudflare plugin/connector
-ChatGPT Plugin Directory was searched for `Cloudflare Workers D1`.
-
-Result:
-- no matching plugin available.
-
-#### GitHub repository
-Repository search found no existing `CLOUDFLARE_API_TOKEN`, `wrangler deploy`, or Cloudflare workflow reference that can be safely reused as an already-established deployment path.
-
-This does not prove no secret exists in GitHub settings; secrets are intentionally not exposed/read through repository search.
-
-#### Desktop Commander
-Known authorized device:
+Desktop Commander device:
 - `Dipti`
 - device id `931e6073-983d-4a7c-92b6-71f04d7efe8c`
 
-At the time of this Gate 13 attempt:
-- device status: **offline**
+Read-only Wrangler check confirmed:
+- Wrangler already authenticated locally through OAuth;
+- Cloudflare account email: `rajeev.backup4.2112@gmail.com`;
+- Account ID: `2dcc43fbce0fcf0413d4e05f4a959a1e`;
+- OAuth permissions include Workers write and D1 write.
 
-Therefore it cannot currently be used to open the user’s authenticated/local browser or terminal.
+No credential value was copied into GitHub or exposed in repository content.
 
-### Current evidence conclusion
-Real Cloudflare access/runtime remains **UNPROVEN** due to an external authentication/tool-access boundary, not due to a product, architecture or code defect.
+### Isolated source checkout
 
-### Preferred continuation
-Use Desktop Commander once the authorized device is online:
-1. locate/open Cloudflare dashboard in browser;
-2. let the user authenticate manually if needed;
-3. verify account/zone read-only first;
-4. create only non-production D1/Worker resources after access is established;
-5. do not change production DNS.
+A clean shallow checkout of branch:
 
-Alternative:
-- TinyFish can be used if the user independently chooses to add wallet credit, but this is not required/recommended for Raahi infrastructure design.
+`myraahi-shared-shell-v1`
 
-**Result: BLOCKED ON EXTERNAL AUTHORIZED ACCESS.**
+was created at:
 
----
+`C:\Users\Dipti\Downloads\myraahi-gate13-20260927`
+
+Branch HEAD used for the spike:
+
+`f82324ca407e4c86c1f7be5b268a1229f62ad512`
+
+### Non-production D1
+
+Created:
+
+`myraahi-shell-gate13-staging`
+
+Database ID:
+
+`5ee83f6f-66a7-4abd-ba0d-94bf609f967f`
+
+Region:
+- APAC
+- observed serving colo: SIN
+
+A temporary local-only Wrangler config was used:
+- `wrangler.gate13.jsonc`
+- unique staging Worker name
+- `workers_dev: true`
+- no custom-domain route
+- staging D1 binding only
+
+This file was not committed.
+
+### Schema + fixture proof
+
+Applied remotely:
+- `0001_public_shell.sql`
+- `fixtures/dev-seed.sql`
+
+Observed import evidence:
+- schema migration succeeded;
+- fixture import succeeded;
+- 34 rows written during fixture import;
+- database size approximately 0.09 MB;
+- six tables reported after setup.
+
+### Worker deployment
+
+Unique non-production Worker:
+
+`myraahi-shell-gate13-staging`
+
+Staging URL:
+
+`https://myraahi-shell-gate13-staging.rajeev-backup4-2112.workers.dev`
+
+Version ID:
+
+`a91ea906-7d3a-450f-81b1-7243363a2ae9`
+
+Observed:
+- three static assets uploaded;
+- Worker startup time 2 ms;
+- only staging D1 + static assets bound;
+- no custom domain/DNS change.
+
+### Real API proof
+
+The deployed runtime returned:
+
+`/api/v1/health`
+- `ok: true`
+- service `myraahi-shell`
+- schema version `0.1`
+
+`/api/v1/locations`
+- Gomoh LIVE
+- Dhanbad LIVE
+
+Initial catalogue:
+- Gomoh: Learning LIVE, ToTo LIVE
+- Dhanbad: Learning LIVE, ToTo PAUSED
+
+### Real browser proof
+
+The deployed staging URL was opened in the isolated Edge profile on the authorized machine.
+
+Initial browser state:
+- title: `Raahi — Your local starting point`
+- no login wall
+- Location chooser shown
+- no Product cards before Location choice
+- no horizontal overflow at the tested desktop viewport
+
+After setting/selecting Dhanbad and reloading against the real deployed API:
+- selected Location displayed as Dhanbad;
+- Learning card = LIVE / Open Learning;
+- ToTo card = PAUSED / temporary-unavailability copy;
+- no horizontal overflow.
+
+### Dynamic configuration without frontend redeploy
+
+Controlled staging-only mutation:
+- Dhanbad ToTo changed from PAUSED → LIVE in D1;
+- audit record `audit-gate13-20260927-toto-live` inserted.
+
+Immediately after mutation:
+- live API returned ToTo = LIVE;
+- no Worker deployment occurred.
+
+The already-open browser initially retained the prior PAUSED card because the public API response uses browser `max-age=30`.
+
+After that cache window expired and the same deployed page was refreshed:
+- Dhanbad ToTo rendered LIVE;
+- CTA changed to `Open ToTo →`;
+- Worker version remained exactly `a91ea906-7d3a-450f-81b1-7243363a2ae9`.
+
+This proves:
+> Location/Product configuration can change the live homepage without rebuilding or redeploying frontend assets.
+
+### Cache evidence
+
+Observed real behavior:
+- D1/API truth updated immediately;
+- an already-open browser can remain stale for up to the configured browser cache window (~30 seconds);
+- after expiry, normal refresh receives current configuration.
+
+Design consequence:
+- 30-second browser cache is acceptable as the current staging default;
+- product/admin UX should not imply configuration changes are instantaneous;
+- if future operational requirements need faster propagation, change cache policy through impact analysis rather than hidden cache-busting.
+
+### Audit/integrity evidence
+
+Deployment list after the D1 mutation still showed only:
+- version `a91ea906-7d3a-450f-81b1-7243363a2ae9`
+
+D1 audit record confirmed:
+- action: `set_location_product_live`
+- target: `lp-dhanbad-toto`
+- Location: `loc-dhanbad`
+- Product: `prd-toto`
+- before: PAUSED
+- after: LIVE
+- reason: Gate 13 dynamic configuration proof
+
+### Cleanup
+
+After proof, staging D1 was restored to the fixture baseline:
+- Dhanbad ToTo = PAUSED
+- original temporary-unavailability message restored
+- restoration audit record `audit-gate13-20260927-toto-restore` inserted.
+
+The non-production Worker/D1 remain available for continued Gate-13 experiments.
+
+### Production safety
+
+Not touched:
+- `myraahi.co.in` DNS
+- custom-domain routes
+- Raahi Learning production database
+- Raahi Learning authentication
+- any production Product state
+
 
 ## Spike 13D — Cross-product Account / SSO
 
@@ -296,15 +415,23 @@ Passed:
 - Worker/toolchain buildability
 - D1-compatible schema/fixture locally in CI
 - real Chromium public-shell behavior
-
-Not yet passed:
 - real Cloudflare Worker runtime
-- real D1 binding/runtime mutation proof
-- cross-product identity/SSO
-- OTP provider primitive
+- real remote D1 migration/fixture
+- real browser → Worker → D1 catalogue path
+- D1 configuration change reflected in the live homepage without frontend redeploy
+- staging baseline cleanup/audit
+
+Still not passed:
+- cross-product Account / SSO
+- account recovery/linking primitive
+- shared auth-handoff/draft-resume primitive
+- OTP provider primitive for a shared Account trust layer
+- GitHub Actions Cloudflare deployment credential bootstrap
 
 ## Exact next action
 
-Bring the authorized Desktop Commander device online and perform a read-only Cloudflare access check.
+Start **Spike 13D — Cross-product Account / SSO** in an isolated non-production lab.
 
-Then continue Spike 13C without touching production DNS or Learning production.
+Do not alter Raahi Learning production authentication behavior.
+
+Separately, when convenient, create a narrowly scoped Cloudflare API token for GitHub Actions so routine future staging deployment can move from the local Wrangler OAuth session to headless GitHub cloud execution.
