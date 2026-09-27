@@ -268,170 +268,199 @@ Not touched:
 - any production Product state
 
 
-## Spike 13D — Cross-product Account / SSO
-
-Status: **NOT STARTED**.
-
-Do not start until Spike 13C proves the public runtime.
-
-Must prove later:
-- real Google/OAuth sign-in;
-- one durable Raahi identity;
-- safe cross-subdomain/product handoff;
-- logout/relogin;
-- session expiry;
-- explicit Location survives auth;
-- safe return target;
-- no duplicate Account creation;
-- compatibility with existing Learning identity;
-- recovery/linking constraints;
-- phone trust remains separate.
 
 ---
 
+## Spike 13D — Cross-product Account / identity continuity
 
----
+**Result: PASS for V1 identity continuity.**
 
-## Spike 13E — Current Cloudflare Free-tier viability check
+Important terminology:
 
-### Purpose
-Confirm that the proposed public-shell runtime still fits Raahi's zero-recurring-cost doctrine using current provider limits rather than old assumptions.
+> This spike proves **one durable Raahi identity across independent Raahi origins**. It does **not** prove one shared browser session/cookie across all subdomains.
 
-### Official Cloudflare evidence checked on 2026-09-26
+That distinction is deliberate.
 
-Workers Free:
-- 100,000 Worker requests/day;
-- 10 ms CPU time per HTTP request;
-- 50 external subrequests/invocation;
-- 1,000 subrequests to Cloudflare services/invocation;
-- 128 MB memory;
-- up to 100 Workers/account.
+### Existing Learning session model observed read-only
 
-D1 Free:
-- 5,000,000 rows read/day;
-- 100,000 rows written/day;
-- 5 GB total account storage;
-- up to 10 D1 databases/account;
-- 500 MB maximum per D1 database;
-- 50 D1 queries per Worker invocation;
-- 7-day Time Travel recovery.
+Public Learning origin:
 
-Important current behavior:
-- since 2026-09-01, D1 Free daily read/write limits are enforced as hard failures until midnight UTC after the limit is exceeded.
+`https://learning.myraahi.co.in`
 
-Official references:
-- https://developers.cloudflare.com/workers/platform/limits/
-- https://developers.cloudflare.com/workers/platform/pricing/
-- https://developers.cloudflare.com/d1/platform/pricing/
-- https://developers.cloudflare.com/d1/platform/limits/
-- https://developers.cloudflare.com/changelog/post/2026-09-01-d1-free-tier-limit-enforcement/
+Observed authenticated browser storage:
+- Supabase Auth session stored in origin-scoped `localStorage`;
+- storage key: `sb-iiwwmqokaeflaenhlyip-auth-token`;
+- no auth cookies observed.
 
-### Design consequence
-For the initial MyRaahi public shell, these limits are materially larger than the expected pilot configuration workload.
+Consequence:
+- another Raahi origin cannot automatically read Learning's browser session;
+- using the same Supabase project alone is not seamless cross-origin SSO.
 
-However, launch design must treat quota exhaustion as a real failure mode:
-- catalogue reads should be indexed and minimal;
-- avoid wasteful polling;
-- static assets should not trigger unnecessary D1 reads;
-- cache public catalogue safely where freshness rules permit;
-- if D1 quota is exhausted, return human temporary-unavailability/retry behavior rather than stale invented availability;
-- do not auto-upgrade to a paid plan.
+### Existing Supabase redirect configuration evidence
 
-**Result: PASS as current free-tier suitability evidence, subject to real account/runtime proof.**
+Repository release evidence confirms the Auth redirect allow-list intentionally includes:
+- DEV Learning redirects;
+- `https://learning.myraahi.co.in/`;
+- `https://learning.myraahi.co.in/**`.
 
----
+It does not include arbitrary workers.dev URLs.
 
-## Spike 13F — Branch deployment-safety configuration check
+Observed in the first workers.dev auth-lab attempt:
+- Google authentication completed;
+- Supabase returned the callback to the configured Learning Site URL rather than the workers.dev lab.
 
-Current branch file:
-`apps/myraahi-shell/wrangler.jsonc`
+No production Auth setting was modified.
+
+### Clean non-production test origin
+
+Existing allow-listed DEV origin:
+
+`https://dev.learning.myraahi.co.in`
+
+DNS:
+- CNAME → `raahi-learning-dev.pages.dev`
+
+DEV is a separate Cloudflare Pages project and remained server-code unchanged during this spike.
+
+### Browser-only isolated PKCE harness
+
+A second Supabase client was created only inside the DEV browser context using:
+- same Supabase project `iiwwmqokaeflaenhlyip`;
+- current publishable key;
+- PKCE flow;
+- separate storage key `raahi-sso-lab`;
+- callback to a static DEV privacy page;
+- test Location `gomoh`.
+
+No Learning source file, deployment artifact, Supabase Auth setting, database row or server configuration was modified.
+
+### Identity continuity result
+
+The isolated DEV client completed Google OAuth and code exchange successfully.
+
+Resulting provider:
+- Google
+
+Resulting Supabase user UUID matched the already-authenticated public Learning session **exactly**.
+
+This proves:
+> A Raahi user authenticating independently from another Raahi origin through the same Supabase Auth project resolves to the same durable user identity rather than creating a duplicate Account identity.
+
+The exact UUID is intentionally omitted from this document.
+
+### Location preservation
+
+Before OAuth:
+- lab Location was explicitly set to Gomoh.
+
+After the complete OAuth round trip and session establishment:
+- selected Location remained Gomoh.
+
+This validates the product rule that explicit current Location can survive authentication independently from identity.
+
+### Session isolation proof
+
+The lab session was signed out locally.
 
 Observed:
-- Worker name: `myraahi-shell`
-- `workers_dev: true`
-- static assets served from `./public`
-- Worker-first routing only for `/api/*`
-- D1 binding name: `DB`
-- database name: `myraahi-shell-db`
-- database ID remains the deliberate placeholder `00000000-0000-0000-0000-000000000000`
-- no custom-domain route is configured
+- lab session became signed out;
+- test Location remained Gomoh;
+- public Learning session remained authenticated as the same Google/Supabase user.
 
-### Design consequence
-The branch cannot accidentally bind to a real D1 database until the placeholder is intentionally replaced, and it is currently prepared for a `workers.dev` staging deployment rather than production `myraahi.co.in` routing.
+This proves per-origin sessions can coexist without one origin's local sign-out unintentionally terminating another origin's browser session.
 
-**Result: PASS as configuration safety evidence.**
+### Re-entry friction proof
 
+After local lab sign-out, Google OAuth was initiated again.
 
----
+Observed:
+- the browser returned to the DEV callback within a few seconds;
+- no credential-entry screen or account chooser was required in that browser state;
+- the resulting Supabase user UUID again matched the same durable identity.
 
-## Spike 13G — GitHub Actions as headless cloud computer
+This shows that independent per-origin sessions can be re-established with very low friction when the user already has a valid Google browser session.
 
-### Why this matters
-The reusable AI-project tooling doctrine says GitHub Codespaces is the preferred interactive cloud development computer and Desktop Commander is reserved mainly for real-user validation. In the current ChatGPT connector, interactive Codespaces terminal control is not exposed, but GitHub Actions is available and already successfully runs MyRaahi builds/tests in GitHub's cloud.
+It does **not** guarantee Google will never display an account chooser or consent prompt; that remains provider/browser-state dependent.
 
-### Read-only Cloudflare credential probe
-A branch-only workflow was added on `myraahi-shared-shell-v1`:
+### Architecture consequence
 
-`.github/workflows/myraahi-cloudflare-access-probe.yml`
+For V1, prefer:
 
-Commit:
-`f82324ca407e4c86c1f7be5b268a1229f62ad512`
+**Central Raahi identity + independent origin-local sessions**
 
-Workflow run:
-`36261265502`
+over:
 
-The probe:
-1. checked out the isolated branch;
-2. installed the existing shell dependencies;
-3. checked only whether standard GitHub Actions secret names were populated;
-4. would have run read-only `wrangler whoami` if credentials existed;
-5. contained no deploy/create/delete/DNS command.
+**Parent-domain shared refresh-token cookie SSO**
 
-### Observed result
-The workflow showed:
-- `CLOUDFLARE_API_TOKEN` = unavailable/empty;
-- `CLOUDFLARE_ACCOUNT_ID` = unavailable/empty;
-- `wrangler whoami` was skipped;
-- no Cloudflare access or change occurred.
+Reasons:
+1. no need to copy refresh/access tokens between origins;
+2. no need to change Learning's proven localStorage auth immediately;
+3. local sign-out can remain scoped;
+4. same Supabase user UUID prevents duplicate Raahi identity;
+5. Google can provide low-friction re-authentication in ordinary already-signed-in browsers;
+6. reduces cross-product blast radius while Raahi products remain independently evolvable.
 
-This proves the current repository cannot yet deploy/probe Cloudflare from GitHub Actions using those standard secret names.
+A true shared-cookie/session architecture may be reconsidered only if real pilot behavior shows that the brief re-authentication redirect creates material friction.
 
-### Consequence
-GitHub Actions **can** serve as the headless cloud execution environment for Gate 13 after a one-time Cloudflare credential bootstrap. Desktop Commander is not required for routine build/deploy once those credentials are safely available to the workflow.
+### Cleanup
 
-The preferred zero-recurring-cost path is therefore:
-1. one-time Cloudflare authentication/token bootstrap by the user in an authorized browser/Codespace;
-2. store only the required scoped Cloudflare API token and account ID as GitHub Actions secrets;
-3. GitHub Actions handles non-production D1 creation/migrations/staging deployment headlessly;
-4. Desktop Commander is used later only for real-user/browser validation when warranted.
+- isolated DEV lab session signed out;
+- no DEV source/deployment changed;
+- temporary workers.dev auth-lab assets removed;
+- staging shell redeployed to normal 3-asset baseline;
+- `/auth-lab.html` returns 404;
+- Dhanbad ToTo staging baseline verified PAUSED.
 
-**Result: PASS for GitHub Actions cloud-compute feasibility; BLOCKED only on one-time Cloudflare credential bootstrap.**
+Final cleaned staging Worker version after lab removal:
+
+`15856ec6-3f9f-4518-9054-593f1d506171`
+
+### Production safety
+
+Not changed:
+- Learning source code;
+- Learning public deployment;
+- Learning DEV deployment;
+- Supabase Auth redirect configuration;
+- Google OAuth configuration;
+- `myraahi.co.in` DNS;
+- Learning database/business state.
+
 
 # Gate 13 current result
 
-**PARTIAL / ACTIVE.**
+**PASS for the current MyRaahi shared-front-door V1 technology scope.**
 
-Passed:
-- Worker/toolchain buildability
-- D1-compatible schema/fixture locally in CI
-- real Chromium public-shell behavior
-- real Cloudflare Worker runtime
-- real remote D1 migration/fixture
-- real browser → Worker → D1 catalogue path
-- D1 configuration change reflected in the live homepage without frontend redeploy
-- staging baseline cleanup/audit
+Proven:
+- Worker/toolchain buildability;
+- D1-compatible schema/fixture in CI;
+- real Chromium public-shell behavior;
+- real Cloudflare Worker runtime;
+- real remote D1 migration and configuration mutation;
+- browser → Worker → D1 end-to-end path;
+- configuration-driven homepage update without frontend redeploy;
+- one durable Supabase/Google user identity across independent Raahi origins;
+- explicit Location preservation through OAuth;
+- independent per-origin session isolation;
+- low-friction re-authentication in an already signed-in Google browser.
 
-Still not passed:
-- cross-product Account / SSO
-- account recovery/linking primitive
-- shared auth-handoff/draft-resume primitive
-- OTP provider primitive for a shared Account trust layer
-- GitHub Actions Cloudflare deployment credential bootstrap
+Intentionally deferred because V1 does not require them yet:
+- parent-domain shared-cookie SSO;
+- universal Account recovery/provider-linking workflow;
+- shared phone-trust/OTP implementation outside product actions;
+- GitHub Actions Cloudflare credential bootstrap.
+
+These deferred primitives must reopen Gate 13 when a future vertical slice actually depends on them.
 
 ## Exact next action
 
-Start **Spike 13D — Cross-product Account / SSO** in an isolated non-production lab.
+Proceed to **Gate 14 — Executable Screen ↔ Backend Contracts**, updated to reflect the proven architecture:
 
-Do not alter Raahi Learning production authentication behavior.
+- public shell on Cloudflare Worker + D1;
+- central Supabase Auth identity;
+- origin-local sessions;
+- same durable user UUID across Raahi products;
+- no shared refresh-token transfer;
+- focused Product remains authoritative for its own actions.
 
-Separately, when convenient, create a narrowly scoped Cloudflare API token for GitHub Actions so routine future staging deployment can move from the local Wrangler OAuth session to headless GitHub cloud execution.
+Then complete Gate 15 side-effects matrix and Gate 16 real walking-skeleton definition before broader implementation.
