@@ -1,0 +1,39 @@
+name: Validate MyRaahi Learning Handoff Spike
+
+on:
+  push:
+    branches:
+      - myraahi-learning-location-handoff-spike
+    paths:
+      - "apps/raahi-learning/**"
+      - ".github/workflows/myraahi-learning-handoff-spike.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run handoff contract tests
+        run: node --test apps/raahi-learning/tests/myraahi-location-handoff-v1.test.mjs
+
+      - name: Reconstruct canonical Learning artifact
+        run: node apps/raahi-learning/build-source-v13.mjs
+
+      - name: Verify adapter is in reconstructed artifact
+        run: |
+          test -f apps/raahi-learning/reconstructed-v13/myraahi-location-handoff-v1.js
+          grep -q 'myraahi-location-handoff-v1.js' apps/raahi-learning/reconstructed-v13/index.html
+          grep -q 'raahi_location' apps/raahi-learning/reconstructed-v13/myraahi-location-handoff-v1.js
+
+      - name: Verify no direct operational DML in adapter
+        run: |
+          ! grep -E -i '\.(insert|update|delete|upsert)\(' apps/raahi-learning/myraahi-location-handoff-v1.js
+          grep -q "set_selected_location" apps/raahi-learning/myraahi-location-handoff-v1.js
