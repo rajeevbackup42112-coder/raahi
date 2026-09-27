@@ -147,14 +147,14 @@ After choosing a Location, show only products appropriate for public display in 
 Example:
 
 **Gomoh**
-- Learning
-- ToTo
+- Learn
+- Ride
 - Shops
 
 **Dhanbad**
-- Learning
-- Doctors
-- ToTo
+- Learn
+- Health
+- Ride
 - Shops
 
 These examples are illustrative, not launch configuration.
@@ -208,11 +208,19 @@ Illustrative fields/concepts:
 - active/retired platform availability
 - optional display metadata
 
-Examples:
+Stable internal keys may remain implementation-friendly, for example:
 - `learning`
 - `toto`
 - `doctors`
 - `shops`
+
+Public brand/display names are independent of those keys. Current naming principle:
+- `learning` → **Learn**
+- `toto` → **Ride**
+- future doctor/clinic capability → **Health**
+- shops/local commerce → **Shops**
+
+On the shared Raahi homepage, prefer the short public name (Learn, Ride, Health, Shops) because the master brand **Raahi** is already visible. Inside a focused product, the fuller identity may be **Raahi Learn**, **Raahi Ride**, etc.
 
 The registry must not contain:
 - Classes
