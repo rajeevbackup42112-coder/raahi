@@ -745,34 +745,84 @@ Detailed document:
 
 ---
 
+## MyRaahi Gate 13D — Shared Identity State
+
+V1 identity architecture is now frozen:
+
+- canonical Raahi authenticated subject comes from Supabase Auth project `iiwwmqokaeflaenhlyip`;
+- subject is issuer + verified Supabase user UUID;
+- MyRaahi D1 is not the production Account identity store;
+- MyRaahi public browsing remains anonymous-first;
+- focused products own their own roles, permissions and transactions;
+- origin-local sessions are acceptable in V1;
+- true seamless SSO is not a launch blocker.
+
+Current Supabase evidence:
+- Raahi Learn session is origin-local in browser storage;
+- JWT algorithm = ES256;
+- issuer = Learn Supabase Auth project;
+- audience = authenticated;
+- current docs support public JWKS verification;
+- Supabase OAuth 2.1/OIDC server exists, currently beta/free on all plans during beta, but requires authorization UI/client configuration.
+
+Future true-SSO candidate:
+**Supabase OAuth 2.1/OIDC Server**
+
+Deferred:
+- custom parent-domain cookie migration
+- custom token broker
+- changing Learn production auth now
+
+Detailed doc:
+`docs/MYRAAHI_GATE13_SHARED_IDENTITY_SSO_SPIKE_V0.1.md`
+
+### Existing experimental handoff
+
+The isolated shell branch already contains a spike-only Learn → MyRaahi handoff:
+- ES256/JWKS token verification
+- HTTPS POST token handoff
+- spike-only issuer+subject mapping
+- HttpOnly MyRaahi session cookie
+- feature flag `ENABLE_GATE13_SSO_SPIKE`
+
+It is explicitly NOT production-ready. Before any productionization it would require login-CSRF/state binding, revocation/session semantics, lifecycle/cleanup and stronger protocol review.
+
+Latest branch validation:
+- branch `myraahi-shared-shell-v1`
+- HEAD `a99ee64924afbca98178dfb59c4d86bee5944f4c`
+- CI run `36297963846` = SUCCESS
+
+---
+
 ## Exact Current Point / Next Action
 
-Current AI Builder gate:
+Current gate:
+**Gate 13D — one empirical cross-product identity/session proof remains.**
 
-**Gate 13D — one empirical identity-continuity proof remains.**
+Desktop Commander device `Dipti` is currently offline.
 
-When an authorized browser device is available:
+When it reconnects:
 
-1. keep one known authenticated Raahi Learn test browser;
-2. privately record its Supabase user UUID in the harness;
-3. use the already-approved DEV redirect `http://localhost:4173/index.html`;
-4. run a tiny MyRaahi proof against the same Supabase project;
-5. authenticate the same designated Google test identity;
-6. compare only whether the returned UUID matches the Learn UUID;
-7. output only `same_raahi_subject=true/false`;
-8. sign out of the proof session;
-9. confirm Learn remains unaffected.
+1. update isolated local checkout to branch HEAD `a99ee649...`;
+2. apply staging-only migration `0002_gate13_sso_spike.sql`;
+3. enable the SSO spike flag only for the workers.dev staging Worker;
+4. deploy staging;
+5. from an already-authenticated Raahi Learn test browser, submit its access token directly from browser memory to the staging handoff by HTTPS POST — never print/copy/log it;
+6. verify the staging MyRaahi HttpOnly session via `/api/v1/_spike/auth/me`;
+7. repeat once to prove stable identity resolution;
+8. log out the MyRaahi spike session;
+9. verify Learn remains unaffected;
+10. disable the spike flag and redeploy staging.
 
-No Supabase Auth configuration change is required or permitted for this proof.
+Alternative fallback:
+use the privacy-safe localhost harness at the already-approved DEV redirect and compare only SHA-256 subject equality.
 
-Do not:
-- create another user database;
-- alter Learning production auth;
-- enable OAuth-server mode yet;
-- change Google OAuth config;
-- change production DNS.
+No production Auth/DNS/code change is permitted for this proof.
 
-After this proof passes, Gate 13 identity technology is sufficient for V1 and we can move to the next AI Builder implementation gate rather than building seamless SSO prematurely.
+After proof:
+- if it passes, Gate 13 identity technology is sufficient for V1;
+- keep true seamless SSO deferred unless real multi-product usage proves the friction worth solving;
+- proceed to the next AI Builder implementation gate.
 
 ---
 
