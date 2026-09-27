@@ -24,7 +24,7 @@ Implementation branch:
 
 Current validated HEAD:
 
-`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
+`4704da826f4b1256b9a9008bcacd5d99c35647f1`
 
 Important preceding commits:
 
@@ -175,38 +175,52 @@ Do not assume any of these exist yet:
 
 ---
 
+## Gate 13 runtime proof — completed
+
+Real non-production Cloudflare resources now exist:
+
+- staging D1: `myraahi-shell-gate13-staging`
+- staging Worker: `myraahi-shell-gate13-staging`
+- staging URL: `https://myraahi-shell-gate13-staging.rajeev-backup4-2112.workers.dev`
+- deployed Worker version: `a91ea906-7d3a-450f-81b1-7243363a2ae9`
+
+Proven in real Cloudflare runtime:
+- D1 migration applied remotely;
+- staging fixture applied remotely;
+- health/locations/catalog APIs return correct data;
+- real browser renders against deployed Worker/D1;
+- public Product names update from D1 without frontend redeploy;
+- LocationProduct LIVE/PAUSED state updates from D1 without frontend redeploy.
+
+The temporary Dhanbad Ride LIVE proof was reverted. Current intended staging baseline:
+- Dhanbad Learn = LIVE
+- Dhanbad Ride = PAUSED
+
+Branding decision:
+- public `learning` display = **Learn**
+- public `toto` display = **Ride**
+- stable internal keys remain `learning` and `toto`
+- fuller focused-brand forms may be **Raahi Learn** and **Raahi Ride**
+
+Latest branch validation:
+- commit `4704da826f4b1256b9a9008bcacd5d99c35647f1`
+- workflow `Validate MyRaahi Shell`
+- run `36291608117`
+- result: SUCCESS
+
 ## Exact next action
 
-AI Builder Cheat Code v2.0 is now governing this work strictly.
+Continue **AI Builder Gate 13 — Spike 13D: Cross-product Account/SSO**.
 
-Gates 0–12 have been reconciled at the appropriate design/evidence level.
+Proceed read-only first:
+1. inspect Raahi Learning's actual current auth/session implementation and public origin(s);
+2. identify current Supabase auth project/session/callback topology without exposing secrets;
+3. identify whether a shared MyRaahi shell can recognize/bridge one durable Account safely;
+4. define the smallest non-production SSO proof;
+5. test only in non-production/staging;
+6. do not modify Learning production auth behavior during the spike.
 
-Current gate:
-
-**Gate 13 — Technology Proof / Spikes**
-
-The first real runtime spike is blocked only by authorized Cloudflare access.
-
-Evidence already completed:
-- Worker/D1-shaped build passes
-- real Chromium UI checks pass
-- final branch commit `c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
-- final run `36247865290` = SUCCESS
-
-Next action:
-1. bring the authorized Desktop Commander device `Dipti` online;
-2. perform a read-only Cloudflare dashboard/account/zone/Workers/D1 access check;
-3. if authenticated access is available, create only non-production D1/Worker staging resources;
-4. apply migration + dev/staging fixture;
-5. deploy only to non-production workers.dev/staging;
-6. verify real API/browser runtime;
-7. mutate one non-production LocationProduct and prove UI changes without frontend rebuild;
-8. document evidence;
-9. only then start cross-product Account/SSO spike.
-
-Do not change production DNS.
-Do not modify Raahi Learning production auth/database.
-
-See main-branch:
-- `docs/MYRAAHI_AI_BUILDER_GATE_REGISTER_V0.1.md`
-- `docs/MYRAAHI_GATE13_TECHNOLOGY_PROOF_REGISTER_V0.1.md`
+Production safety remains:
+- no production `myraahi.co.in` DNS change;
+- no Learning production database/auth migration;
+- no shared auth rollout until the spike passes.
