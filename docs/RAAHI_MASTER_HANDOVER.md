@@ -594,78 +594,82 @@ This is classified as an external authorized-access evidence boundary, not a pro
 
 ---
 
+## Gate 13 — Real Cloudflare Runtime Proven
+
+The isolated MyRaahi public-shell runtime spike is now complete and passed.
+
+Non-production resources:
+
+- D1: `myraahi-shell-gate13-staging`
+- D1 ID: `5ee83f6f-66a7-4abd-ba0d-94bf609f967f`
+- Worker: `myraahi-shell-gate13-staging`
+- workers.dev URL: `https://myraahi-shell-gate13-staging.rajeev-backup4-2112.workers.dev`
+- Worker version: `a91ea906-7d3a-450f-81b1-7243363a2ae9`
+
+Evidence:
+- real remote D1 migration succeeded;
+- dev/staging fixture succeeded;
+- live Worker health/locations/catalogue API succeeded;
+- real Edge browser rendered the live Worker/D1 shell;
+- Dhanbad ToTo changed PAUSED → LIVE through D1 only;
+- live API changed immediately;
+- browser changed after the configured 30-second cache window;
+- Worker version did not change;
+- no frontend rebuild/redeploy was needed;
+- D1 audit evidence exists;
+- staging baseline was restored to Dhanbad ToTo PAUSED afterward.
+
+Production remained untouched:
+- no `myraahi.co.in` DNS change;
+- no custom-domain route;
+- no Learning production database/auth change.
+
+GitHub Actions remains suitable as headless cloud compute, but the repo still lacks `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Current successful staging deployment used the already-authorized local Wrangler OAuth session on Dipti. Do not copy that broad OAuth credential into GitHub secrets; bootstrap a narrowly scoped API token later.
+
+---
+
 ## Exact Current Point / Next Action
 
-Do not restart strategy, archaeology, Gates 0–12, shell scaffolding or UI redesign.
+Do not restart Gates 0–12 or the public-shell runtime spike.
 
-Current implementation branch:
-`myraahi-shared-shell-v1`
+Current AI Builder gate:
 
-Current validated implementation commit:
-`c3424217c1ce8a43866b705ce3cc42f7cbe842d7`
-
-Current gate:
 **Gate 13 — Technology Proof / Spikes**
 
-### Next action
+Completed:
+- public shell build/toolchain
+- browser UI primitive
+- real Cloudflare Worker + D1 staging runtime
+- dynamic LocationProduct configuration proof
 
-The tooling strategy has now been rechecked against the earlier reusable AI-project tooling doctrine:
+Next:
+**Spike 13D — Cross-product Account / SSO.**
 
-- GitHub Codespaces = intended interactive cloud development computer.
-- GitHub Actions = available headless cloud execution in the current chat.
-- Desktop Commander = real-user/browser validation, not routine coding/deployment.
+The spike must be isolated and must not modify Raahi Learning production auth behavior.
 
-A read-only GitHub Actions Cloudflare access probe was run:
+It must prove:
+1. a user can authenticate once with a durable Raahi identity;
+2. identity can be recognized across Raahi-owned shell/product boundaries;
+3. explicit selected Location survives authentication;
+4. safe return destination works;
+5. logout/relogin/session expiry behave correctly;
+6. no duplicate Account is created;
+7. existing Learning identities can be linked/consumed without a destructive migration;
+8. wrong-account/recovery cases are safe;
+9. phone trust remains separate from authentication.
 
-- branch commit: `f82324ca407e4c86c1f7be5b268a1229f62ad512`
-- workflow run: `36261265502`
-- result: standard secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are not currently available to the repo workflow.
-- no Cloudflare action or deployment occurred.
+After SSO primitive evidence, define Gate 14 executable contracts against the proven technology.
 
-Therefore the preferred next step is a **one-time Cloudflare credential bootstrap**, after which GitHub Actions can handle non-production staging without keeping Dipti in the critical path.
+Separately, create a narrowly scoped Cloudflare API token and store it as GitHub Actions secrets when convenient, so future staging deploys can run entirely in GitHub cloud.
 
-One-time bootstrap options:
-1. authorize Cloudflare in an interactive GitHub Codespace/browser and create a narrowly scoped API token/account ID for Actions; or
-2. use the authorized local browser/Desktop Commander once solely to create/store those GitHub Actions secrets.
-
-After the secrets exist, continue Gate 13 entirely through GitHub Actions for D1 creation/migrations/staging deploy, then reserve Desktop Commander for real-user validation.
-
-Do not use paid TinyFish or a paid cloud VM merely to solve this bootstrap.
-
-
-
-Then:
-
-1. verify Cloudflare dashboard authentication **read-only**;
-2. confirm the authorized Cloudflare account/zone for `myraahi.co.in`;
-3. confirm Workers/D1 access;
-4. create only a non-production D1 database and Worker/staging target;
-5. apply `apps/myraahi-shell/migrations/0001_public_shell.sql`;
-6. load `apps/myraahi-shell/fixtures/dev-seed.sql` only in non-production;
-7. deploy only to workers.dev or a dedicated staging hostname;
-8. verify real API + mobile/desktop browser behavior;
-9. change one non-production LocationProduct state and prove the homepage changes without frontend rebuild;
-10. document observed evidence/limits;
-11. only then begin the separate cross-product Account/SSO spike.
-
-Do not point production `myraahi.co.in` to the shell.
-Do not modify Raahi Learning production auth/database.
+Do not point production `myraahi.co.in` to staging.
+Do not change Raahi Learning production authentication during the spike.
 
 ---
 
 ## Handover Discipline Going Forward
 
 At every major decision or material discovery, update this master handover.
-
-Before a chat reaches its limit, update the document with:
-- decisions made
-- assumptions changed
-- completed research
-- repository/branch state relevant to the work
-- unresolved questions
-- exact next action
-
-Project-specific execution work should continue to maintain its own detailed handover as well.
 
 A new chat should resume with:
 "Read docs/RAAHI_MASTER_HANDOVER.md and continue from Exact Current Point."
