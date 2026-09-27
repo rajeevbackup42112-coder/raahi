@@ -1,0 +1,58 @@
+name: MyRaahi Gate13D SSO Handoff Spike
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'tests/raahi-learning-e2e/myraahi-sso-handoff-spike.mjs'
+      - '.github/workflows/myraahi-gate13d-sso-handoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: myraahi-gate13d-sso-handoff
+  cancel-in-progress: true
+
+jobs:
+  sso-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Learning implementation branch
+        uses: actions/checkout@v4
+
+      - name: Guard DEV synthetic writes
+        run: test -f .github/RAAHI_LEARNING_DEV_WRITES_ENABLED
+
+      - name: Guard branch
+        run: test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Audit harness dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm audit --audit-level=high
+
+      - name: Run MyRaahi identity handoff proof
+        working-directory: tests/raahi-learning-e2e
+        run: node myraahi-sso-handoff-spike.mjs
+
+      - name: Upload sanitized proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: myraahi-gate13d-sso-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-myraahi-sso-handoff/
+          if-no-files-found: warn
+          retention-days: 14
