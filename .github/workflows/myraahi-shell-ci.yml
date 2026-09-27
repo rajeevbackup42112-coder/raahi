@@ -35,6 +35,9 @@ jobs:
       - name: Check browser JavaScript syntax
         run: node --check public/app.js
 
+      - name: Check shared-identity spike harness syntax
+        run: node --check spikes/shared-identity/generate-proof.mjs
+
       - name: Validate Worker bundle
         run: npx wrangler deploy --dry-run --outdir=.wrangler-dist
 
