@@ -329,6 +329,66 @@ This keeps future identity-provider migration possible.
 
 ---
 
+## 9A. Existing isolated handoff spike implementation
+
+The isolated implementation branch already contains an experimental handoff:
+
+- `apps/myraahi-shell/src/gate13-sso-spike.ts`
+- `apps/myraahi-shell/migrations/0002_gate13_sso_spike.sql`
+
+It is disabled unless:
+
+`ENABLE_GATE13_SSO_SPIKE=true`
+
+Spike endpoints:
+- `POST /api/v1/_spike/auth/learning-handoff`
+- `GET /api/v1/_spike/auth/me`
+- `POST /api/v1/_spike/auth/logout`
+
+What it proves technically:
+1. a Raahi Learn access token can be submitted in an HTTPS POST body;
+2. MyRaahi can verify the token using the Learn project's public JWKS;
+3. verification checks ES256, issuer, audience, role and subject;
+4. the raw access token is not intentionally persisted by the spike code;
+5. issuer + subject can resolve one pseudonymous spike account;
+6. MyRaahi can issue its own HttpOnly + Secure + SameSite=Lax session cookie;
+7. MyRaahi can then recognize the browser without exposing the Learn access token to normal MyRaahi JavaScript.
+
+CI history:
+- initial spike commit: `fba5bd4dbb74aa9992decf11d16449c253d8bc8e`
+- migration-CI repair: `61f4d4242b01d622dd44147f78e97f4822ec3fba`
+- response-header repair: `e1066453069bb5ef6b793f68153086f5a4ccebc0`
+- latest branch CI including additional privacy-safe harness: `a99ee64924afbca98178dfb59c4d86bee5944f4c` = SUCCESS
+
+### Why this remains spike-only
+
+The current experimental handoff is useful evidence, but it is **not yet a production SSO protocol**.
+
+Before productionization it would need explicit analysis/repairs for at least:
+- login-CSRF / session-swapping protection via MyRaahi-initiated state/nonce or equivalent;
+- strict trusted-origin/return-target binding;
+- session revocation semantics;
+- relationship between MyRaahi session expiry and upstream Supabase session expiry/revocation;
+- cleanup/retention of spike session rows;
+- logout behavior across products;
+- account recovery/provider linking;
+- whether a separate MyRaahi session store is actually justified;
+- audit/abuse/rate-limit behavior.
+
+The D1 tables named `sso_spike_*` are experimental evidence only.
+
+They must not be reinterpreted as the frozen production Account schema.
+
+### Architectural consequence
+
+The spike shows that seamless Learn → MyRaahi handoff is technically plausible **without putting a bearer token in the URL**.
+
+That is valuable optionality.
+
+It does not create a current requirement to ship custom SSO in V1.
+
+---
+
 ## 10. Minimum non-production identity-continuity proof
 
 This proof intentionally does not change Supabase Auth configuration.
