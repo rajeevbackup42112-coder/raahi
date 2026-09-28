@@ -413,7 +413,26 @@ A true shared-cookie/session architecture may be reconsidered only if real pilot
 
 Final cleaned staging Worker version after lab removal:
 
-`15856ec6-3f9f-4518-9054-593f1d506171`
+`693b3c47-851d-4295-ae26-6c0b1d4c1e74`
+
+### 2026-09-28 reconfirmation
+
+The identity proof was repeated/reconfirmed with privacy-safe subject comparison:
+- `same_raahi_subject=true`
+- provider = Google
+- selected Location = Gomoh
+- isolated proof sign-out succeeded
+- public Learn session remained present.
+
+The temporary staging SSO flag was returned to false and staging was redeployed.
+
+Current cleaned staging Worker version:
+`693b3c47-851d-4295-ae26-6c0b1d4c1e74`
+
+Post-cleanup staging evidence:
+- disabled spike endpoint → HTTP 404
+- `sso_spike_accounts=0`
+- `sso_spike_sessions=0`
 
 ### Production safety
 
