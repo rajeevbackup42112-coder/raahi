@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` first.**
+**For the current state, read `134-final-ux-gate-closure-public-release-2026-09-28.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-09-28 FINAL UX GATE CLOSED / PUBLIC RELEASE VERIFIED:** exact product SHA `7d99b69165df0de0ca02e7778fde995b302ff624` is live on `https://learning.myraahi.co.in`. Preview and production hashes match the same immutable release artifact. Exact-SHA qualification is green: 5,349,572 model cases / 0 failures; source 35/35; shell 5/5; Notifications 9/9; mobile actions 32/32; Settings 8/8; conversations 16/16; Teacher 11/11; Institute 16/16; Manager 21/21; Platform 19/19; Ads 19/19; language 168/168; sealed interactions 27/27. GitHub Model Tests #796 and Browser Contract #49 passed. Final all-nine audit: 527 screens, 6,998 controls, 0 issue screens, 0 audit errors. Post-deploy continuity for Raahi-03 and Raahi-08 was rechecked after settled boot and is clean. The controlled Gomoh-first product/UX go-live gate is complete. Read `134-final-ux-gate-closure-public-release-2026-09-28.md` first.
 
 **2026-09-26 INVESTOR-GRADE UX REDESIGN GATE — SLICES 1–9 CLOSED / UNDEPLOYED:** read `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` first. The baseline live audit covers all nine persistent browser profiles across 14 role contexts, 493 screens and 6,360 controls on desktop + iPhone. Slices 1–7 repaired the responsive shell, Welcome/Profile photo, Notifications, mobile touch targets, Settings, conversations, Teacher and Institute workspaces. Slice 8 exact product SHA `72958a9e8f88c79c20ed9a43a204e570099a492c` redesigns Local Manager Home / People & safety / Learning around exact authorized aggregate data and the no-learner-directory boundary; Manager browser proof passes 20/20 and the extended Institute proof passes 15/15. Model Tests #791 and Browser Contract #45 passed first attempt. Slice 9 exact SHA `f9fd83e871d9b41423138b0c97b2b8be43ed6036` redesigns Platform and Ads operational workspaces, including governed Platform queues, human Ads creation/inventory/analytics and exact creative-review handling. Exact Slice 9 qualification includes 5,349,572 model cases / 0 failures, source 35/35, shell 5/5, Notifications 9/9, mobile actions 32/32, Settings 8/8, Conversation 16/16, Teacher 10/10, Institute 15/15, Manager 20/20, Platform 16/16, Ads 18/18, human-language 168/168 and existing interactions 27/27. GitHub Model Tests #792 and Browser Contract #46 passed first attempt. Do not deploy these UX slices while the broader redesign gate remains open. Public was reverified unchanged on `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
 
@@ -44,11 +46,12 @@ Do **not** restart product design, rebuild the database, recreate the DEV-write 
 
 Read next:
 
-1. `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` - **canonical current UX gate; deployment frozen until product-wide visual redesign and mobile/desktop regression are closed**
-2. `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` - Round-6 functional baseline; admin polish and Class-message double-submit recovery are public-live and proven
-3. `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` - Round-5 predecessor and Browser Contract #33 failure context
-4. `130-prelaunch-live-simulation-registry-2026-09-23.md` - persistent isolated browser personas and accumulated live-simulation state
-5. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - first genuine Teacher closure and controlled Gomoh pilot baseline
+1. `134-final-ux-gate-closure-public-release-2026-09-28.md` - **canonical current state; final UX gate closed and exact public release verified**
+2. `133-investor-grade-ux-audit-and-redesign-gate-2026-09-25.md` - historical redesign program and slice evidence
+3. `132-current-execution-handover-prelaunch-live-simulation-round6-2026-09-25.md` - Round-6 functional baseline; admin polish and Class-message double-submit recovery are public-live and proven
+4. `131-current-execution-handover-prelaunch-live-simulation-round5-2026-09-25.md` - Round-5 predecessor and Browser Contract #33 failure context
+5. `130-prelaunch-live-simulation-registry-2026-09-23.md` - persistent isolated browser personas and accumulated live-simulation state
+6. `129-current-execution-handover-first-teacher-closed-2026-09-23.md` - first genuine Teacher closure and controlled Gomoh pilot baseline
 2. `117-current-execution-handover-v14h-public-live-2026-09-23.md` - **V1.4H StartMessaging phone trust public-live handover**
 3. `116-v14h-startmessaging-phone-trust-public-live-evidence-2026-09-23.md` - **exact V1.4H deployment, migrations, identity continuity, enforcement and browser evidence**
 4. `115-startmessaging-phone-trust-activation-contract-v1.4h.md` - activation contract and rollout order

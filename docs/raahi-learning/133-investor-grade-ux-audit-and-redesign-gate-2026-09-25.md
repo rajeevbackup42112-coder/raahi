@@ -5,20 +5,20 @@ Repo: `rajeevbackup42112-coder/raahi`
 Branch: `raahi-learning-implementation-v1`  
 Public: `https://learning.myraahi.co.in`
 
-## Decision
+## Decision — CLOSED
 
-Do **not** treat Raahi Learning as visually launch-ready yet.
+This document records the redesign program that was opened on 2026-09-25.
 
-The functional/product foundation is strong, but the current presentation does not yet feel like one polished consumer learning brand. The next pre-launch gate is a product-wide UX and visual-system redesign, followed by full mobile + desktop visual regression.
+The gate is now **closed**. The final released product source is `7d99b69165df0de0ca02e7778fde995b302ff624`.
 
-Deployment of the current human-language candidate is frozen until this gate is closed.
+Final release evidence, all-nine zero-issue audit results, exact-SHA qualification and post-deploy continuity are canonical in `134-final-ux-gate-closure-public-release-2026-09-28.md`.
 
-Current undeployed branch product source:
-`f9fd83e871d9b41423138b0c97b2b8be43ed6036` — **Redesign Platform and Ads workspaces**
+Final released product source:
+`7d99b69165df0de0ca02e7778fde995b302ff624` — **Close final mobile audit disclosure target**
 
-This source includes the earlier human-language/setup reliability work plus Investor-Grade UX **Slices 1–9**. Exact-SHA qualification is green: 5,349,572 model cases with 0 failures, focused/source 35/35, responsive-shell browser contract 5/5, Notifications UX browser contract 9/9, mobile-action browser contract 32/32, Settings UX browser contract 8/8, Conversation UX browser contract 16/16, Teacher workspace browser contract 10/10, Institute workspace browser contract 15/15, Local Manager workspace browser contract 20/20, Platform workspace browser contract 16/16, Ads workspace browser contract 18/18, human-language browser audit 168/168, and existing sealed browser interactions 27/27. GitHub Model Tests #792 and Browser Contract #46 are green on the first attempt. It is intentionally **not deployed** while this UX redesign gate is open.
+The complete redesign and convergence program is deployed. Final exact-SHA qualification, the zero-issue all-nine audit, preview/production hash equality and post-deploy continuity are recorded in `134-final-ux-gate-closure-public-release-2026-09-28.md`.
 
-Current public product remains `5d8ea741a4c782a3978f4d3c096024e3dbc0fead`.
+Current public product is `7d99b69165df0de0ca02e7778fde995b302ff624`.
 
 ## Implementation progress
 
