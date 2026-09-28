@@ -428,6 +428,80 @@ This is the remaining empirical proof for this spike.
 
 ---
 
+## 10A. Empirical proof completed — 2026-09-28
+
+The intended privacy property was preserved while adapting to current redirect configuration.
+
+### Attempt 1 — historical localhost proof
+
+The localhost proof page started with:
+- `session_present=false`
+- no proof session.
+
+Google OAuth was initiated with `redirectTo=http://localhost:4173/index.html`.
+
+Observed:
+- authentication completed;
+- Supabase redirected to the current configured Learning Site URL rather than localhost.
+
+Interpretation:
+- the historical localhost redirect is no longer an active return target in the current Auth configuration;
+- no Auth setting was changed merely to satisfy the test.
+
+### Attempt 2 — existing allowed DEV origin
+
+Existing DEV origin:
+`https://dev.learning.myraahi.co.in`
+
+The DEV privacy page already had Supabase available in the browser.
+
+An isolated PKCE client used:
+- project `iiwwmqokaeflaenhlyip`;
+- separate storage key `raahi-sso-lab`;
+- Google provider;
+- explicit test Location `gomoh`.
+
+OAuth returned automatically to the DEV callback with an authorization code.
+
+The code was exchanged locally in the browser.
+
+Before reporting the result, the returned user UUID was hashed locally and the raw UUID was removed from output.
+
+Result:
+- `ok=true`
+- provider = `google`
+- selected Location = `gomoh`
+- `same_raahi_subject=true`
+
+### Isolation cleanup
+
+The isolated DEV proof session was signed out with local scope.
+
+Result:
+- no sign-out error;
+- isolated proof session no longer authenticated;
+- Location `gomoh` remained in the DEV proof context.
+
+The original public Learning browser remained on Learning Home with its original Supabase auth storage entry present.
+
+### Staging spike safety
+
+The temporary MyRaahi staging flag was restored to:
+`ENABLE_GATE13_SSO_SPIKE=false`
+
+Current cleaned staging Worker version after that redeploy:
+`693b3c47-851d-4295-ae26-6c0b1d4c1e74`
+
+Read-only staging D1 check after cleanup:
+- `sso_spike_accounts = 0`
+- `sso_spike_sessions = 0`
+
+The disabled spike API returned HTTP 404.
+
+No residual spike identity/session state remains.
+
+---
+
 ## 11. Future true-SSO trigger
 
 Do not build true SSO merely because it is technically possible.
@@ -444,10 +518,25 @@ At that point, reassess Supabase OAuth 2.1/OIDC first.
 
 ## 12. Gate 13D current result
 
-**ARCHITECTURE DIRECTION: PASS**
+**PASS for V1 identity continuity.**
 
-**EMPIRICAL IDENTITY-CONTINUITY PROOF: PENDING**
+Empirical proof completed on 2026-09-28.
 
-No product/business decision is blocked.
+Observed:
+- an existing authenticated public Raahi Learn session was used only to derive a one-way SHA-256 hash of the Supabase user UUID inside the browser;
+- the raw UUID, access token, refresh token, email and phone were not emitted into the proof record;
+- a separate PKCE client on the already-allow-listed DEV origin authenticated through Google against the same Supabase project;
+- code exchange succeeded;
+- provider = Google;
+- `same_raahi_subject = true`;
+- explicit test Location `gomoh` survived the OAuth round trip;
+- isolated DEV proof session signed out locally;
+- the public Learning session remained present and usable after proof;
+- no Supabase Auth redirect setting, Google OAuth setting, Learning source/deployment, production DNS or production business data changed.
 
-The next action is the localhost two-surface identity proof when an authorized browser device is available.
+The historical localhost redirect was also tested first. Supabase returned to the current Site URL instead of localhost, so the proof correctly switched to the already-approved DEV origin rather than modifying Auth configuration.
+
+V1 conclusion:
+> Central Raahi identity + independent origin-local sessions is sufficient.
+
+True seamless cross-origin SSO remains deferred until real multi-product usage proves it necessary.
