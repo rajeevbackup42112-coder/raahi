@@ -15,7 +15,7 @@ test('MyRaahi handoff consumes only the safe location hint', () => {
 });
 
 test('MyRaahi handoff uses Learning canonical Location state and RPC', () => {
-  assert.match(source, /location\.state !== 'live'/);
+  assert.match(source, /target\.state !== 'live'/);
   assert.match(source, /live\.client\.rpc\('set_selected_location'/);
   assert.match(source, /live\.client\.rpc\('get_my_account_context'/);
   assert.doesNotMatch(source, /account_location_preferences/);
