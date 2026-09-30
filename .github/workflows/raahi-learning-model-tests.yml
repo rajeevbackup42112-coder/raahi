@@ -75,6 +75,9 @@ jobs:
       - name: Verify pre-launch live simulation repairs
         run: node --test tests/prelaunch-live-simulation-v14l.test.mjs
 
+      - name: Verify MyRaahi location handoff contract
+        run: node --test tests/myraahi-location-handoff-v1.test.mjs
+
       - name: Verify release packaging and operational guards
         run: node --test tests/release-package.test.mjs tests/thread-cache.test.mjs tests/load-harness.test.mjs tests/ops-guardrails.test.mjs tests/production-canary.test.mjs tests/dev-write-seal.test.mjs tests/pilot-identity-seal.test.mjs tests/launch-polish.test.mjs tests/pilot-cleanup-guards.test.mjs
 
@@ -93,7 +96,8 @@ jobs:
           node --check apps/raahi-learning/market-activation-v14b.js
           node --check apps/raahi-learning/founding-supply-v14c.js
           node --check apps/raahi-learning/admin-management-v14e.js
-          node --check apps/raahi-learning/live-product-fix-v13.js\n          node --check apps/raahi-learning/myraahi-location-handoff-v1.js
+          node --check apps/raahi-learning/live-product-fix-v13.js
+          node --check apps/raahi-learning/myraahi-location-handoff-v1.js
 
       - name: Verify production-like load target guards
         working-directory: tests/raahi-learning-e2e
