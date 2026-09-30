@@ -98,6 +98,7 @@ jobs:
           node --check apps/raahi-learning/admin-management-v14e.js
           node --check apps/raahi-learning/live-product-fix-v13.js
           node --check apps/raahi-learning/myraahi-location-handoff-v1.js
+          node --check tests/raahi-learning-e2e/myraahi-location-handoff-readonly.mjs
 
       - name: Verify production-like load target guards
         working-directory: tests/raahi-learning-e2e

@@ -1,0 +1,61 @@
+name: MyRaahi Learn Location Handoff Readonly
+
+on:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'apps/raahi-learning/myraahi-location-handoff-v1.js'
+      - 'apps/raahi-learning/build-source-v13.mjs'
+      - 'tests/myraahi-location-handoff-v1.test.mjs'
+      - 'tests/raahi-learning-e2e/myraahi-location-handoff-readonly.mjs'
+      - '.github/workflows/myraahi-learning-location-handoff-readonly.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myraahi-learning-location-handoff-readonly
+  cancel-in-progress: true
+
+jobs:
+  readonly-dev-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard DEV read-only target
+        run: |
+          test "$GITHUB_REF" = "refs/heads/raahi-learning-implementation-v1"
+          test "https://dev.learning.myraahi.co.in" = "https://dev.learning.myraahi.co.in"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned browser dependencies
+        working-directory: tests/raahi-learning-e2e
+        run: npm ci --ignore-scripts
+
+      - name: Install Chromium
+        working-directory: tests/raahi-learning-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run read-only deployed handoff proof
+        working-directory: tests/raahi-learning-e2e
+        run: node myraahi-location-handoff-readonly.mjs
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: myraahi-learning-location-handoff-readonly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: tests/raahi-learning-e2e/artifacts-myraahi-location-handoff-readonly/
+          if-no-files-found: warn
+          retention-days: 14
