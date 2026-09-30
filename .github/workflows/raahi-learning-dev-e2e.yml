@@ -2,6 +2,14 @@ name: Raahi Learning DEV E2E Harness
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - raahi-learning-implementation-v1
+    paths:
+      - 'apps/raahi-learning/myraahi-location-handoff-v1.js'
+      - 'apps/raahi-learning/build-source-v13.mjs'
+      - 'tests/raahi-learning-e2e/dev-session-harness.mjs'
+      - '.github/workflows/raahi-learning-dev-e2e.yml'
 
 permissions:
   contents: read

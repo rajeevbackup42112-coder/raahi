@@ -292,6 +292,16 @@ async function main() {
     assert(Array.isArray(allowedRows) && allowedRows.length === 1, 'AUTHORIZED_LEARNER_RLS_READ_FAILED');
     report.checks.push({ check: 'learner_rls_allow_unrelated_rls_deny', pass: true });
 
+    // Gate 16 MyRaahi → Learn walking-skeleton setup.
+    // Seed the synthetic learner to a different canonical preference first so
+    // the browser adapter must perform a real state transition to Dhanbad.
+    await rpc(learner.client, 'set_selected_location', {
+      p_location_id: gomohLocation.location_id,
+      p_idempotency_key: rid + '-myraahi-handoff-seed-gomoh',
+    });
+    learner.context = await accountContext(learner.client);
+    assert(learner.context.selected_location?.slug === 'gomoh', 'MYRAAHI_HANDOFF_SEED_LOCATION_NOT_GOMOH');
+
     const browser = await chromium.launch({ headless: true });
     try {
       for (const key of PERSONA_KEYS) {
@@ -307,6 +317,35 @@ async function main() {
         await page.waitForTimeout(1200);
         const body = await page.locator('body').innerText();
         assert(!/Continue with Google/i.test(body), 'BROWSER_RETURNED_TO_GOOGLE_SIGNIN_' + key);
+
+        if (key === 'learner') {
+          await page.goto(DEV_ORIGIN + '/?raahi_location=dhanbad#/home', { waitUntil: 'domcontentloaded' });
+          await page.waitForFunction(() => {
+            const status = window.RaahiLearningLive?.__myraahiLocationHandoffV1?.status;
+            return status === 'applied' || status === 'already_selected';
+          }, null, { timeout: 30000 });
+          await page.waitForTimeout(500);
+
+          const handoff = await page.evaluate(() => ({
+            status: window.RaahiLearningLive?.__myraahiLocationHandoffV1?.status || null,
+            slug: window.RaahiLearningLive?.context?.selected_location?.slug || null,
+            queryStillPresent: new URL(location.href).searchParams.has('raahi_location'),
+          }));
+
+          assert(handoff.status === 'applied', 'MYRAAHI_LOCATION_HANDOFF_NOT_APPLIED_' + handoff.status);
+          assert(handoff.slug === 'dhanbad', 'MYRAAHI_LOCATION_HANDOFF_BROWSER_CONTEXT_NOT_DHANBAD');
+          assert(handoff.queryStillPresent === false, 'MYRAAHI_LOCATION_HANDOFF_QUERY_NOT_CLEANED');
+
+          const backendContext = await accountContext(learner.client);
+          assert(backendContext.selected_location?.slug === 'dhanbad', 'MYRAAHI_LOCATION_HANDOFF_BACKEND_CONTEXT_NOT_DHANBAD');
+
+          report.checks.push({
+            check: 'myraahi_location_handoff_dhanbad_browser_and_backend',
+            pass: true,
+          });
+          await page.screenshot({ path: path.join(ARTIFACT_DIR, 'browser-learner-myraahi-handoff.png'), fullPage: true });
+        }
+
         await page.screenshot({ path: path.join(ARTIFACT_DIR, 'browser-' + key + '.png'), fullPage: true });
         report.personas[key].browser_signed_in = true;
         await context.close();
