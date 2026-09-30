@@ -1,6 +1,6 @@
 # MyRaahi — AI Builder Cheat Code v2.0 Gate Register
 
-Last updated: 2026-09-26
+Last updated: 2026-09-30
 
 Method source: AI Builder Cheat Code v2.0
 
@@ -28,9 +28,9 @@ Status meanings:
 | 11 — Change impact analysis | PASS | A/B/C/D impact register in `MYRAAHI_GATE11_CHANGE_IMPACT_REGISTER_V0.1.md`; shared-shell changes explicitly separated from Learning production changes. |
 | 12 — Architecture | PASS LOGICALLY | Architecture reconciled against Gates 0–11 in `MYRAAHI_GATE12_ARCHITECTURE_RECONCILIATION_V0.1.md`; physical choices remain provisional pending Gate 13. |
 | 13 — Technology proof/spikes | PASS (V1 scope) | Real Cloudflare Worker+D1 runtime, dynamic config, browser path, durable cross-origin identity continuity, Location preservation and per-origin session isolation are proven. Shared-cookie SSO/OTP remain deferred until a slice needs them. |
-| 14 — Screen ↔ backend executable contract | CURRENT | Earlier contract exists; now reconcile it against proven Worker+D1 + central identity/per-origin-session architecture. |
-| 15 — Side-effects matrix | NOT STARTED | No explicit transition → audit/notification/deep-link/analytics/external effect matrix. |
-| 16 — Walking skeleton E2E | NOT PASSED | Code scaffold exists, but no real deployed browser→backend proof and no real auth/session journey. |
+| 14 — Screen ↔ backend executable contract | PASS | Executable contracts are frozen in `MYRAAHI_GATE14_SCREEN_BACKEND_EXECUTABLE_CONTRACTS_V0.1.md`, reconciled against Worker+D1 and central Supabase identity with origin-local V1 sessions. |
+| 15 — Side-effects matrix | PASS | Explicit shared-shell transition/side-effect policy exists in `MYRAAHI_GATE15_SIDE_EFFECTS_MATRIX_V0.1.md`; audit/idempotency are required only where consequential and focused-product writes remain product-owned. |
+| 16 — Walking skeleton E2E | PARTIAL / CURRENT | Real MyRaahi runtime, D1 config, identity continuity, safe Learn link, deployed DEV hint capture and executable canonical-RPC adapter logic are proven. One controlled authenticated DEV browser → `set_selected_location` → backend-context transition remains. See `MYRAAHI_GATE16_WALKING_SKELETON_V0.1.md`. |
 | 17 — Vertical slices | NOT STARTED | Must wait for walking skeleton. |
 | 18 — Defect classification | PARTIAL PRACTICE | CI defects were fixed correctly as implementation defects, but no formal ongoing defect register yet. |
 | 19 — Adversarial/regression | NOT STARTED | Must follow slices. |
@@ -38,32 +38,40 @@ Status meanings:
 | 21 — Load/security/chaos/launch | NOT STARTED | Launch gate only. |
 | 22 — Freeze/change control | PARTIAL | Product decisions are marked frozen, but a formal evidence-based change register is missing. |
 
-## Important correction to execution state
+## Current execution boundary
 
-The branch `myraahi-shared-shell-v1` is useful implementation evidence, but under the strict AI Builder sequence it is **not authorization to continue broad implementation**.
+Gates 0–15 are now reconciled for the current MyRaahi V1 scope.
 
-Until Gates 1–15 are reconciled:
-- do not deploy production;
-- do not broaden the shell;
-- do not add auth/SSO implementation;
-- do not add ads/admin UI;
-- do not integrate focused-product production systems.
+Gate 16 is the current evidence boundary.
 
-The existing code may be used as:
-- prototype evidence for UI discussions;
-- an implementation spike for build/tooling;
-- a future walking-skeleton starting point once the required gates pass.
+Broad vertical-slice implementation must **not** begin until the final walking-skeleton proof closes.
+
+Already proven:
+- real Cloudflare Worker + D1 public shell;
+- dynamic Location/Product configuration;
+- real browser public journey;
+- central Supabase identity continuity;
+- safe MyRaahi → Learn Location hint transport;
+- deployed DEV Learn hint capture/cleanup while logged out;
+- actual adapter logic invoking canonical `set_selected_location` in deterministic cloud CI;
+- existing Learning regressions remain green.
+
+Still required:
+- one authorized authenticated DEV/browser execution proving the deployed adapter commits a real Learn Location preference and canonical backend context returns the same target Location.
+
+Do not bypass the controlled-pilot DEV-write seal just to satisfy this gate.
 
 ## Exact next gate
 
-**Gate 14 — Screen ↔ Backend Executable Contracts.**
+**Gate 16 — close WS-10 only.**
 
-Reconcile the earlier contract against Gate 13 evidence:
-- Cloudflare Worker + D1 is proven for the public shared shell.
-- Supabase Auth is the central identity authority.
-- each origin maintains its own local session in V1.
-- a new Raahi origin authenticating through the same Supabase project resolves to the same user UUID.
-- do not transfer access/refresh tokens between origins.
-- focused Product remains authoritative for product transactions.
+Use `docs/MYRAAHI_GATE16_WALKING_SKELETON_V0.1.md` as the canonical proof plan.
 
-Then complete Gate 15 Side-Effects Matrix and Gate 16 Walking Skeleton before broad implementation.
+After WS-10 passes:
+- mark Gate 16 PASS;
+- begin Gate 17 vertical slices one at a time.
+
+Until then:
+- no production launch;
+- no broad admin/auth build-out;
+- no synthetic-writer guard bypass.
