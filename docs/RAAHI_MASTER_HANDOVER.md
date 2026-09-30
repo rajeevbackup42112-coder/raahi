@@ -794,41 +794,154 @@ Latest branch validation:
 
 ---
 
+## MyRaahi Gate 16 — Walking Skeleton Current State
+
+Canonical document:
+
+`docs/MYRAAHI_GATE16_WALKING_SKELETON_V0.1.md`
+
+Status:
+
+**PARTIAL — one controlled authenticated DEV preference-transition proof remains.**
+
+### Cross-product adapter implemented
+
+Raahi Learning branch:
+
+`raahi-learning-implementation-v1`
+
+Current branch HEAD:
+
+`e96a6236df75cfac6a1a4373fb3abb35c41f38a9`
+
+New adapter:
+
+`apps/raahi-learning/myraahi-location-handoff-v1.js`
+
+It:
+- consumes only `raahi_location`;
+- normalizes/validates the slug;
+- preserves pending intent in sessionStorage across auth;
+- removes the query parameter from the visible URL;
+- waits for authenticated Learn Account context and Learn's own Location list;
+- requires target Learn Location state LIVE;
+- invokes the existing canonical `set_selected_location` RPC;
+- refreshes `get_my_account_context`;
+- never writes the preference table directly;
+- never treats Location as role/admin authority;
+- never reads/transfers auth tokens.
+
+### Cloud evidence
+
+Model Tests:
+
+- run `36709495982`
+- SHA `e96a6236df75cfac6a1a4373fb3abb35c41f38a9`
+- result: **SUCCESS**
+
+The actual adapter source is executed in a VM test which proves:
+- logged-out arrival does not write;
+- authenticated context causes `set_selected_location`;
+- Dhanbad Location ID is passed;
+- idempotency key is used;
+- canonical account context is refreshed to Dhanbad;
+- pending handoff state is cleared.
+
+Real deployed DEV read-only proof:
+
+- workflow: `MyRaahi Learn Location Handoff Readonly`
+- run `36709496149`
+- result: **SUCCESS**
+- artifact: `myraahi-learning-location-handoff-readonly-36709496149-1`
+- digest: `sha256:effd883eb4ddfd4913c65ae7167c825f7f21cf86765aab513dfe4c47acd67607`
+
+Observed on `dev.learning.myraahi.co.in`:
+- deployed adapter asset present;
+- `raahi_location=dhanbad` captured;
+- query parameter removed from visible URL;
+- **zero** `set_selected_location` requests while logged out;
+- normal signed-out Learn UI remained intact.
+
+The deployed DEV app SHA was `ae6a7e8e9c215ea554e2475a39319ad561e8ce46`. It is source-compatible with `e96a6236…`; the later differences are tests/workflows only and `appChanges=[]`.
+
+### DEV synthetic-write seal
+
+The controlled-pilot safety seal remains intact.
+
+`.github/RAAHI_LEARNING_DEV_WRITES_ENABLED` is intentionally absent.
+
+Synthetic DEV writer workflows remain manual-only and fail closed.
+
+An attempted automatic DEV E2E writer run stopped at the write guard before any mutation. The temporary push trigger was removed immediately.
+
+Do not recreate/bypass that marker merely to satisfy Gate 16.
+
+### Remaining proof — WS-10
+
+One exact evidence step remains:
+
+authenticated deployed DEV browser
+→ valid MyRaahi Location hint
+→ real Learn `set_selected_location`
+→ real preference write
+→ `get_my_account_context`
+→ same target Location in browser and backend.
+
+This must use an explicitly authorized controlled test path.
+
+No production user preference, production Auth configuration, service-role direct table write or synthetic-writer guard bypass may substitute for it.
+
+---
+
 ## Exact Current Point / Next Action
 
-Current gate:
-**Gate 13D — one empirical cross-product identity/session proof remains.**
+Current AI Builder state:
 
-Desktop Commander device `Dipti` is currently offline.
+- Gates 0–15: **PASS / reconciled for current V1 scope**
+- Gate 16: **PARTIAL / CURRENT**
+- Gate 17: **BLOCKED until Gate 16 closes**
 
-When it reconnects:
+Do not restart:
+- archaeology;
+- public-shell architecture;
+- Cloudflare runtime proof;
+- identity architecture;
+- Gate 14 contracts;
+- Gate 15 side-effects;
+- Learn Location adapter implementation.
 
-1. update isolated local checkout to branch HEAD `a99ee649...`;
-2. apply staging-only migration `0002_gate13_sso_spike.sql`;
-3. enable the SSO spike flag only for the workers.dev staging Worker;
-4. deploy staging;
-5. from an already-authenticated Raahi Learn test browser, submit its access token directly from browser memory to the staging handoff by HTTPS POST — never print/copy/log it;
-6. verify the staging MyRaahi HttpOnly session via `/api/v1/_spike/auth/me`;
-7. repeat once to prove stable identity resolution;
-8. log out the MyRaahi spike session;
-9. verify Learn remains unaffected;
-10. disable the spike flag and redeploy staging.
+### Exact remaining action
 
-Alternative fallback:
-use the privacy-safe localhost harness at the already-approved DEV redirect and compare only SHA-256 subject equality.
+Close Gate 16 WS-10 only:
 
-No production Auth/DNS/code change is permitted for this proof.
+1. use an explicitly authorized authenticated DEV/test Learn browser context;
+2. establish/confirm an initial canonical selected Location different from the target;
+3. enter deployed Learn with a valid MyRaahi `raahi_location` hint;
+4. observe the deployed adapter invoke the real canonical `set_selected_location` RPC;
+5. confirm `get_my_account_context` returns the target Location;
+6. confirm the browser Learn context shows the same target Location;
+7. confirm no role, capability, admin scope or unrelated Product data changes;
+8. repeat/reload safely to prove idempotent recovery.
 
-After proof:
-- if it passes, Gate 13 identity technology is sufficient for V1;
-- keep true seamless SSO deferred unless real multi-product usage proves the friction worth solving;
-- proceed to the next AI Builder implementation gate.
+Do not bypass the sealed synthetic DEV writer workflow.
+
+If no authorized state-changing DEV browser path is available, stop at this evidence boundary rather than weakening the guard.
+
+After WS-10 passes:
+- mark Gate 16 PASS;
+- begin Gate 17 vertical slices one at a time.
+
+Production remains untouched:
+- no `myraahi.co.in` DNS cutover;
+- no production Learn Auth change;
+- no production preference write solely for test evidence.
 
 ---
 
 ## Handover Discipline Going Forward
 
-Update this master handover after every material decision or technology proof.
+Update this master handover after every material decision, defect classification, or technology/evidence gate.
 
 A new chat resumes with:
+
 "Read docs/RAAHI_MASTER_HANDOVER.md and continue from Exact Current Point."
