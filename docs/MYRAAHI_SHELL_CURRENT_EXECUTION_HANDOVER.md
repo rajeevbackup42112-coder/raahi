@@ -242,29 +242,44 @@ Latest CI:
 - run `36297963846`
 - result: SUCCESS
 
+## Cross-product Gate 16 state
+
+MyRaahi public shell work is now integrated with Raahi Learn through a dedicated Location adapter on:
+
+`raahi-learning-implementation-v1`
+
+Learning branch HEAD:
+`e96a6236df75cfac6a1a4373fb3abb35c41f38a9`
+
+Adapter:
+`apps/raahi-learning/myraahi-location-handoff-v1.js`
+
+Cloud evidence:
+- Model Tests `36709495982` = SUCCESS
+- deployed DEV read-only handoff `36709496149` = SUCCESS
+- deployed adapter captures Dhanbad hint, removes query, and performs zero writes while logged out
+- executable adapter test proves authenticated path calls canonical `set_selected_location` then refreshes `get_my_account_context`
+
+Canonical main-branch evidence:
+`docs/MYRAAHI_GATE16_WALKING_SKELETON_V0.1.md`
+
 ## Exact next action
 
-Desktop Commander device `Dipti` is currently offline.
+Gate 16 remains PARTIAL for one reason only:
 
-When it reconnects, run the isolated seamless-handoff proof:
+perform one explicitly authorized authenticated DEV/browser handoff proving:
 
-1. update isolated local checkout to branch HEAD `a99ee649...`;
-2. apply remote staging migration `0002_gate13_sso_spike.sql` to `myraahi-shell-gate13-staging`;
-3. enable `ENABLE_GATE13_SSO_SPIKE=true` only in the temporary local staging Wrangler config;
-4. deploy only `myraahi-shell-gate13-staging` to workers.dev;
-5. from an already-authenticated Raahi Learn test browser, read the access token only inside page memory and submit it by HTTPS POST directly to the staging handoff endpoint;
-6. do not print/copy/log the token;
-7. verify MyRaahi redirects and `/api/v1/_spike/auth/me` reports authenticated;
-8. repeat handoff and verify the same spike account resolves rather than duplicate identity;
-9. invoke spike logout;
-10. confirm the original Learn browser/session still works;
-11. disable `ENABLE_GATE13_SSO_SPIKE` and redeploy staging;
-12. document result.
+MyRaahi Location hint
+→ deployed Learn adapter
+→ real `set_selected_location`
+→ real `get_my_account_context`
+→ same target Location in UI/backend.
 
-If that custom handoff proof becomes unnecessary or encounters a security/design concern, use the already-approved localhost identity-continuity harness instead.
+Do not:
+- recreate/bypass `.github/RAAHI_LEARNING_DEV_WRITES_ENABLED`;
+- auto-run sealed synthetic writer workflows;
+- mutate a production user preference for evidence;
+- direct-write `account_location_preferences`;
+- start Gate 17 broad implementation before this proof.
 
-Do not modify:
-- production DNS;
-- Learning production auth configuration;
-- Google OAuth configuration;
-- Learning production code.
+Everything else in Gates 0–15 and the non-writing portions of Gate 16 is already complete.
