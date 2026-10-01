@@ -105,6 +105,8 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/one_to_one:'One-to-one'/);
   assert.match(js,/Your conversations with learners, families and Classes/);
   assert.match(js,/message from a learner or family/);
+  assert.match(js,/v16-notification-repeat/);
+  assert.match(css,/v16-notification-repeat/);
   assert.match(js,/Create a Class to organise your institute/);
   assert.match(js,/toLocaleString/);
   assert.match(css,/\.v16-active-learner/);

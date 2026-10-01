@@ -1378,6 +1378,9 @@
     cards.forEach((card,index)=>{
       const n=rows[index]; if(!n) return;
       card.classList.add('v15-notification-card');
+      const previous=rows[index-1];
+      const repeated=!!previous && !!n.source_id && n.source_id===previous.source_id && n.notification_type===previous.notification_type;
+      card.classList.toggle('v16-notification-repeat',repeated);
       card.classList.toggle('is-unread',!n.read_at);
       card.classList.toggle('is-read',!!n.read_at);
       const between=card.querySelector(':scope > .between'); if(!between) return;

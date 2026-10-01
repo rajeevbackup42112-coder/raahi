@@ -910,3 +910,8 @@ body{
   .v16-active-learner-copy strong{display:block;max-width:220px;font-size:12px}
   .v16-active-learner-type{font-size:9.5px}
 }
+
+/* V1.6 notification history compaction */
+.v15-notification-card.v16-notification-repeat{padding-top:10px;padding-bottom:10px}
+.v15-notification-card.v16-notification-repeat .v15-notification-copy p{display:none}
+.v15-notification-card.v16-notification-repeat .v15-notification-icon{opacity:.72;transform:scale(.9)}
