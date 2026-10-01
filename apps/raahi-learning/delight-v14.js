@@ -1501,6 +1501,50 @@
     }
   }
 
+  function humanDisplayValue(value){
+    const key=String(value||'').trim().toLowerCase();
+    const map={in_person:'In person',one_to_one:'One-to-one',group:'Group',active:'Active',pending:'Pending',completed:'Completed',cancelled:'Cancelled',closed:'Closed',draft:'Draft',published:'Published'};
+    return map[key]||null;
+  }
+
+  function polishHumanLanguage(){
+    const r=route();
+    if(r==='messages'){
+      const subtitle=document.querySelector('.main .page-head p');
+      if(subtitle) subtitle.textContent=activeRole()==='teacher'
+        ? 'Your conversations with learners, families and Classes.'
+        : 'Your conversations with teachers and Classes.';
+    }
+    if(activeRole()==='institute' && r==='org-classes'){
+      document.querySelectorAll('.main .empty p').forEach(p=>{
+        if(/When you join a Class/i.test(p.textContent||'')) p.textContent='Create a Class to organise your institute’s learners, activities and updates.';
+      });
+    }
+    document.querySelectorAll('.main .badge,.main .tiny,.main .card-sub,.main p').forEach(el=>{
+      if(el.children.length) return;
+      const raw=(el.textContent||'').trim();
+      const mapped=humanDisplayValue(raw);
+      if(mapped) el.textContent=mapped;
+      else if(/learner-side message/i.test(raw)) el.textContent=raw.replace(/learner-side message/ig,'message from a learner or family');
+      else if(/\b(in_person|one_to_one)\b/i.test(raw)) el.textContent=raw.replace(/in_person/ig,'In person').replace(/one_to_one/ig,'One-to-one');
+      else if(/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})\b/.test(raw)){
+        el.textContent=raw.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})/g,iso=>{
+          const d=new Date(iso); return Number.isNaN(d.getTime())?iso:d.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+        });
+      }
+    });
+    if(activeRole()==='teacher'){
+      const selected=locationName();
+      document.querySelectorAll('.main .page-head p,.main .hero p').forEach(p=>{
+        if(p.dataset.v16LocationExplained==='true'||!/\bLocation\b/i.test(p.textContent||'')) return;
+        if(/teach|teacher|teaching/i.test(p.textContent||'') && selected){
+          p.dataset.v16LocationExplained='true';
+          p.title='Your learning Location controls what you browse. Your teaching Location stays with your teaching profile.';
+        }
+      });
+    }
+  }
+
   function polishCardsAndContext(){
     for(const card of document.querySelectorAll('[data-live-option].card')) card.classList.add('v14-market-card');
     for(const tiny of document.querySelectorAll('.rightbar .tiny')) if(tiny.textContent.trim()==='Selected Location') tiny.textContent='Exploring';
@@ -1540,6 +1584,7 @@
       polishSettings();
       polishNotifications();
       polishAvatarPicker();
+      polishHumanLanguage();
       polishSemanticNavigationCards();
       polishCardsAndContext();
     } finally {

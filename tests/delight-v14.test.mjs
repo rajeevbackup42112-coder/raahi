@@ -99,6 +99,13 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/Learning for/);
   assert.match(js,/Managed by you/);
   assert.match(js,/Your learning profile/);
+  assert.match(js,/function polishHumanLanguage\(\)/);
+  assert.match(js,/in_person:'In person'/);
+  assert.match(js,/one_to_one:'One-to-one'/);
+  assert.match(js,/Your conversations with learners, families and Classes/);
+  assert.match(js,/message from a learner or family/);
+  assert.match(js,/Create a Class to organise your institute/);
+  assert.match(js,/toLocaleString/);
   assert.match(css,/\.v16-active-learner/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
