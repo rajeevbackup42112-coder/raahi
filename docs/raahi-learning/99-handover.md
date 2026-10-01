@@ -1,6 +1,6 @@
 # Raahi Learning - Handover / Current State
 
-**For the current state, read `134-final-ux-gate-closure-public-release-2026-09-28.md` first.**
+**For the current state, read `135-current-execution-handover-live-acceptance-improvements-2026-10-01.md` first.**
 
 Repository: `rajeevbackup42112-coder/raahi`  
 Implementation branch: `raahi-learning-implementation-v1`  
@@ -9,6 +9,8 @@ Canonical docs: `docs/raahi-learning/`
 > This branch is isolated from older Raahi ride work on `main`. Do not replay mobility migrations or overwrite the older commute app.
 
 ## Current status
+
+**2026-10-01 LIVE NINE-PERSONA ACCEPTANCE FROZEN / TARGETED IMPROVEMENTS IN PROGRESS:** production remains exact SHA `7d99b69165df0de0ca02e7778fde995b302ff624`. The browser-only study completed 9 personas / 14 effective role contexts / 104 paired scenario states / 214 inspected live views-states plus controlled Enquiry, Class-message and notification-read proofs. Canonical synthesis: `tests/raahi-learning-e2e/artifacts-live-user-acceptance-2026-09-28/06-consolidated-acceptance-findings-and-plan.md`. Slice A semantic navigation cards is complete at `7b896fe` (Model #806 / Browser #52 green). Slice B active learner clarity is complete at current undeployed product HEAD `bf65527b0d4379e1d2467b32d4817d1b44e0948e` (Model #807 / Browser #53 green). Immediate next: Slice C read-only root-cause analysis of P06's two indistinguishable Institute contexts before any data mutation. Do not deploy current HEAD yet. Read `135-current-execution-handover-live-acceptance-improvements-2026-10-01.md` first.
 
 **2026-09-28 FINAL UX GATE CLOSED / PUBLIC RELEASE VERIFIED:** exact product SHA `7d99b69165df0de0ca02e7778fde995b302ff624` is live on `https://learning.myraahi.co.in`. Preview and production hashes match the same immutable release artifact. Exact-SHA qualification is green: 5,349,572 model cases / 0 failures; source 35/35; shell 5/5; Notifications 9/9; mobile actions 32/32; Settings 8/8; conversations 16/16; Teacher 11/11; Institute 16/16; Manager 21/21; Platform 19/19; Ads 19/19; language 168/168; sealed interactions 27/27. GitHub Model Tests #796 and Browser Contract #49 passed. Final all-nine audit: 527 screens, 6,998 controls, 0 issue screens, 0 audit errors. Post-deploy continuity for Raahi-03 and Raahi-08 was rechecked after settled boot and is clean. The controlled Gomoh-first product/UX go-live gate is complete. Read `134-final-ux-gate-closure-public-release-2026-09-28.md` first.
 
