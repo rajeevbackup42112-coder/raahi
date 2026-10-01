@@ -124,7 +124,9 @@ test('Draft Class management exposes a canonical activation path',()=>{
 
 test('Platform audit is human-readable while retaining technical details',()=>{
   assert.match(product,/function pagePlatformAuditHuman\(\)/);
-  assert.match(product,/Human summary first; technical identifiers remain available when needed\./);
+  assert.match(product,/Search the loaded actions; open technical details only when needed\./);
+  assert.match(product,/live-audit-search/);
+  assert.match(product,/data-live-audit-row/);
   assert.match(product,/Technical details/);
   assert.match(product,/route === 'platform-audit'[\s\S]*pagePlatformAuditHuman\(\)/);
 });

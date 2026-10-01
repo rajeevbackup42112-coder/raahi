@@ -1038,6 +1038,7 @@
     main.dataset.v15ManagerRoute=r;
 
     const scope=(Array.isArray(live.context?.manager_scopes)?live.context.manager_scopes:[])[0]||null;
+    const isPlatformAdmin=Array.isArray(live.context?.capabilities)&&live.context.capabilities.includes('platform_admin');
     const locationName=scope?.location_name||live.context?.selected_location?.name||'Local';
     const head=main.querySelector('.page-head');
     const title=head?.querySelector('h1');
@@ -1085,7 +1086,7 @@
       copy.className='v15-manager-scope-copy';
       const eyebrow=document.createElement('span');
       eyebrow.className='v15-manager-eyebrow';
-      eyebrow.textContent='Local Manager';
+      eyebrow.textContent=scope?'Local Manager':(isPlatformAdmin?'Platform Admin · local operations':'Local operations');
       const h=document.createElement('h2');
       h.textContent=locationName;
       const p=document.createElement('p');

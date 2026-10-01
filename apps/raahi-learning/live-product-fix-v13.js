@@ -307,9 +307,11 @@
           reason:row.reason || null,
           metadata:row.metadata || {}
         }));
-        return `<div class="card"><div class="between"><div><h3>${h(auditLabel(row.action_type))}</h3><p class="card-sub">${h(target)} · ${h(when)}</p></div>${learnerContext}</div><details><summary class="tiny muted">Technical details</summary><code style="display:block;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px">${details}</code></details></div>`;
+        const searchText=[row.action_type,row.target_type,row.reason,when].filter(Boolean).join(' ').toLowerCase();
+        return `<div class="card" data-live-audit-row data-live-audit-search="${h(searchText)}"><div class="between"><div><h3>${h(auditLabel(row.action_type))}</h3><p class="card-sub">${h(target)} · ${h(when)}</p></div>${learnerContext}</div><details><summary class="tiny muted">Technical details</summary><code style="display:block;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px">${details}</code></details></div>`;
       }).join('');
-      return api.layout(`${api.pageHead('Audit Log','Governed action history. Human summary first; technical identifiers remain available when needed.')}<div class="stack">${cards || api.empty('No audit rows','No audit entries are visible to this projection.')}</div>`);
+      const tools=rows.length ? '<div class="field"><label for="live-audit-search">Find an audit action</label><input id="live-audit-search" type="search" placeholder="Search action, target or date" autocomplete="off"><p class="tiny muted">Showing <span id="live-audit-visible-count">'+rows.length+'</span> of '+rows.length+' loaded actions.</p></div>' : '';
+      return api.layout(`${api.pageHead('Audit Log','Governed action history. Search the loaded actions; open technical details only when needed.')}${tools}<div class="stack">${cards || api.empty('No audit rows','No audit entries are visible to this projection.')}</div>`);
     }
 
     function pageSubmissionReviewHuman() {
@@ -754,6 +756,19 @@
         },'teacher-home','Your teaching setup is ready');
       }
     }, true);
+
+    document.addEventListener('input', e => {
+      if (e.target?.id !== 'live-audit-search') return;
+      const q=String(e.target.value||'').trim().toLowerCase();
+      let visible=0;
+      document.querySelectorAll('[data-live-audit-row]').forEach(card=>{
+        const show=!q||String(card.dataset.liveAuditSearch||'').includes(q);
+        card.hidden=!show;
+        if(show) visible+=1;
+      });
+      const count=document.querySelector('#live-audit-visible-count');
+      if(count) count.textContent=String(visible);
+    });
 
     document.addEventListener('click', async e => {
       const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-send-class-message],[data-live-notification-read],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');

@@ -68,6 +68,7 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/People & safety/);
   assert.match(js,/Learning activity/);
   assert.match(js,/v15-manager-metric-card/);
+  assert.match(js,/Platform Admin · local operations/);
   assert.match(css,/v15-manager-metric-grid/);
   assert.match(js,/Platform operations/);
   assert.match(js,/Governed platform view/);
