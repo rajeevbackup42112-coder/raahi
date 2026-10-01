@@ -118,8 +118,8 @@
 
     // Human context labels. Internal route/authority values remain unchanged.
     Object.assign(api.workspaceLabels,{
-      learner:'My learning',
-      student:'My learning',
+      learner:'Find learning',
+      student:'Classes & practice',
       parent:'Learners I manage',
       teacher:'Teaching',
       institute:'Institute',

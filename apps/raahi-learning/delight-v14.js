@@ -166,6 +166,35 @@
     }
   }
 
+  function polishLearnerContext(){
+    const live=window.RaahiLearningLive;
+    const main=document.querySelector('.main');
+    const role=activeRole();
+    const routes=new Set(['home','explore','classes','messages','request-new','request-edit','request-detail','class-detail','class-thread','enquiry','activity','test','test-upcoming','notifications']);
+    const existing=main?.querySelector(':scope > .v16-active-learner');
+    const learners=Array.isArray(live?.context?.learners)?live.context.learners:[];
+    if(!main || !['learner','student','parent'].includes(role) || learners.length<2 || !routes.has(route())){
+      existing?.remove();
+      return;
+    }
+    const selected=learners.find(x=>String(x.learner_id)===String(live?.selected?.learnerId)) || learners[0];
+    if(!selected){ existing?.remove(); return; }
+    const signature=[role,selected.learner_id,learners.length].join('|');
+    if(existing?.dataset.v16LearnerSignature===signature) return;
+    const strip=existing||document.createElement('div');
+    strip.className='v16-active-learner';
+    strip.dataset.v16LearnerSignature=signature;
+    strip.setAttribute('aria-label','Active learner: '+(selected.display_name||'Selected learner'));
+    strip.innerHTML='<div class="v16-active-learner-copy"><span>Learning for</span><strong></strong></div><span class="v16-active-learner-type"></span>';
+    strip.querySelector('strong').textContent=selected.display_name||'Selected learner';
+    strip.querySelector('.v16-active-learner-type').textContent=selected.access_type==='manage'?'Managed by you':'Your learning profile';
+    if(!existing){
+      const head=main.querySelector(':scope > .page-head');
+      if(head) head.insertAdjacentElement('afterend',strip);
+      else main.prepend(strip);
+    }
+  }
+
   function polishWelcome(){
     const card=[...document.querySelectorAll('.auth-card')].find(x=>/Continue with Google/i.test(x.textContent||''));
     if(!card) return;
@@ -1487,6 +1516,7 @@
       polishBrand();
       polishIcons();
       polishShell();
+      polishLearnerContext();
       polishWelcome();
       polishHome();
       polishPageHead();

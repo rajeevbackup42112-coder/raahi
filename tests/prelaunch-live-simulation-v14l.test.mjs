@@ -40,6 +40,12 @@ test('Class materials returned by the authorized overview are visible to provide
   assert.match(product,/withClassMaterials\(rendered\)/);
 });
 
+test('Learner workspaces stay human-distinct without changing canonical roles',()=>{
+  assert.match(product,/learner:'Find learning'/);
+  assert.match(product,/student:'Classes & practice'/);
+  assert.match(product,/parent:'Learners I manage'/);
+});
+
 test('Self Learners can create the same private Class code as other learning decision makers',()=>{
   const start=product.indexOf('function pageLearners()');
   const block=product.slice(start,start+2400);

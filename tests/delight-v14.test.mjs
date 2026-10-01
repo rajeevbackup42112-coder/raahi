@@ -95,6 +95,11 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(js,/v16-semantic-card/);
   assert.match(css,/\.v16-semantic-card:focus-visible/);
   assert.match(css,/outline:3px solid var\(--primary\)/);
+  assert.match(js,/function polishLearnerContext\(\)/);
+  assert.match(js,/Learning for/);
+  assert.match(js,/Managed by you/);
+  assert.match(js,/Your learning profile/);
+  assert.match(css,/\.v16-active-learner/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);
