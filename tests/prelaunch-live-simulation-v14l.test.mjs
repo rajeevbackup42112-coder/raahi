@@ -95,6 +95,16 @@ test('Class thread messages refetch once and reject duplicate in-flight submits'
 test('Enquiry mutations immediately refetch the authoritative thread for the acting browser',()=>{
   assert.match(product,/data-live-engage-enquiry[\s\S]*engage_enquiry[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
   assert.match(product,/data-live-send-enquiry-message[\s\S]*send_enquiry_message[\s\S]*refreshCurrentEnquiryThread\(\)[\s\S]*api\.render\(\)/);
+  const sendBlock=product.match(/if \(t\.hasAttribute\('data-live-send-enquiry-message'\)\)[\s\S]*?return;\n        }/)?.[0]||'';
+  assert.doesNotMatch(sendBlock,/refreshCoreState\(\)|routeLoads\.clear\(\)/);
+});
+
+test('Notification read refreshes only authoritative notifications',()=>{
+  const readStart=product.indexOf("if (t.hasAttribute('data-live-notification-read'))");
+  const readBlock=readStart>=0?product.slice(readStart,product.indexOf("if (t.hasAttribute('data-live-send-enquiry-message'))",readStart)):'';
+  assert.match(readBlock,/mark_notification_read/);
+  assert.match(readBlock,/get_my_notifications/);
+  assert.doesNotMatch(readBlock,/refreshCoreState\(\)|get_my_classes|get_my_enquiries|get_my_conversations/);
 });
 
 test('Duplicate active enquiry opens the existing relationship with human guidance',()=>{

@@ -756,7 +756,7 @@
     }, true);
 
     document.addEventListener('click', async e => {
-      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-send-class-message],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
+      const t = e.target.closest?.('[data-live-first-use-intent],[data-live-enable-teaching],[data-live-confirm-enquiry],[data-live-engage-enquiry],[data-live-send-enquiry-message],[data-live-send-class-message],[data-live-notification-read],[data-live-activity],[data-live-test],[data-live-fix-open-test-attempt],[data-live-fix-evaluate-test-attempt],[data-live-fix-release-test-results],[data-live-fix-review-submission],[data-live-fix-request-submission-changes],[data-live-fix-activate-class],[data-live-fix-open-invite],[data-live-fix-accept-invite],[data-live-fix-end-management],[data-live-fix-confirm-end-management],[data-live-fix-send-phone-otp],[data-live-fix-verify-phone],[data-live-fix-resume-action],[data-live-fix-logout],[data-live-fix-open-trial-notification],[data-live-fix-open-class-session-notification],[data-live-fix-open-class-post-notification],[data-live-fix-open-class-lifecycle-notification],[data-live-fix-open-activity-submission-notification],[data-live-fix-open-test-correction-notification],[data-live-fix-open-organization-authority-notification]');
       if (!t) return;
       e.preventDefault(); e.stopImmediatePropagation();
       try {
@@ -930,13 +930,20 @@
           api.render();
           return;
         }
+        if (t.hasAttribute('data-live-notification-read')) {
+          const id=t.dataset.liveNotificationRead;
+          if (!id) throw new Error('No notification is selected.');
+          await rpc('mark_notification_read',{p_notification_id:id,p_idempotency_key:idk('notification')});
+          live.data.notifications=arr(await rpc('get_my_notifications',{p_limit:50}));
+          api.toast('Notification marked read','success');
+          api.render();
+          return;
+        }
         if (t.hasAttribute('data-live-send-enquiry-message')) {
           if (!live.selected.enquiryId) throw new Error('No Enquiry is selected.');
           const body = document.querySelector('#live-enquiry-message')?.value?.trim();
           if (!body) throw new Error('Write a message.');
           await rpc('send_enquiry_message',{p_enquiry_id:live.selected.enquiryId,p_body:body,p_idempotency_key:idk('enquiry-message')});
-          live.routeLoads.clear();
-          await refreshCoreState();
           await refreshCurrentEnquiryThread();
           api.toast('Message sent','success');
           api.render();
