@@ -89,6 +89,12 @@ test('V1.4 visual layer stays truthful and accessible by construction',()=>{
   assert.match(css,/\.main \.card details > summary\.tiny[\s\S]*min-height:44px/);
   assert.match(css,/\.auth-shell button[\s\S]*min-height:44px/);
   assert.match(css,/max-height:calc\(100dvh - 445px\)/);
+  assert.match(js,/function polishSemanticNavigationCards\(\)/);
+  assert.match(js,/document\.createElement\('a'\)/);
+  assert.match(js,/link\.href='#\/'\+routeName/);
+  assert.match(js,/v16-semantic-card/);
+  assert.match(css,/\.v16-semantic-card:focus-visible/);
+  assert.match(css,/outline:3px solid var\(--primary\)/);
   assert.match(css,/prefers-reduced-motion/);
   assert.match(css,/v14-welcome-values/);
   assert.match(css,/v14-local-hero/);

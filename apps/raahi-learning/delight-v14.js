@@ -1447,6 +1447,31 @@
     card.appendChild(note);
   }
 
+  function polishSemanticNavigationCards(){
+    const selectors=[
+      '[data-live-option].card[data-route]',
+      '[data-live-class].card[data-route]',
+      '[data-live-enquiry].card[data-route]',
+      '[data-live-conversation-class].card[data-route]',
+      '[data-live-activity].card[data-route]',
+      '[data-live-test].card[data-route]'
+    ];
+    for(const card of document.querySelectorAll(selectors.join(','))){
+      if(card.tagName==='A'){
+        card.classList.add('v16-semantic-card');
+        continue;
+      }
+      const routeName=card.dataset.route;
+      if(!routeName) continue;
+      const link=document.createElement('a');
+      for(const attr of [...card.attributes]) link.setAttribute(attr.name,attr.value);
+      link.href='#/'+routeName;
+      link.classList.add('v16-semantic-card');
+      link.innerHTML=card.innerHTML;
+      card.replaceWith(link);
+    }
+  }
+
   function polishCardsAndContext(){
     for(const card of document.querySelectorAll('[data-live-option].card')) card.classList.add('v14-market-card');
     for(const tiny of document.querySelectorAll('.rightbar .tiny')) if(tiny.textContent.trim()==='Selected Location') tiny.textContent='Exploring';
@@ -1485,6 +1510,7 @@
       polishSettings();
       polishNotifications();
       polishAvatarPicker();
+      polishSemanticNavigationCards();
       polishCardsAndContext();
     } finally {
       observer.takeRecords();
